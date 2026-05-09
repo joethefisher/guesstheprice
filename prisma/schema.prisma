@@ -40,11 +40,12 @@ model Listing {
   // Quality control
   isActive        Boolean  @default(true)
   qualityScore    Int      @default(50) // 0-100, used to filter low-quality listings
+  lastShownAt     DateTime? // for rotation freshness
 
   // Photos
   photos          Photo[]
 
-  // When did we ingest it
+  // Ingestion metadata
   ingestedAt      DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -57,26 +58,27 @@ model Listing {
 }
 
 model Photo {
-  id          String   @id @default(cuid())
-  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
-  listingId   String
-  url         String
-  width       Int?
-  height      Int?
-  ordering    Int      @default(0)
-  caption     String?
+  id           String   @id @default(cuid())
+  listing      Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId    String
+  url          String   // mirrored 1600w URL (or original if not mirrored yet)
+  thumbnailUrl String?  // mirrored 400w URL
+  sourceUrl    String?  // original 3rd-party URL (kept for debugging)
+  width        Int?
+  height       Int?
+  ordering     Int      @default(0)
+  caption      String?
 
   @@index([listingId, ordering])
 }
 
 model Game {
   id          String    @id @default(cuid())
-  // Anonymous play supported. Optional user link added later.
   sessionId   String    // browser-generated UUID
   totalRounds Int       @default(10)
   startedAt   DateTime  @default(now())
   completedAt DateTime?
-  totalScore  Int?      // computed on completion
+  totalScore  Int?
 
   rounds      Round[]
 
@@ -90,10 +92,22 @@ model Round {
   listing     Listing  @relation(fields: [listingId], references: [id])
   listingId   String
 
-  roundNumber Int      // 1-indexed within the game
-  guess       Int?     // user's guess in dollars (null if abandoned)
-  score       Int?     // 0-100 (null if not yet submitted)
+  roundNumber Int
+  guess       Int?
+  score       Int?
   guessedAt   DateTime?
 
   @@index([gameId, roundNumber])
+}
+
+model IngestionRun {
+  id               String    @id @default(cuid())
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  status           String    // "running" | "success" | "failed"
+  marketsRequested Int       @default(0)
+  listingsFound    Int       @default(0)
+  listingsIngested Int       @default(0)
+  listingsSkipped  Int       @default(0)
+  errorLog         String?   // truncated error details
 }

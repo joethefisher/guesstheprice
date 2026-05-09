@@ -11,8 +11,14 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset --force && npm run db:seed",
-    "ingest:rapidapi": "tsx scripts/ingest.ts",
-    "test": "vitest"
+    "ingest:full": "tsx scripts/ingest.ts",
+    "ingest:plan": "tsx scripts/ingest-plan.ts",
+    "ingest:fetch": "tsx scripts/ingest-stage.ts fetch",
+    "ingest:normalize": "tsx scripts/ingest-stage.ts normalize",
+    "ingest:mirror": "tsx scripts/ingest-stage.ts mirror",
+    "ingest:persist": "tsx scripts/ingest-stage.ts persist",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
