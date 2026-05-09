@@ -1,0 +1,99 @@
+// Prisma schema for Pricetag
+// Swap `provider = "sqlite"` for `"postgresql"` in production.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Listing {
+  id              String   @id @default(cuid())
+  externalId      String?  @unique // ID from source API (e.g. Realtor.com property_id)
+  source          String   // "realtor" | "zillow" | "manual" | "seed"
+
+  // Address (we display neighborhood + city + state, NOT street until reveal)
+  streetAddress   String
+  neighborhood    String?
+  city            String
+  state           String   // 2-letter
+  zipCode         String?
+  latitude        Float?
+  longitude       Float?
+
+  // Facts
+  beds            Int
+  baths           Float    // half-baths exist
+  sqft            Int?
+  lotSqft         Int?
+  yearBuilt       Int?
+  homeType        String?  // "single_family" | "condo" | "townhouse" | etc.
+
+  // The answer
+  soldPrice       Int      // in dollars, the truth
+  soldDate        DateTime?
+  isSold          Boolean  @default(true)
+
+  // Quality control
+  isActive        Boolean  @default(true)
+  qualityScore    Int      @default(50) // 0-100, used to filter low-quality listings
+
+  // Photos
+  photos          Photo[]
+
+  // When did we ingest it
+  ingestedAt      DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Game references
+  rounds          Round[]
+
+  @@index([isActive, qualityScore])
+  @@index([state, city])
+  @@index([soldPrice])
+}
+
+model Photo {
+  id          String   @id @default(cuid())
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  listingId   String
+  url         String
+  width       Int?
+  height      Int?
+  ordering    Int      @default(0)
+  caption     String?
+
+  @@index([listingId, ordering])
+}
+
+model Game {
+  id          String    @id @default(cuid())
+  // Anonymous play supported. Optional user link added later.
+  sessionId   String    // browser-generated UUID
+  totalRounds Int       @default(10)
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  totalScore  Int?      // computed on completion
+
+  rounds      Round[]
+
+  @@index([sessionId])
+}
+
+model Round {
+  id          String   @id @default(cuid())
+  game        Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId      String
+  listing     Listing  @relation(fields: [listingId], references: [id])
+  listingId   String
+
+  roundNumber Int      // 1-indexed within the game
+  guess       Int?     // user's guess in dollars (null if abandoned)
+  score       Int?     // 0-100 (null if not yet submitted)
+  guessedAt   DateTime?
+
+  @@index([gameId, roundNumber])
+}

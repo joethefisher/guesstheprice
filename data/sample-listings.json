@@ -1,0 +1,423 @@
+[
+  {
+    "externalId": "seed-001",
+    "streetAddress": "412 Marina Boulevard",
+    "neighborhood": "Marina District",
+    "city": "San Francisco",
+    "state": "CA",
+    "zipCode": "94123",
+    "latitude": 37.8042,
+    "longitude": -122.4424,
+    "beds": 1,
+    "baths": 1,
+    "sqft": 720,
+    "yearBuilt": 1928,
+    "homeType": "condo",
+    "soldPrice": 1150000,
+    "photos": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600",
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1600",
+      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-002",
+    "streetAddress": "1847 Vermont Street",
+    "neighborhood": "Potrero Hill",
+    "city": "San Francisco",
+    "state": "CA",
+    "zipCode": "94107",
+    "latitude": 37.7596,
+    "longitude": -122.4030,
+    "beds": 3,
+    "baths": 2.5,
+    "sqft": 2100,
+    "yearBuilt": 1992,
+    "homeType": "single_family",
+    "soldPrice": 2450000,
+    "photos": [
+      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-003",
+    "streetAddress": "224 W 11th Street",
+    "neighborhood": "West Village",
+    "city": "New York",
+    "state": "NY",
+    "zipCode": "10014",
+    "latitude": 40.7359,
+    "longitude": -74.0036,
+    "beds": 2,
+    "baths": 2,
+    "sqft": 1450,
+    "yearBuilt": 1910,
+    "homeType": "condo",
+    "soldPrice": 3200000,
+    "photos": [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1600",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600",
+      "https://images.unsplash.com/photo-1565182999561-18d7dc61c393?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-004",
+    "streetAddress": "78 Bedford Avenue",
+    "neighborhood": "Williamsburg",
+    "city": "Brooklyn",
+    "state": "NY",
+    "zipCode": "11211",
+    "latitude": 40.7178,
+    "longitude": -73.9618,
+    "beds": 2,
+    "baths": 1,
+    "sqft": 980,
+    "yearBuilt": 1925,
+    "homeType": "condo",
+    "soldPrice": 1075000,
+    "photos": [
+      "https://images.unsplash.com/photo-1494203484021-3c454daf695d?w=1600",
+      "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-005",
+    "streetAddress": "3411 Camelback Road",
+    "neighborhood": "Arcadia",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zipCode": "85018",
+    "latitude": 33.5083,
+    "longitude": -112.0143,
+    "beds": 4,
+    "baths": 3,
+    "sqft": 2850,
+    "lotSqft": 12500,
+    "yearBuilt": 2008,
+    "homeType": "single_family",
+    "soldPrice": 875000,
+    "photos": [
+      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1600",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-006",
+    "streetAddress": "1240 Lakeshore Drive",
+    "neighborhood": "Gold Coast",
+    "city": "Chicago",
+    "state": "IL",
+    "zipCode": "60611",
+    "latitude": 41.9012,
+    "longitude": -87.6234,
+    "beds": 3,
+    "baths": 3,
+    "sqft": 2200,
+    "yearBuilt": 1965,
+    "homeType": "condo",
+    "soldPrice": 1290000,
+    "photos": [
+      "https://images.unsplash.com/photo-1600566753086-00f18fe6ba5d?w=1600",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1600",
+      "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-007",
+    "streetAddress": "907 SW Vista Avenue",
+    "neighborhood": "Goose Hollow",
+    "city": "Portland",
+    "state": "OR",
+    "zipCode": "97205",
+    "latitude": 45.5189,
+    "longitude": -122.6975,
+    "beds": 3,
+    "baths": 2,
+    "sqft": 1750,
+    "lotSqft": 5000,
+    "yearBuilt": 1922,
+    "homeType": "single_family",
+    "soldPrice": 685000,
+    "photos": [
+      "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600",
+      "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-008",
+    "streetAddress": "2200 Brickell Avenue",
+    "neighborhood": "Brickell",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33129",
+    "latitude": 25.7466,
+    "longitude": -80.1918,
+    "beds": 2,
+    "baths": 2,
+    "sqft": 1320,
+    "yearBuilt": 2018,
+    "homeType": "condo",
+    "soldPrice": 950000,
+    "photos": [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1600",
+      "https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=1600",
+      "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-009",
+    "streetAddress": "5621 Mockingbird Lane",
+    "neighborhood": "M Streets",
+    "city": "Dallas",
+    "state": "TX",
+    "zipCode": "75206",
+    "latitude": 32.8393,
+    "longitude": -96.7672,
+    "beds": 4,
+    "baths": 3.5,
+    "sqft": 3100,
+    "lotSqft": 7800,
+    "yearBuilt": 2014,
+    "homeType": "single_family",
+    "soldPrice": 1175000,
+    "photos": [
+      "https://images.unsplash.com/photo-1605114558537-04ab4d77a1a4?w=1600",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600",
+      "https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-010",
+    "streetAddress": "1455 Oak Street",
+    "neighborhood": "Cherry Creek",
+    "city": "Denver",
+    "state": "CO",
+    "zipCode": "80206",
+    "latitude": 39.7193,
+    "longitude": -104.9527,
+    "beds": 3,
+    "baths": 2.5,
+    "sqft": 2400,
+    "yearBuilt": 2005,
+    "homeType": "townhouse",
+    "soldPrice": 1080000,
+    "photos": [
+      "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=1600",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-011",
+    "streetAddress": "3308 SE Belmont Street",
+    "neighborhood": "Sunnyside",
+    "city": "Portland",
+    "state": "OR",
+    "zipCode": "97214",
+    "latitude": 45.5163,
+    "longitude": -122.6328,
+    "beds": 2,
+    "baths": 1,
+    "sqft": 1100,
+    "lotSqft": 4500,
+    "yearBuilt": 1908,
+    "homeType": "single_family",
+    "soldPrice": 525000,
+    "photos": [
+      "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=1600",
+      "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-012",
+    "streetAddress": "1008 Park Place",
+    "neighborhood": "Crown Heights",
+    "city": "Brooklyn",
+    "state": "NY",
+    "zipCode": "11213",
+    "latitude": 40.6710,
+    "longitude": -73.9512,
+    "beds": 4,
+    "baths": 2.5,
+    "sqft": 2800,
+    "yearBuilt": 1899,
+    "homeType": "townhouse",
+    "soldPrice": 1850000,
+    "photos": [
+      "https://images.unsplash.com/photo-1564540583246-934409427776?w=1600",
+      "https://images.unsplash.com/photo-1600573472556-e636c2acda88?w=1600",
+      "https://images.unsplash.com/photo-1600585152915-d208bec867a1?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-013",
+    "streetAddress": "9874 Sunset Plaza Drive",
+    "neighborhood": "Hollywood Hills",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90069",
+    "latitude": 34.0928,
+    "longitude": -118.3776,
+    "beds": 5,
+    "baths": 4.5,
+    "sqft": 4200,
+    "lotSqft": 9800,
+    "yearBuilt": 1962,
+    "homeType": "single_family",
+    "soldPrice": 4750000,
+    "photos": [
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600",
+      "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=1600",
+      "https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-014",
+    "streetAddress": "445 N Mariposa Avenue",
+    "neighborhood": "East Hollywood",
+    "city": "Los Angeles",
+    "state": "CA",
+    "zipCode": "90004",
+    "latitude": 34.0817,
+    "longitude": -118.2967,
+    "beds": 2,
+    "baths": 1,
+    "sqft": 950,
+    "yearBuilt": 1924,
+    "homeType": "condo",
+    "soldPrice": 695000,
+    "photos": [
+      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1600",
+      "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-015",
+    "streetAddress": "1620 Bay Street",
+    "neighborhood": "Beacon Hill",
+    "city": "Boston",
+    "state": "MA",
+    "zipCode": "02114",
+    "latitude": 42.3588,
+    "longitude": -71.0707,
+    "beds": 1,
+    "baths": 1,
+    "sqft": 680,
+    "yearBuilt": 1885,
+    "homeType": "condo",
+    "soldPrice": 875000,
+    "photos": [
+      "https://images.unsplash.com/photo-1600566753104-685f4f24cb4d?w=1600",
+      "https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-016",
+    "streetAddress": "812 N 16th Street",
+    "neighborhood": "Roosevelt Row",
+    "city": "Phoenix",
+    "state": "AZ",
+    "zipCode": "85006",
+    "latitude": 33.4625,
+    "longitude": -112.0641,
+    "beds": 2,
+    "baths": 2,
+    "sqft": 1400,
+    "yearBuilt": 2019,
+    "homeType": "townhouse",
+    "soldPrice": 485000,
+    "photos": [
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1600",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-017",
+    "streetAddress": "275 W Tahquitz Canyon Way",
+    "neighborhood": "Downtown Palm Springs",
+    "city": "Palm Springs",
+    "state": "CA",
+    "zipCode": "92262",
+    "latitude": 33.8224,
+    "longitude": -116.5419,
+    "beds": 3,
+    "baths": 2,
+    "sqft": 1850,
+    "lotSqft": 8500,
+    "yearBuilt": 1958,
+    "homeType": "single_family",
+    "soldPrice": 1325000,
+    "photos": [
+      "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1600",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1600",
+      "https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-018",
+    "streetAddress": "1144 Queen Anne Avenue N",
+    "neighborhood": "Queen Anne",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98109",
+    "latitude": 47.6342,
+    "longitude": -122.3567,
+    "beds": 4,
+    "baths": 2.5,
+    "sqft": 2650,
+    "lotSqft": 6200,
+    "yearBuilt": 1928,
+    "homeType": "single_family",
+    "soldPrice": 1820000,
+    "photos": [
+      "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1600",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600",
+      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-019",
+    "streetAddress": "667 N High Street",
+    "neighborhood": "Short North",
+    "city": "Columbus",
+    "state": "OH",
+    "zipCode": "43215",
+    "latitude": 39.9756,
+    "longitude": -83.0036,
+    "beds": 2,
+    "baths": 2,
+    "sqft": 1280,
+    "yearBuilt": 2016,
+    "homeType": "condo",
+    "soldPrice": 365000,
+    "photos": [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600",
+      "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=1600"
+    ]
+  },
+  {
+    "externalId": "seed-020",
+    "streetAddress": "33 Palm Beach Drive",
+    "neighborhood": "Palm Beach",
+    "city": "Palm Beach",
+    "state": "FL",
+    "zipCode": "33480",
+    "latitude": 26.7056,
+    "longitude": -80.0364,
+    "beds": 6,
+    "baths": 7,
+    "sqft": 7800,
+    "lotSqft": 22000,
+    "yearBuilt": 2002,
+    "homeType": "single_family",
+    "soldPrice": 12500000,
+    "photos": [
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=1600",
+      "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=1600"
+    ]
+  }
+]
