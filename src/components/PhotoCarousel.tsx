@@ -1,118 +1,139 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Icon } from "./Icons";
 
 interface Photo {
   url: string;
   caption?: string | null;
+  thumbnailUrl?: string | null;
 }
 
-export function PhotoCarousel({ photos }: { photos: Photo[] }) {
-  const [index, setIndex] = useState(0);
-  const touchStartX = useRef<number | null>(null);
+interface Props {
+  photos: Photo[];
+  overlayCount?: number;
+  bandColor?: string;
+  onIndexChange?: (idx: number) => void;
+}
+
+export function PhotoCarousel({ photos, overlayCount, bandColor = "#bfae93", onIndexChange }: Props) {
+  const [idx, setIdx] = useState(0);
+  const total = photos.length;
+
+  const go = useCallback(
+    (dir: number) => {
+      setIdx((i) => {
+        const next = (i + dir + total) % total;
+        onIndexChange?.(next);
+        return next;
+      });
+    },
+    [total, onIndexChange]
+  );
 
   useEffect(() => {
-    setIndex(0);
-  }, [photos]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "ArrowRight") next();
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") go(1);
+      if (e.key === "ArrowLeft") go(-1);
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  });
-
-  function next() {
-    setIndex((i) => (i + 1) % photos.length);
-  }
-  function prev() {
-    setIndex((i) => (i - 1 + photos.length) % photos.length);
-  }
-
-  function onTouchStart(e: React.TouchEvent) {
-    touchStartX.current = e.touches[0].clientX;
-  }
-  function onTouchEnd(e: React.TouchEvent) {
-    if (touchStartX.current === null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 50) {
-      if (dx > 0) prev();
-      else next();
-    }
-    touchStartX.current = null;
-  }
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [go]);
 
   if (!photos.length) {
     return (
-      <div className="aspect-[4/3] bg-cream rounded-2xl grid place-items-center text-ink/40">
-        No photos available
+      <div className="w-full h-full grid place-items-center" style={{ background: bandColor, color: "var(--ink-mute)" }}>
+        No photos
       </div>
     );
   }
 
   return (
     <div
-      className="relative aspect-[4/3] md:aspect-[16/10] bg-ink rounded-2xl overflow-hidden shadow-card group"
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
+      className="relative w-full h-full overflow-hidden"
+      style={{ background: bandColor, borderRadius: "inherit" }}
     >
-      {/* Photos stack */}
-      {photos.map((photo, i) => (
-        <img
-          key={i}
-          src={photo.url}
-          alt=""
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-snappy ${
-            i === index ? "opacity-100" : "opacity-0"
-          }`}
-          loading={i === 0 ? "eager" : "lazy"}
+      {/* Photo crossfade */}
+      <AnimatePresence initial={false}>
+        <motion.div
+          key={idx}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.36, ease: [0.32, 0.72, 0, 1] }}
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${photos[idx].url})` }}
         />
-      ))}
+      </AnimatePresence>
 
-      {/* Photo counter */}
-      <div className="absolute top-4 right-4 bg-ink/70 backdrop-blur text-paper caption px-3 py-1.5 rounded-full">
-        <span className="tnum">{index + 1}</span>
-        <span className="opacity-50 mx-1">/</span>
-        <span className="tnum opacity-70">{photos.length}</span>
+      {/* Legibility gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(0,0,0,.32) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 60%, rgba(0,0,0,.5) 100%)",
+        }}
+      />
+
+      {/* Arrow nav */}
+      <button
+        onClick={() => go(-1)}
+        aria-label="Previous photo"
+        className="btn-icon absolute top-1/2 -translate-y-1/2"
+        style={{ left: 14, color: "var(--ink)", boxShadow: "0 4px 12px rgba(0,0,0,0.18)" }}
+      >
+        <Icon.Arrow dir="left" size={20} />
+      </button>
+      <button
+        onClick={() => go(1)}
+        aria-label="Next photo"
+        className="btn-icon absolute top-1/2 -translate-y-1/2"
+        style={{ right: 14, color: "var(--ink)", boxShadow: "0 4px 12px rgba(0,0,0,0.18)" }}
+      >
+        <Icon.Arrow size={20} />
+      </button>
+
+      {/* Counter */}
+      <div
+        className="tnum absolute top-4 right-4 text-[12px] font-semibold"
+        style={{
+          background: "rgba(26,26,26,0.72)",
+          color: "var(--paper)",
+          padding: "6px 12px",
+          borderRadius: 999,
+          backdropFilter: "blur(8px)",
+          letterSpacing: "0.02em",
+        }}
+      >
+        {idx + 1} <span style={{ opacity: 0.55 }}>/</span> {overlayCount ?? total}
       </div>
 
-      {/* Nav arrows (desktop) */}
-      {photos.length > 1 && (
-        <>
+      {/* Dot pagination */}
+      <div
+        className="absolute bottom-[18px] left-1/2 -translate-x-1/2 flex gap-[6px]"
+        style={{
+          padding: "6px 10px",
+          background: "rgba(26,26,26,0.4)",
+          borderRadius: 999,
+          backdropFilter: "blur(8px)",
+        }}
+      >
+        {photos.map((_, i) => (
           <button
-            onClick={prev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-paper/90 backdrop-blur text-ink grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-paper hover:scale-110"
-            aria-label="Previous photo"
-          >
-            ←
-          </button>
-          <button
-            onClick={next}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-paper/90 backdrop-blur text-ink grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-paper hover:scale-110"
-            aria-label="Next photo"
-          >
-            →
-          </button>
-        </>
-      )}
-
-      {/* Pagination dots */}
-      {photos.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-          {photos.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setIndex(i)}
-              className={`h-1.5 rounded-full transition-all duration-300 ease-snappy ${
-                i === index ? "w-6 bg-paper" : "w-1.5 bg-paper/40"
-              }`}
-              aria-label={`Photo ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
+            key={i}
+            onClick={() => { setIdx(i); onIndexChange?.(i); }}
+            aria-label={`Photo ${i + 1}`}
+            style={{
+              width: i === idx ? 22 : 6,
+              height: 6,
+              borderRadius: 4,
+              background: i === idx ? "var(--paper)" : "rgba(247,244,238,0.5)",
+              transition: "all 280ms cubic-bezier(0.32,0.72,0,1)",
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,150 +1,188 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { formatPrice } from "@/lib/scoring";
+import { useRef, useState, useCallback, useEffect } from "react";
+
+const SLIDER_MIN = 50_000;
+const SLIDER_MAX = 20_000_000;
+const TICKS = [100_000, 250_000, 500_000, 1_000_000, 2_000_000, 5_000_000, 10_000_000];
+
+function valueToPos(v: number) {
+  const lmin = Math.log(SLIDER_MIN);
+  const lmax = Math.log(SLIDER_MAX);
+  return (Math.log(v) - lmin) / (lmax - lmin);
+}
+
+function posToValue(p: number) {
+  const lmin = Math.log(SLIDER_MIN);
+  const lmax = Math.log(SLIDER_MAX);
+  return Math.exp(lmin + p * (lmax - lmin));
+}
+
+function snapValue(v: number) {
+  if (v < 1_000_000) return Math.round(v / 5_000) * 5_000;
+  if (v < 5_000_000) return Math.round(v / 25_000) * 25_000;
+  return Math.round(v / 100_000) * 100_000;
+}
+
+function fmtShort(v: number) {
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(v % 1_000_000 === 0 ? 0 : 1)}M`;
+  return `$${(v / 1_000).toFixed(0)}K`;
+}
 
 interface Props {
   value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
-  disabled?: boolean;
+  onChange: (v: number) => void;
+  locked?: boolean;
 }
 
-// Logarithmic mapping: slider 0-1000 → dollars MIN to MAX
-// This gives finer-grained control at lower prices where most of the action is.
-const SLIDER_RANGE = 1000;
+export function PriceSlider({ value, onChange, locked = false }: Props) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [drag, setDrag] = useState(false);
 
-function sliderToPrice(slider: number, min: number, max: number): number {
-  const ratio = slider / SLIDER_RANGE;
-  const logMin = Math.log10(min);
-  const logMax = Math.log10(max);
-  const logVal = logMin + ratio * (logMax - logMin);
-  const raw = Math.pow(10, logVal);
-  // Snap to sensible increments based on magnitude
-  if (raw < 100_000) return Math.round(raw / 1_000) * 1_000;
-  if (raw < 1_000_000) return Math.round(raw / 5_000) * 5_000;
-  if (raw < 5_000_000) return Math.round(raw / 25_000) * 25_000;
-  return Math.round(raw / 100_000) * 100_000;
-}
+  const pct = valueToPos(Math.max(SLIDER_MIN, Math.min(SLIDER_MAX, value)));
 
-function priceToSlider(price: number, min: number, max: number): number {
-  const logMin = Math.log10(min);
-  const logMax = Math.log10(max);
-  const logVal = Math.log10(Math.max(min, Math.min(max, price)));
-  return ((logVal - logMin) / (logMax - logMin)) * SLIDER_RANGE;
-}
-
-const TICK_MARKS = [100_000, 250_000, 500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000];
-
-export function PriceSlider({
-  value,
-  onChange,
-  min = 50_000,
-  max = 20_000_000,
-  disabled = false
-}: Props) {
-  const [sliderPos, setSliderPos] = useState(() => priceToSlider(value, min, max));
-  const [manualMode, setManualMode] = useState(false);
-  const [manualText, setManualText] = useState(value.toString());
+  const updateFromX = useCallback(
+    (clientX: number) => {
+      if (!trackRef.current) return;
+      const r = trackRef.current.getBoundingClientRect();
+      const p = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+      onChange(snapValue(posToValue(p)));
+    },
+    [onChange]
+  );
 
   useEffect(() => {
-    if (!manualMode) {
-      setSliderPos(priceToSlider(value, min, max));
-    }
-  }, [value, min, max, manualMode]);
-
-  function handleSlider(e: React.ChangeEvent<HTMLInputElement>) {
-    const pos = parseFloat(e.target.value);
-    setSliderPos(pos);
-    const price = sliderToPrice(pos, min, max);
-    onChange(price);
-  }
-
-  function handleManualChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const raw = e.target.value.replace(/[^0-9]/g, "");
-    setManualText(raw);
-    const num = parseInt(raw, 10);
-    if (!isNaN(num) && num >= min && num <= max) {
-      onChange(num);
-    }
-  }
+    if (!drag) return;
+    const m = (e: MouseEvent | TouchEvent) => {
+      const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+      updateFromX(clientX);
+    };
+    const u = () => setDrag(false);
+    window.addEventListener("mousemove", m);
+    window.addEventListener("touchmove", m, { passive: true });
+    window.addEventListener("mouseup", u);
+    window.addEventListener("touchend", u);
+    return () => {
+      window.removeEventListener("mousemove", m);
+      window.removeEventListener("touchmove", m);
+      window.removeEventListener("mouseup", u);
+      window.removeEventListener("touchend", u);
+    };
+  }, [drag, updateFromX]);
 
   return (
-    <div className="space-y-6">
-      {/* Display value */}
-      <div className="text-center">
-        <p className="caption text-ink/50 mb-2">Your guess</p>
-        {!manualMode ? (
+    <div
+      style={{
+        position: "relative",
+        padding: "32px 0 0",
+        opacity: locked ? 0.55 : 1,
+        pointerEvents: locked ? "none" : "auto",
+      }}
+    >
+      {/* Tick labels */}
+      <div style={{ position: "relative", height: 16 }}>
+        {TICKS.map((t) => (
           <div
-            className={`font-display text-display-l md:text-display-xl font-semibold tnum tracking-tight ${
-              disabled ? "text-ink/40" : "text-ink"
-            }`}
+            key={t}
+            className="tnum"
+            style={{
+              position: "absolute",
+              left: `${valueToPos(t) * 100}%`,
+              transform: "translateX(-50%)",
+              fontSize: 10,
+              color: "var(--ink-quiet)",
+              fontWeight: 600,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+            }}
           >
-            {formatPrice(value)}
+            {fmtShort(t)}
           </div>
-        ) : (
-          <div className="flex items-baseline justify-center gap-1">
-            <span className="font-display text-display-l font-semibold text-ink">$</span>
-            <input
-              type="text"
-              inputMode="numeric"
-              value={manualText}
-              onChange={handleManualChange}
-              autoFocus
-              disabled={disabled}
-              className="font-display text-display-l font-semibold tnum tracking-tight bg-transparent border-b-2 border-ink outline-none w-[280px] text-center"
-            />
-          </div>
-        )}
+        ))}
       </div>
 
-      {/* Slider */}
-      {!manualMode && (
-        <div className="space-y-3">
-          <input
-            type="range"
-            min={0}
-            max={SLIDER_RANGE}
-            value={sliderPos}
-            onChange={handleSlider}
-            disabled={disabled}
-            className="price-slider"
-            aria-label="Price guess"
-            aria-valuetext={formatPrice(value)}
-          />
-
-          {/* Tick marks with labels */}
-          <div className="relative h-6">
-            {TICK_MARKS.map((tick) => {
-              const pos = (priceToSlider(tick, min, max) / SLIDER_RANGE) * 100;
-              return (
-                <div
-                  key={tick}
-                  className="absolute text-[10px] font-semibold text-ink/40 tnum -translate-x-1/2"
-                  style={{ left: `${pos}%` }}
-                >
-                  {tick >= 1_000_000 ? `$${tick / 1_000_000}M` : `$${tick / 1_000}K`}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Mode toggle */}
-      <div className="flex justify-center">
-        <button
-          type="button"
-          onClick={() => {
-            setManualMode((m) => !m);
-            setManualText(value.toString());
+      {/* Track */}
+      <div
+        ref={trackRef}
+        onMouseDown={(e) => { setDrag(true); updateFromX(e.clientX); }}
+        onTouchStart={(e) => { setDrag(true); updateFromX(e.touches[0].clientX); }}
+        style={{
+          position: "relative",
+          height: 14,
+          marginTop: 8,
+          background: "var(--cream)",
+          borderRadius: 999,
+          boxShadow: "inset 0 1px 2px rgba(0,0,0,0.08)",
+          cursor: locked ? "default" : "pointer",
+        }}
+      >
+        {/* Gradient hints */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: 999,
+            pointerEvents: "none",
+            background:
+              "linear-gradient(90deg, rgba(168,197,218,0.4) 0%, transparent 8%, transparent 92%, rgba(255,92,57,0.35) 100%)",
           }}
-          disabled={disabled}
-          className="caption text-ink/50 hover:text-ink transition-colors underline underline-offset-4"
+        />
+
+        {/* Tick marks */}
+        {TICKS.map((t) => (
+          <div
+            key={t}
+            style={{
+              position: "absolute",
+              left: `${valueToPos(t) * 100}%`,
+              top: 4,
+              bottom: 4,
+              width: 1.5,
+              background: "rgba(26,26,26,0.18)",
+              transform: "translateX(-50%)",
+              borderRadius: 1,
+            }}
+          />
+        ))}
+
+        {/* Fill */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: `${pct * 100}%`,
+            background: "var(--ink)",
+            borderRadius: 999,
+            transition: drag ? "none" : "width 120ms cubic-bezier(0.32,0.72,0,1)",
+          }}
+        />
+
+        {/* Thumb */}
+        <div
+          style={{
+            position: "absolute",
+            left: `${pct * 100}%`,
+            top: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 28,
+            height: 28,
+            borderRadius: 999,
+            background: "var(--paper)",
+            boxShadow: "0 0 0 2px var(--ink), 0 4px 12px rgba(0,0,0,0.18)",
+            transition: drag ? "none" : "left 120ms cubic-bezier(0.32,0.72,0,1)",
+          }}
         >
-          {manualMode ? "Use slider" : "Type a number"}
-        </button>
+          <div
+            style={{
+              position: "absolute",
+              inset: 6,
+              borderRadius: 999,
+              background: "var(--accent)",
+            }}
+          />
+        </div>
       </div>
     </div>
   );
