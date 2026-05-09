@@ -11,3 +11,6 @@ prisma/*.db-journal
 prisma/migrations/
 .vscode/
 .idea/
+next-env.d.ts
+tsconfig.tsbuildinfo
+.cache/
