@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Wordmark } from "@/components/Wordmark";
@@ -13,7 +13,7 @@ import {
   type RoundResult,
 } from "@/lib/game";
 
-export default function SummaryPage() {
+function SummaryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [history, setHistory] = useState<RoundResult[]>([]);
@@ -373,5 +373,13 @@ export default function SummaryPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SummaryPage() {
+  return (
+    <Suspense>
+      <SummaryContent />
+    </Suspense>
   );
 }
