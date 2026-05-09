@@ -2,250 +2,492 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { PhotoCarousel } from "@/components/PhotoCarousel";
 import { PriceSlider } from "@/components/PriceSlider";
-import { PropertyFacts } from "@/components/PropertyFacts";
-import { ResultReveal } from "@/components/ResultReveal";
-import type { AccuracyTier } from "@/lib/scoring";
+import { RevealOverlay } from "@/components/RevealOverlay";
+import { Wordmark } from "@/components/Wordmark";
+import { RoundPill, StreakFlame, Stat } from "@/components/GameChips";
+import { Icon } from "@/components/Icons";
+import {
+  formatPrice,
+  type ListingPublic,
+  type RoundResult,
+  type SavedHome,
+} from "@/lib/game";
 
 const TOTAL_ROUNDS = 10;
 
-interface Listing {
-  id: string;
-  neighborhood?: string | null;
-  city: string;
-  state: string;
-  beds: number;
-  baths: number;
-  sqft?: number | null;
-  lotSqft?: number | null;
-  yearBuilt?: number | null;
-  homeType?: string | null;
-  photos: { url: string; caption?: string | null }[];
-}
-
-interface RoundResult {
-  guess: number;
-  score: number;
-  tier: AccuracyTier;
-  actualPrice: number;
-  errorDollars: number;
-  errorPct: number;
-  reaction: string;
-  subReaction: string;
-  streetAddress: string;
-}
-
-interface PlayedRound {
-  listingId: string;
-  listingSnapshot: Listing;
-  result: RoundResult;
-}
-
-type Phase = "loading" | "guessing" | "submitting" | "revealed";
+type GuessTab = "slider" | "type";
+type PlayTab = "photos" | "floorplan";
 
 export default function PlayPage() {
   const router = useRouter();
-  const [phase, setPhase] = useState<Phase>("loading");
-  const [roundNumber, setRoundNumber] = useState(1);
-  const [listing, setListing] = useState<Listing | null>(null);
-  const [guess, setGuess] = useState(750_000);
-  const [result, setResult] = useState<RoundResult | null>(null);
-  const [history, setHistory] = useState<PlayedRound[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
-  const fetchListing = useCallback(async (excludeIds: string[]) => {
-    setPhase("loading");
-    setError(null);
-    try {
-      const url = `/api/listings${
-        excludeIds.length ? `?exclude=${excludeIds.join(",")}` : ""
-      }`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`status ${res.status}`);
-      const data = await res.json();
-      setListing(data);
-      setGuess(750_000);
-      setPhase("guessing");
-    } catch (e) {
-      setError("Couldn't load a home. Try refreshing.");
-      console.error(e);
-    }
+  // Game state
+  const [roundIdx, setRoundIdx] = useState(0);
+  const [history, setHistory] = useState<RoundResult[]>([]);
+  const [usedIds, setUsedIds] = useState<string[]>([]);
+  const [streak, setStreak] = useState(0);
+  const [savedHomes, setSavedHomes] = useState<SavedHome[]>([]);
+
+  // Round state
+  const [listing, setListing] = useState<ListingPublic | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [guess, setGuess] = useState(500_000);
+  const [hasInteracted, setHasInteracted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [reveal, setReveal] = useState<RoundResult | null>(null);
+  const [guessTab, setGuessTab] = useState<GuessTab>("slider");
+  const [playTab, setPlayTab] = useState<PlayTab>("photos");
+  const [typeInput, setTypeInput] = useState("");
+
+  // Load persisted state from localStorage on mount
+  useEffect(() => {
+    const s = localStorage.getItem("pricetag_streak");
+    if (s) setStreak(parseInt(s, 10));
+    const saved = localStorage.getItem("pricetag_saved");
+    if (saved) setSavedHomes(JSON.parse(saved));
   }, []);
 
-  // Initial load
+  const fetchListing = useCallback(
+    async (exclude: string[]) => {
+      setLoading(true);
+      setReveal(null);
+      setHasInteracted(false);
+      setGuess(500_000);
+      setTypeInput("");
+      setPlayTab("photos");
+      try {
+        const qs = exclude.length ? `?exclude=${exclude.join(",")}` : "";
+        const res = await fetch(`/api/listings${qs}`);
+        if (!res.ok) throw new Error("no listing");
+        const data = await res.json();
+        setListing(data);
+        setUsedIds((prev) => [...prev, data.id]);
+      } catch {
+        router.push("/");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [router]
+  );
+
   useEffect(() => {
     fetchListing([]);
-  }, [fetchListing]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit() {
-    if (!listing) return;
-    setPhase("submitting");
+    if (!listing || submitting || !hasInteracted) return;
+    setSubmitting(true);
     try {
+      const finalGuess =
+        guessTab === "type" ? parsePrice(typeInput) ?? guess : guess;
       const res = await fetch("/api/score", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          listingId: listing.id,
-          guess
-        })
+        body: JSON.stringify({ listingId: listing.id, guess: finalGuess }),
       });
-      if (!res.ok) throw new Error(`status ${res.status}`);
-      const data: RoundResult = await res.json();
-      setResult(data);
-      setPhase("revealed");
-    } catch (e) {
-      setError("Couldn't submit your guess. Try again.");
-      setPhase("guessing");
-      console.error(e);
+      const data = await res.json();
+      const result: RoundResult = {
+        listing,
+        guess: finalGuess,
+        score: data.score,
+        tier: data.tier,
+        errorPct: data.errorPct,
+        errorDollars: data.errorDollars,
+        actualPrice: data.actualPrice,
+        streetAddress: data.streetAddress,
+        reaction: data.reaction,
+      };
+      setReveal(result);
+      setHistory((prev) => [...prev, result]);
+    } finally {
+      setSubmitting(false);
     }
   }
 
   function handleNext() {
-    if (!listing || !result) return;
-
-    const newHistory = [
-      ...history,
-      { listingId: listing.id, listingSnapshot: listing, result }
-    ];
-    setHistory(newHistory);
-
-    if (roundNumber >= TOTAL_ROUNDS) {
-      // Stash results and route to summary
-      sessionStorage.setItem("pricetag-history", JSON.stringify(newHistory));
-      router.push("/play/summary");
+    const nextRound = roundIdx + 1;
+    if (nextRound >= TOTAL_ROUNDS) {
+      const newStreak = streak + 1;
+      setStreak(newStreak);
+      localStorage.setItem("pricetag_streak", String(newStreak));
+      const finalHistory = history;
+      router.push(
+        `/play/summary?data=${encodeURIComponent(
+          JSON.stringify({ history: finalHistory, streak: newStreak })
+        )}`
+      );
       return;
     }
-
-    setRoundNumber((n) => n + 1);
-    setResult(null);
-    fetchListing(newHistory.map((h) => h.listingId));
+    setRoundIdx(nextRound);
+    fetchListing(usedIds);
   }
 
-  // Cumulative score in header
-  const cumulativeScore = history.reduce((sum, h) => sum + h.result.score, 0);
+  function handleSave(home: SavedHome) {
+    const updated = [
+      home,
+      ...savedHomes.filter((s) => s.listingId !== home.listingId),
+    ];
+    setSavedHomes(updated);
+    localStorage.setItem("pricetag_saved", JSON.stringify(updated));
+  }
+
+  function handleSkip() {
+    if (roundIdx + 1 >= TOTAL_ROUNDS) {
+      router.push("/");
+      return;
+    }
+    setRoundIdx((i) => i + 1);
+    fetchListing(usedIds);
+  }
+
+  const displayGuess =
+    guessTab === "type" ? parsePrice(typeInput) ?? guess : guess;
+  const isAlreadySaved = listing
+    ? savedHomes.some((s) => s.listingId === listing.id)
+    : false;
+
+  if (loading) return <PlaySkeleton />;
+  if (!listing) return null;
 
   return (
-    <main className="min-h-screen flex flex-col">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: "var(--paper)" }}
+    >
       {/* Top bar */}
-      <header className="px-4 md:px-10 py-4 flex items-center justify-between border-b border-ink/10">
-        <Link
-          href="/"
-          className="caption text-ink/60 hover:text-ink transition-colors"
-        >
-          ← Exit
-        </Link>
+      <header
+        className="flex items-center justify-between px-7 py-4 shrink-0"
+        style={{ borderBottom: "1px solid var(--rule)" }}
+      >
         <div className="flex items-center gap-4">
-          <div className="caption text-ink/60">
-            Round{" "}
-            <span className="text-ink tnum font-bold">{roundNumber}</span>
-            <span className="text-ink/40 mx-1">/</span>
-            <span className="tnum">{TOTAL_ROUNDS}</span>
-          </div>
-          <div className="hidden md:block w-px h-4 bg-ink/20" />
-          <div className="hidden md:block caption text-ink/60">
-            Score{" "}
-            <span className="text-ink tnum font-bold">{cumulativeScore}</span>
-          </div>
+          <Wordmark size={18} />
+          <RoundPill current={roundIdx + 1} total={TOTAL_ROUNDS} />
+          {streak > 0 && <StreakFlame count={streak} />}
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="btn-icon" aria-label="Save home">
+            <Icon.Heart size={18} />
+          </button>
+          <button
+            className="btn-icon"
+            aria-label="Exit game"
+            onClick={() => router.push("/")}
+          >
+            <Icon.X size={18} />
+          </button>
         </div>
       </header>
 
-      {/* Progress bar */}
-      <div className="h-1 bg-cream">
-        <div
-          className="h-full bg-accent transition-all duration-500 ease-snappy"
-          style={{
-            width: `${((roundNumber - 1) / TOTAL_ROUNDS) * 100}%`
-          }}
-        />
-      </div>
-
-      {/* Main content */}
-      <section className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-10 py-6 md:py-10">
-        {phase === "loading" && <LoadingSkeleton />}
-
-        {error && (
-          <div className="text-center py-20">
-            <p className="text-flag mb-4">{error}</p>
-            <button
-              onClick={() => fetchListing(history.map((h) => h.listingId))}
-              className="px-6 py-3 bg-ink text-paper rounded-xl"
-            >
-              Try again
-            </button>
+      {/* Two-column game layout */}
+      <main
+        className="flex-1 grid"
+        style={{ gridTemplateColumns: "1.55fr 1fr" }}
+      >
+        {/* Photo column */}
+        <div className="relative" style={{ padding: 28 }}>
+          {/* Tab group overlay */}
+          <div
+            className="absolute top-[42px] left-[42px] z-10 flex"
+            style={{
+              background: "rgba(247,244,238,0.88)",
+              backdropFilter: "blur(8px)",
+              borderRadius: 12,
+              padding: 4,
+              gap: 4,
+            }}
+          >
+            {(["photos", "floorplan"] as PlayTab[]).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setPlayTab(tab)}
+                className="caption"
+                style={{
+                  padding: "7px 14px",
+                  borderRadius: 9,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  letterSpacing: "0.1em",
+                  background:
+                    playTab === tab ? "var(--ink)" : "transparent",
+                  color:
+                    playTab === tab ? "var(--paper)" : "var(--ink-mute)",
+                  transition: "all 200ms cubic-bezier(0.32,0.72,0,1)",
+                  textTransform: "capitalize",
+                  cursor: "pointer",
+                }}
+              >
+                {tab === "photos" ? "Photos" : "Floor plan"}
+              </button>
+            ))}
           </div>
-        )}
 
-        {listing && (phase === "guessing" || phase === "submitting" || phase === "revealed") && (
-          <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-12">
-            {/* Left: photos */}
-            <div className="space-y-6">
+          <div style={{ height: "100%", borderRadius: 18, overflow: "hidden" }}>
+            {playTab === "photos" ? (
               <PhotoCarousel photos={listing.photos} />
-              <PropertyFacts listing={listing} />
+            ) : (
+              <FloorPlanPlaceholder />
+            )}
+          </div>
+        </div>
+
+        {/* Guess panel */}
+        <div
+          className="flex flex-col"
+          style={{
+            padding: "28px 32px 28px 0",
+            borderLeft: "1px solid var(--rule)",
+          }}
+        >
+          <div
+            className="flex-1 overflow-y-auto"
+            style={{ paddingLeft: 28 }}
+          >
+            <div className="eyebrow mb-2">Listed in {listing.city}</div>
+            <h2
+              className="display m-0 mb-4"
+              style={{ fontSize: 26, lineHeight: 1.15 }}
+            >
+              {listing.neighborhood ? `${listing.neighborhood}, ` : ""}
+              {listing.city}, {listing.state}
+            </h2>
+
+            {/* Property stats */}
+            <div className="flex flex-wrap gap-x-5 gap-y-2 mb-5">
+              <Stat
+                icon={Icon.Bed}
+                label="beds"
+                value={listing.beds === 0 ? "Studio" : listing.beds}
+              />
+              <Stat icon={Icon.Bath} label="baths" value={listing.baths} />
+              {listing.sqft && (
+                <Stat
+                  icon={Icon.Sqft}
+                  label="sqft"
+                  value={listing.sqft.toLocaleString()}
+                />
+              )}
+              {listing.yearBuilt && (
+                <Stat icon={Icon.Year} label="built" value={listing.yearBuilt} />
+              )}
+              {listing.lotSqft && (
+                <Stat
+                  icon={Icon.Lot}
+                  label="lot sqft"
+                  value={listing.lotSqft.toLocaleString()}
+                />
+              )}
             </div>
 
-            {/* Right: guess input */}
-            <div className="lg:sticky lg:top-8 lg:self-start space-y-8">
+            <hr className="hairline mb-5" />
+
+            {/* Guess display */}
+            <div className="eyebrow mb-2">Your guess</div>
+            <div
+              className="display tnum mb-4"
+              style={{
+                fontSize: 56,
+                color: hasInteracted ? "var(--ink)" : "var(--ink-quiet)",
+                lineHeight: 1,
+                transition: "color 200ms ease",
+              }}
+            >
+              {hasInteracted ? formatPrice(displayGuess) : "$———"}
+            </div>
+
+            {/* Mode tabs */}
+            <div className="flex gap-1 mb-4">
+              {(["slider", "type"] as GuessTab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setGuessTab(tab)}
+                  className="caption"
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: 999,
+                    fontSize: 11,
+                    fontWeight: 600,
+                    letterSpacing: "0.1em",
+                    background:
+                      guessTab === tab
+                        ? "var(--ink)"
+                        : "rgba(26,26,26,0.06)",
+                    color:
+                      guessTab === tab ? "var(--paper)" : "var(--ink-mute)",
+                    transition: "all 200ms cubic-bezier(0.32,0.72,0,1)",
+                    cursor: "pointer",
+                  }}
+                >
+                  {tab === "slider" ? "Slider" : "Type a number"}
+                </button>
+              ))}
+            </div>
+
+            {guessTab === "slider" ? (
               <PriceSlider
                 value={guess}
-                onChange={setGuess}
-                disabled={phase === "submitting"}
+                onChange={(v) => {
+                  setGuess(v);
+                  setHasInteracted(true);
+                }}
+                locked={submitting}
               />
-
-              <button
-                onClick={handleSubmit}
-                disabled={phase === "submitting"}
-                className="w-full py-4 bg-accent text-paper font-semibold rounded-xl hover:bg-ink transition-colors duration-300 ease-snappy text-lg disabled:opacity-50 disabled:cursor-wait"
-              >
-                {phase === "submitting" ? "Locking it in..." : "Lock it in →"}
-              </button>
-
-              <p className="text-center text-xs text-ink/40">
-                You can use the slider, type a number, or use arrow keys.
-              </p>
-            </div>
+            ) : (
+              <input
+                type="text"
+                inputMode="numeric"
+                value={typeInput}
+                onChange={(e) => {
+                  setTypeInput(e.target.value);
+                  if (parsePrice(e.target.value)) setHasInteracted(true);
+                }}
+                placeholder="Enter price (e.g. 1250000)"
+                aria-label="Enter your price guess"
+                className="tnum"
+                style={{
+                  width: "100%",
+                  padding: "14px 16px",
+                  borderRadius: 12,
+                  border: "1.5px solid var(--rule)",
+                  background: "var(--paper)",
+                  fontSize: 18,
+                  fontWeight: 600,
+                  outline: "none",
+                  marginTop: 8,
+                }}
+              />
+            )}
           </div>
-        )}
-      </section>
 
-      {/* Reveal modal */}
-      {phase === "revealed" && result && (
-        <ResultReveal
-          guess={guess}
-          actualPrice={result.actualPrice}
-          score={result.score}
-          tier={result.tier}
-          reaction={result.reaction}
-          subReaction={result.subReaction}
-          streetAddress={result.streetAddress}
-          errorDollars={result.errorDollars}
-          onNext={handleNext}
-          isLastRound={roundNumber >= TOTAL_ROUNDS}
-        />
-      )}
-    </main>
+          {/* CTA row */}
+          <div
+            className="flex flex-col gap-3 mt-6"
+            style={{ paddingLeft: 28 }}
+          >
+            <button
+              onClick={handleSubmit}
+              disabled={!hasInteracted || submitting}
+              className="btn btn-primary"
+              style={{ fontSize: 16, justifyContent: "space-between" }}
+            >
+              <span>{submitting ? "Scoring…" : "Lock it in"}</span>
+              <span>→</span>
+            </button>
+            <button
+              onClick={handleSkip}
+              className="btn btn-secondary"
+              style={{ fontSize: 14 }}
+            >
+              Skip
+            </button>
+          </div>
+        </div>
+      </main>
+
+      {/* Reveal overlay */}
+      <AnimatePresence>
+        {reveal && listing && (
+          <RevealOverlay
+            key="reveal"
+            result={reveal}
+            listing={listing}
+            roundNumber={roundIdx + 1}
+            totalRounds={TOTAL_ROUNDS}
+            onNext={handleNext}
+            onSave={handleSave}
+            alreadySaved={isAlreadySaved}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
-function LoadingSkeleton() {
+function parsePrice(s: string): number | null {
+  const n = parseFloat(s.replace(/[^0-9.]/g, ""));
+  return isNaN(n) || n <= 0 ? null : n;
+}
+
+function PlaySkeleton() {
   return (
-    <div className="grid lg:grid-cols-[1.6fr_1fr] gap-8 lg:gap-12 animate-pulse">
-      <div className="space-y-6">
-        <div className="aspect-[4/3] md:aspect-[16/10] bg-cream rounded-2xl" />
-        <div className="space-y-3">
-          <div className="h-8 w-2/3 bg-cream rounded" />
-          <div className="grid grid-cols-4 gap-2">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-16 bg-cream rounded-xl" />
-            ))}
-          </div>
-        </div>
+    <div
+      className="min-h-screen grid"
+      style={{
+        gridTemplateColumns: "1.55fr 1fr",
+        background: "var(--paper)",
+      }}
+    >
+      <div style={{ padding: 28 }}>
+        <div
+          style={{
+            height: "100%",
+            background: "var(--cream)",
+            borderRadius: 18,
+          }}
+        />
       </div>
-      <div className="space-y-6">
-        <div className="h-32 bg-cream rounded-xl" />
-        <div className="h-14 bg-cream rounded-xl" />
+      <div style={{ padding: "28px 32px 28px 28px" }}>
+        <div
+          style={{
+            height: 12,
+            width: "40%",
+            background: "var(--cream)",
+            borderRadius: 6,
+            marginBottom: 16,
+          }}
+        />
+        <div
+          style={{
+            height: 32,
+            width: "80%",
+            background: "var(--cream)",
+            borderRadius: 8,
+            marginBottom: 24,
+          }}
+        />
+        <div
+          style={{
+            height: 64,
+            width: "70%",
+            background: "var(--cream)",
+            borderRadius: 8,
+          }}
+        />
       </div>
+    </div>
+  );
+}
+
+function FloorPlanPlaceholder() {
+  return (
+    <div
+      className="w-full h-full flex flex-col items-center justify-center gap-4"
+      style={{
+        background: "var(--paper)",
+        border: "1.5px dashed var(--rule)",
+        borderRadius: 18,
+      }}
+    >
+      <svg
+        width={120}
+        height={90}
+        viewBox="0 0 120 90"
+        fill="none"
+        stroke="var(--ink-quiet)"
+        strokeWidth="1.5"
+      >
+        <rect x="10" y="10" width="100" height="70" rx="2" />
+        <path d="M10 40h40M50 10v30M80 40h30M80 10v30M10 60h100" />
+        <rect x="20" y="48" width="22" height="22" />
+        <rect x="60" y="48" width="40" height="22" />
+      </svg>
+      <p className="eyebrow" style={{ margin: 0 }}>
+        Floor plan unavailable
+      </p>
     </div>
   );
 }
