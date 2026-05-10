@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "./Icons";
+import { comboMultiplier } from "@/lib/game";
 
 export function Stat({
   icon: IconComp,
@@ -63,6 +64,74 @@ export function RoundPill({ current, total }: { current: number; total: number }
       <span>{String(current).padStart(2, "0")}</span>
       <span style={{ opacity: 0.4 }}>/</span>
       <span style={{ opacity: 0.55 }}>{String(total).padStart(2, "0")}</span>
+    </div>
+  );
+}
+
+export function ComboFlame({ combo }: { combo: number }) {
+  if (combo < 2) return null;
+
+  const isOnFire = combo >= 3;
+  const isUnreal = combo >= 5;
+  const isGoated = combo >= 7;
+
+  const multiplier = comboMultiplier(combo);
+  const flameColor = combo < 3 ? "var(--gold)" : "var(--accent)";
+  const flameScale = isGoated ? 1.6 : isUnreal ? 1.5 : isOnFire ? 1.4 : 1.2;
+
+  return (
+    <div
+      className="inline-flex items-center gap-[6px] tnum"
+      style={{
+        padding: "5px 11px",
+        borderRadius: 999,
+        background: isGoated ? "rgba(255,92,57,0.12)" : "var(--cream)",
+        color: flameColor,
+        fontWeight: 700,
+        fontSize: 13,
+        animation: "comboPulse 200ms ease-out 1",
+      }}
+    >
+      <span
+        style={{
+          display: "inline-flex",
+          position: "relative",
+          animation: "flameFlicker 1.2s ease-in-out infinite",
+          transform: `scale(${flameScale})`,
+          transformOrigin: "center bottom",
+          filter: isOnFire ? "drop-shadow(0 0 6px var(--accent))" : undefined,
+        }}
+      >
+        <Icon.Flame size={14} />
+
+        {/* Ember sparks for UNREAL (×2.0) and GOATED (×3.0) */}
+        {isUnreal && (
+          <>
+            <span style={{ position: "absolute", top: -1, left: "25%", width: 3, height: 3, borderRadius: "50%", background: "var(--gold)", animation: "emberFloat 0.9s ease-out infinite" }} />
+            <span style={{ position: "absolute", top: -1, left: "55%", width: 2, height: 2, borderRadius: "50%", background: "var(--accent)", animation: "emberFloat 0.9s ease-out 0.3s infinite" }} />
+            <span style={{ position: "absolute", top: -1, left: "40%", width: 2, height: 2, borderRadius: "50%", background: "var(--gold)", animation: "emberFloat 0.9s ease-out 0.6s infinite" }} />
+          </>
+        )}
+
+        {/* Rotating ring of fire for GOATED (×3.0) */}
+        {isGoated && (
+          <span style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            width: 26,
+            height: 26,
+            borderRadius: "50%",
+            border: "1.5px dashed var(--accent)",
+            opacity: 0.55,
+            animation: "ringRotate 2s linear infinite",
+          }} />
+        )}
+      </span>
+
+      <span className="display" style={{ fontSize: 13 }}>
+        ×{multiplier.toFixed(1)}
+      </span>
     </div>
   );
 }

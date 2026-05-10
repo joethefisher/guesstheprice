@@ -121,11 +121,41 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
           </div>
           <div className="flex flex-col gap-1">
             <div className="eyebrow">Score this round</div>
-            <div className="tnum font-semibold text-[18px]" style={{ color: "var(--accent)" }}>
-              +{result.score}
-            </div>
+            {result.multiplier != null && result.multiplier > 1 ? (
+              <>
+                <div className="tnum font-semibold text-[18px]" style={{ color: "var(--accent)" }}>
+                  +{result.score}
+                </div>
+                <div className="tnum text-[11px]" style={{ color: "var(--ink-mute)", marginTop: 1 }}>
+                  {result.pointsRaw} × {result.multiplier.toFixed(1)}
+                </div>
+              </>
+            ) : (
+              <div className="tnum font-semibold text-[18px]" style={{ color: "var(--accent)" }}>
+                +{result.score}
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Combo break notification */}
+        {result.comboBrokenFrom != null && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "var(--flag)",
+              marginBottom: 8,
+              marginTop: -8,
+              letterSpacing: "0.04em",
+            }}
+          >
+            Combo broken at ×{result.comboBrokenFrom.toFixed(1)}
+          </motion.div>
+        )}
 
         {/* Address sub-card */}
         <motion.div

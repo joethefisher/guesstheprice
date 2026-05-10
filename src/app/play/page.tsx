@@ -7,10 +7,12 @@ import { PhotoCarousel } from "@/components/PhotoCarousel";
 import { PriceSlider } from "@/components/PriceSlider";
 import { RevealOverlay } from "@/components/RevealOverlay";
 import { Wordmark } from "@/components/Wordmark";
-import { RoundPill, StreakFlame, Stat } from "@/components/GameChips";
+import { RoundPill, StreakFlame, ComboFlame, Stat } from "@/components/GameChips";
 import { Icon } from "@/components/Icons";
 import {
   formatPrice,
+  comboMultiplier,
+  nextCombo,
   type ListingPublic,
   type RoundResult,
   type SavedHome,
@@ -28,6 +30,7 @@ export default function PlayPage() {
   const [history, setHistory] = useState<RoundResult[]>([]);
   const [usedIds, setUsedIds] = useState<string[]>([]);
   const [streak, setStreak] = useState(0);
+  const [combo, setCombo] = useState(0);
   const [savedHomes, setSavedHomes] = useState<SavedHome[]>([]);
 
   // Round state
@@ -102,10 +105,19 @@ export default function PlayPage() {
       if (data.score == null || !data.tier || data.actualPrice == null) {
         throw new Error("invalid_response");
       }
+      const multiplier = comboMultiplier(combo);
+      const pointsRaw = data.score;
+      const finalScore = Math.round(pointsRaw * multiplier);
+      const newCombo = nextCombo(combo, data.errorPct);
+      const comboBrokenFrom = combo >= 3 && newCombo === 0 ? multiplier : null;
+      setCombo(newCombo);
       const result: RoundResult = {
         listing,
         guess: finalGuess,
-        score: data.score,
+        score: finalScore,
+        pointsRaw,
+        multiplier,
+        comboBrokenFrom,
         tier: data.tier,
         errorPct: data.errorPct,
         errorDollars: data.errorDollars,
@@ -214,6 +226,7 @@ export default function PlayPage() {
         <div className="flex items-center gap-4">
           <Wordmark size={18} />
           <RoundPill current={roundIdx + 1} total={TOTAL_ROUNDS} />
+          <ComboFlame key={combo} combo={combo} />
           {streak > 0 && <StreakFlame count={streak} />}
         </div>
         {history.length > 0 && (

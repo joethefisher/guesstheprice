@@ -28,13 +28,33 @@ export interface ScoreResponse {
 export interface RoundResult {
   listing: ListingPublic;
   guess: number;
-  score: number;
+  score: number;         // post-multiplier
+  pointsRaw?: number;   // pre-multiplier score from API
+  multiplier?: number;  // multiplier applied this round
+  comboBrokenFrom?: number | null; // multiplier at time of combo break; null/undefined = no break
   tier: AccuracyTier;
   errorPct: number;
   errorDollars: number;
   actualPrice: number;
   streetAddress: string;
   reaction: string;
+}
+
+// Combo multiplier for a given consecutive-close-call count.
+export function comboMultiplier(combo: number): number {
+  if (combo >= 7) return 3.0;
+  if (combo >= 5) return 2.0;
+  if (combo >= 3) return 1.5;
+  if (combo >= 2) return 1.2;
+  return 1.0;
+}
+
+// Compute next combo value after a round with the given errorPct.
+// Hot tier or better (≤10%) increments; Off/Yikes (>30%) resets; Solid/Ballpark holds.
+export function nextCombo(combo: number, errorPct: number): number {
+  if (errorPct <= 0.10) return combo + 1;
+  if (errorPct > 0.30) return 0;
+  return combo;
 }
 
 export interface SavedHome {
