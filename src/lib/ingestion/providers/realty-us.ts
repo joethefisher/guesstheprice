@@ -114,7 +114,9 @@ export function toRawListing(api: RealtyUsListing): RawListing {
     list_price: api.list_price ?? undefined,
     last_sold_price: api.last_sold_price ?? undefined,
     last_sold_date: api.last_sold_date ?? undefined,
-    photos: (api.photos ?? []).map((p) => ({ href: p.href })),
+    photos: (api.photos ?? []).map((p) => ({
+      href: p.href.replace(/s\.jpg$/i, "od.jpg"),
+    })),
   };
 }
 
