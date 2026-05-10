@@ -30,13 +30,13 @@ async function main() {
     }
 
     case "normalize": {
-      // Load last fetch results from cache
+      // Raw cache files are written by writeCache() as { ts, data: { listings, totalPages } }
       const files = await listCacheDir(".cache/raw");
       const rawByMarket = new Map<string, any[]>();
       for (const file of files) {
         if (!file.endsWith(".json")) continue;
-        const data = await readCacheDir<any[]>(".cache/raw", file);
-        if (data) rawByMarket.set(file, data);
+        const cached = await readCacheDir<{ ts: number; data: { listings: any[]; totalPages: number } }>(".cache/raw", file);
+        if (cached?.data?.listings) rawByMarket.set(file, cached.data.listings);
       }
       await runNormalize(rawByMarket);
       break;
