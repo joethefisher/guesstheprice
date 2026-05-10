@@ -224,7 +224,9 @@ export default function PlayPage() {
         style={{ borderBottom: "1px solid var(--rule)" }}
       >
         <div className="flex items-center gap-4">
-          <Wordmark size={18} />
+          <button onClick={() => router.push("/")} style={{ cursor: "pointer" }} aria-label="Go to home">
+            <Wordmark size={18} />
+          </button>
           <RoundPill current={roundIdx + 1} total={TOTAL_ROUNDS} />
           <ComboFlame key={combo} combo={combo} />
           {streak > 0 && <StreakFlame count={streak} />}

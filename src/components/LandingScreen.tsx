@@ -3,24 +3,37 @@
 import { motion } from "framer-motion";
 import { Wordmark } from "./Wordmark";
 
-const HERO_URL =
+const FALLBACK_HERO_URL =
   "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=2400&q=85";
 
 const SPARKLINE_POINTS = "0,24 12,18 24,20 36,10 48,14 60,6 72,12 84,4 96,8 108,2 120,8";
 
+interface HeroLocation {
+  neighborhood: string | null;
+  city: string;
+  state: string;
+}
+
 interface Props {
   listingCount: number;
+  heroPhotoUrl: string | null;
+  heroLocation: HeroLocation | null;
   onPlay: () => void;
 }
 
-export function LandingScreen({ listingCount, onPlay }: Props) {
+export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay }: Props) {
+  const photoUrl = heroPhotoUrl ?? FALLBACK_HERO_URL;
+  const locationLabel = heroLocation
+    ? [heroLocation.neighborhood, heroLocation.city, heroLocation.state].filter(Boolean).join(", ")
+    : "Carbon Beach · Malibu, CA";
+
   return (
     <div className="relative w-full h-screen overflow-hidden" style={{ background: "var(--paper)" }}>
       {/* Hero photo */}
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `url(${HERO_URL})`,
+          backgroundImage: `url(${photoUrl})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           filter: "saturate(0.78) brightness(0.92)",
@@ -195,8 +208,7 @@ export function LandingScreen({ listingCount, onPlay }: Props) {
         <div className="flex flex-col gap-1">
           <div className="eyebrow" style={{ color: "rgba(247,244,238,0.5)" }}>Now showing</div>
           <div style={{ color: "var(--paper)", fontSize: 14, fontWeight: 500 }}>
-            Carbon Beach · Malibu, CA
-            <span className="tnum ml-2" style={{ color: "rgba(247,244,238,0.6)" }}>$18.75M</span>
+            {locationLabel}
           </div>
         </div>
       </div>
