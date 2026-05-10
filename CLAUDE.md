@@ -84,6 +84,8 @@ Code lives in `src/lib/ingestion/`. Each stage is independently runnable via CLI
 
 **Photo mirroring**: Sharp resizes to 1600w (display) + 400w (thumbnail) and uploads to R2 with `Cache-Control: immutable`. Dev mode (R2 not configured): uses source URLs directly.
 
+**API source**: "Realty US" by ntd119 (`realty-us.p.rapidapi.com`). Endpoint: `GET /properties/search-buy`. Location slug format: `city:{state_lower}_{city_lower}` (e.g. `city:il_chicago`). Page-based pagination via `?page=N`, 20 results/page, hard cap at page 475 (offset 9500). Sold price in `last_sold_price` (top-level, only on resale listings — new construction is filtered out at fetch time).
+
 **Caching**: Raw API responses cached to `.cache/raw/` with 30-day TTL. Re-running the pipeline reads from cache, not the API. This prevents burning RapidAPI quota.
 
 **`IngestionRun` model** tracks every pipeline run (status, counts, error log) for observability. Check it via Prisma Studio or `SELECT * FROM IngestionRun ORDER BY startedAt DESC LIMIT 5;`.

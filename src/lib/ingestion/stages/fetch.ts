@@ -1,7 +1,13 @@
 import { readCache, writeCache } from "../cache";
 import type { Market, RawListing } from "../types";
-
-const API_HOST = "realtor.p.rapidapi.com";
+import {
+  REALTY_US_HOST,
+  SEARCH_BUY_ENDPOINT,
+  MAX_PAGE,
+  toLocationSlug,
+  toRawListing,
+  parseSearchBuyResponse,
+} from "../providers/realty-us";
 
 async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -37,27 +43,23 @@ async function fetchWithRetry(
 
 async function fetchPage(
   market: Market,
-  offset: number,
+  page: number,
   apiKey: string
-): Promise<RawListing[]> {
-  const cacheKey = `${market.city.toLowerCase().replace(/\s+/g, "-")}-${market.state.toLowerCase()}-${offset}.json`;
-  const cached = await readCache<RawListing[]>(cacheKey);
-  if (cached) {
-    return cached;
-  }
+): Promise<{ listings: RawListing[]; totalPages: number }> {
+  const slug = toLocationSlug(market.city, market.state);
+  const cacheKey = `${market.city.toLowerCase().replace(/\s+/g, "-")}-${market.state.toLowerCase()}-page${page}.json`;
 
-  const url = new URL(`https://${API_HOST}/properties/list-sold`);
-  url.searchParams.set("city", market.city);
-  url.searchParams.set("state_code", market.state);
-  url.searchParams.set("limit", "200");
-  url.searchParams.set("offset", String(offset));
-  url.searchParams.set("sort", "sold_date");
-  url.searchParams.set("prop_status", "recently_sold");
+  const cached = await readCache<{ listings: RawListing[]; totalPages: number }>(cacheKey);
+  if (cached) return cached;
+
+  const url = new URL(SEARCH_BUY_ENDPOINT);
+  url.searchParams.set("location", slug);
+  url.searchParams.set("page", String(page));
 
   const res = await fetchWithRetry(url.toString(), {
     headers: {
       "X-RapidAPI-Key": apiKey,
-      "X-RapidAPI-Host": API_HOST,
+      "X-RapidAPI-Host": REALTY_US_HOST,
     },
   });
 
@@ -67,17 +69,17 @@ async function fetchPage(
   }
 
   const json = await res.json();
-  // apidojo response shape: { properties: [...] } or { data: { home_search: { results: [...] } } }
-  const results: RawListing[] =
-    json?.properties ??
-    json?.data?.home_search?.results ??
-    json?.results ??
-    [];
+  const { listings, totalPages } = parseSearchBuyResponse(json);
 
-  await writeCache(cacheKey, results);
-  await sleep(250); // rate-limit guard
+  const withPrice = listings
+    .filter((l) => l.last_sold_price != null)
+    .map(toRawListing);
 
-  return results;
+  const result = { listings: withPrice, totalPages };
+  await writeCache(cacheKey, result);
+  await sleep(250);
+
+  return result;
 }
 
 export async function fetchMarket(
@@ -85,17 +87,19 @@ export async function fetchMarket(
   quota: number,
   apiKey: string
 ): Promise<RawListing[]> {
-  const pages = Math.ceil(quota / 200);
+  const pagesNeeded = Math.ceil(quota / 20);
+  const pages = Math.min(pagesNeeded, MAX_PAGE);
   const all: RawListing[] = [];
 
-  for (let page = 0; page < pages; page++) {
-    const offset = page * 200;
+  let apiTotalPages = pages;
+  for (let page = 1; page <= Math.min(pages, apiTotalPages); page++) {
     try {
-      const results = await fetchPage(market, offset, apiKey);
-      all.push(...results);
-      if (results.length < 200) break; // no more pages
+      const { listings, totalPages } = await fetchPage(market, page, apiKey);
+      apiTotalPages = Math.min(totalPages, MAX_PAGE);
+      all.push(...listings);
+      if (all.length >= quota) break;
     } catch (err) {
-      console.error(`  Error fetching ${market.city} offset ${offset}:`, err);
+      console.error(`  Error fetching ${market.city} page ${page}:`, err);
       break;
     }
   }
