@@ -1,72 +1,80 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 /**
- * GET /api/listings/random?exclude=id1,id2
+ * GET /api/listings?exclude=id1,id2
  *
  * Returns a random active listing, with photos.
  * Does NOT include soldPrice — the answer is server-only.
+ *
+ * Uses ORDER BY RANDOM() LIMIT 1 — a single atomic query that eliminates the
+ * TOCTOU race between count() and findFirst(skip) that occurred under concurrent load.
  */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const excludeParam = searchParams.get("exclude") || "";
-  const excludeIds = excludeParam ? excludeParam.split(",").filter(Boolean) : [];
+  // Cap at 50 to prevent oversized NOT IN clauses
+  const excludeIds = excludeParam
+    ? excludeParam.split(",").filter(Boolean).slice(0, 50)
+    : [];
 
-  // Count eligible listings
-  const totalCount = await prisma.listing.count({
-    where: {
-      isActive: true,
-      qualityScore: { gte: 50 },
-      id: excludeIds.length ? { notIn: excludeIds } : undefined
+  let rows: Array<{ id: string }>;
+  try {
+    if (excludeIds.length > 0) {
+      rows = await prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM "Listing"
+        WHERE "isActive" = true
+        AND "qualityScore" >= 50
+        AND id NOT IN (${Prisma.join(excludeIds)})
+        ORDER BY RANDOM()
+        LIMIT 1
+      `;
+    } else {
+      rows = await prisma.$queryRaw<Array<{ id: string }>>`
+        SELECT id FROM "Listing"
+        WHERE "isActive" = true
+        AND "qualityScore" >= 50
+        ORDER BY RANDOM()
+        LIMIT 1
+      `;
     }
-  });
+  } catch {
+    return NextResponse.json({ error: "db error" }, { status: 500 });
+  }
 
-  if (totalCount === 0) {
+  if (!rows.length) {
     return NextResponse.json(
       { error: "no listings available" },
       { status: 404 }
     );
   }
 
-  // Random offset (SQLite doesn't have RANDOM() ordering as efficiently as PG,
-  // but for a few thousand listings this is fine)
-  const skip = Math.floor(Math.random() * totalCount);
-
-  const listing = await prisma.listing.findFirst({
-    where: {
-      isActive: true,
-      qualityScore: { gte: 50 },
-      id: excludeIds.length ? { notIn: excludeIds } : undefined
-    },
-    skip,
-    include: {
-      photos: { orderBy: { ordering: "asc" } }
-    }
+  const listing = await prisma.listing.findUnique({
+    where: { id: rows[0].id },
+    include: { photos: { orderBy: { ordering: "asc" } } },
   });
 
   if (!listing) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
-  // Strip the answer before sending to client
-  const { soldPrice, soldDate, streetAddress, ...safe } = listing;
-
   return NextResponse.json({
-    id: safe.id,
-    neighborhood: safe.neighborhood,
-    city: safe.city,
-    state: safe.state,
-    beds: safe.beds,
-    baths: safe.baths,
-    sqft: safe.sqft,
-    lotSqft: safe.lotSqft,
-    yearBuilt: safe.yearBuilt,
-    homeType: safe.homeType,
-    photos: safe.photos.map((p) => ({
+    id: listing.id,
+    neighborhood: listing.neighborhood,
+    city: listing.city,
+    state: listing.state,
+    beds: listing.beds,
+    baths: listing.baths,
+    sqft: listing.sqft,
+    lotSqft: listing.lotSqft,
+    yearBuilt: listing.yearBuilt,
+    homeType: listing.homeType,
+    photos: listing.photos.map((p) => ({
       url: p.url,
-      caption: p.caption
-    }))
+      caption: p.caption,
+    })),
   });
 }
