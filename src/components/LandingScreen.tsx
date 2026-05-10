@@ -111,7 +111,7 @@ export function LandingScreen({ listingCount, onPlay }: Props) {
                 className="btn btn-primary"
                 style={{ fontSize: 16, padding: "18px 28px", justifyContent: "space-between" }}
               >
-                <span>Play — 10 rounds</span>
+                <span>Play 10 rounds</span>
                 <span style={{ opacity: 0.8 }}>→</span>
               </button>
               <button

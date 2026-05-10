@@ -169,6 +169,22 @@ export default function PlayPage() {
           <RoundPill current={roundIdx + 1} total={TOTAL_ROUNDS} />
           {streak > 0 && <StreakFlame count={streak} />}
         </div>
+        {history.length > 0 && (
+          <div
+            className="tnum"
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+              color: "var(--ink)",
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          >
+            {history.reduce((s, r) => s + r.score, 0)}
+            <span style={{ fontWeight: 400, color: "var(--ink-mute)", marginLeft: 4 }}>pts</span>
+          </div>
+        )}
         <div className="flex items-center gap-2">
           <button className="btn-icon" aria-label="Save home">
             <Icon.Heart size={18} />

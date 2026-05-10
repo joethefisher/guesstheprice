@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Pricetag — Guess the home.",
+  title: "Pricetag: Guess the home.",
   description:
     "Real homes. Real prices. How close can you get? A real-estate guessing game.",
   openGraph: {
