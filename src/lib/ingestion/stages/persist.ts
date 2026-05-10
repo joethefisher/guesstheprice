@@ -1,9 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import type { MirroredListing } from "../types";
 
-const prisma = new PrismaClient();
-
-export async function persistOne(listing: MirroredListing): Promise<boolean> {
+export async function persistOne(listing: MirroredListing, prisma: PrismaClient): Promise<boolean> {
   if (listing.photos.length < 3) return false;
 
   await prisma.$transaction(async (tx) => {
@@ -72,7 +70,7 @@ export async function persistOne(listing: MirroredListing): Promise<boolean> {
   return true;
 }
 
-export async function runPersist(mirrored: MirroredListing[]): Promise<{
+export async function runPersist(mirrored: MirroredListing[], prisma: PrismaClient): Promise<{
   ingested: number;
   skipped: number;
 }> {
@@ -82,7 +80,7 @@ export async function runPersist(mirrored: MirroredListing[]): Promise<{
 
   for (const listing of mirrored) {
     try {
-      const ok = await persistOne(listing);
+      const ok = await persistOne(listing, prisma);
       if (ok) {
         ingested++;
       } else {
@@ -96,7 +94,6 @@ export async function runPersist(mirrored: MirroredListing[]): Promise<{
 
   console.log(`  Persisted: ${ingested} listings`);
   console.log(`  Skipped:   ${skipped} listings\n`);
-  await prisma.$disconnect();
 
   return { ingested, skipped };
 }

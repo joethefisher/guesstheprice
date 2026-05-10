@@ -72,8 +72,8 @@ async function mirrorPhoto(
   const thumbKey = `${base}_thumb.jpg`;
 
   try {
-    // Check if already mirrored (idempotent)
-    const alreadyMirrored = await objectExists(client, displayKey);
+    // Check if already mirrored (idempotent) — must verify both sizes exist
+    const alreadyMirrored = await objectExists(client, displayKey) && await objectExists(client, thumbKey);
 
     let displayUrl: string;
     let thumbUrl: string;

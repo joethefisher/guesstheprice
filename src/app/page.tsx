@@ -13,13 +13,18 @@ export default async function HomePage() {
       where: { isActive: true, qualityScore: { gte: 50 } },
     });
 
-    if (listingCount > 0) {
-      const heroWhere = { isActive: true, qualityScore: { gte: 50 }, soldPrice: { gte: 1_000_000 } };
-      const heroCount = await prisma.listing.count({ where: heroWhere });
-      const skip = heroCount > 0 ? Math.floor(Math.random() * heroCount) : 0;
-      const hero = await prisma.listing.findFirst({
-        where: heroWhere,
-        skip,
+    const heroRows = await prisma.$queryRaw<Array<{ id: string }>>`
+      SELECT id FROM "Listing"
+      WHERE "isActive" = true
+      AND "qualityScore" >= 50
+      AND "soldPrice" >= 1000000
+      ORDER BY RANDOM()
+      LIMIT 1
+    `;
+
+    if (heroRows.length > 0) {
+      const hero = await prisma.listing.findUnique({
+        where: { id: heroRows[0].id },
         include: { photos: { orderBy: { ordering: "asc" }, take: 1 } },
       });
       if (hero) {

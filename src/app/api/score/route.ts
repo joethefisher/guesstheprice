@@ -9,15 +9,14 @@ export const dynamic = "force-dynamic";
 const GuessSchema = z.object({
   listingId: z.string().min(1),
   guess: z.number().int().min(0).max(1_000_000_000),
-  gameId: z.string().optional(),
-  roundNumber: z.number().int().min(1).max(50).optional()
 });
 
 /**
  * POST /api/score
- * Body: { listingId, guess, gameId?, roundNumber? }
+ * Body: { listingId, guess }
  *
- * Validates, scores, optionally records the round, and returns the reveal.
+ * Validates, scores, and returns the reveal. Does not persist rounds —
+ * game state is client-only (localStorage).
  */
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { listingId, guess, gameId, roundNumber } = parsed.data;
+  const { listingId, guess } = parsed.data;
 
   const listing = await prisma.listing.findUnique({
     where: { id: listingId },
@@ -49,28 +48,6 @@ export async function POST(req: NextRequest) {
   const result = scoreGuess(guess, listing.soldPrice);
   const reaction = getReaction(result.tier, listingId);
   const subReaction = getSubReaction(result.tier);
-
-  // Optionally record the round
-  if (gameId && roundNumber) {
-    try {
-      await prisma.round.upsert({
-        where: { id: `${gameId}-${roundNumber}` },
-        update: { guess, score: result.score, guessedAt: new Date() },
-        create: {
-          id: `${gameId}-${roundNumber}`,
-          gameId,
-          listingId,
-          roundNumber,
-          guess,
-          score: result.score,
-          guessedAt: new Date()
-        }
-      });
-    } catch (err) {
-      // Non-fatal — game can continue without persistence
-      console.error("round record failed", err);
-    }
-  }
 
   return NextResponse.json({
     score: result.score,

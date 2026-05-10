@@ -49,7 +49,7 @@ export default function PlayPage() {
   useEffect(() => {
     try {
       const s = localStorage.getItem("pricetag_streak");
-      if (s) setStreak(parseInt(s, 10));
+      if (s) { const n = parseInt(s, 10); if (!isNaN(n)) setStreak(n); }
     } catch { /* storage disabled or corrupted */ }
     try {
       const saved = localStorage.getItem("pricetag_saved");
@@ -156,6 +156,23 @@ export default function PlayPage() {
     fetchListing(usedIds);
   }
 
+  function handleHeaderSave() {
+    if (!reveal || !listing) return;
+    const accuracy = Math.max(0, Math.round((1 - reveal.errorPct) * 100));
+    handleSave({
+      listingId: listing.id,
+      neighborhood: listing.neighborhood,
+      city: listing.city,
+      state: listing.state,
+      photoUrl: listing.photos[0]?.url ?? "",
+      guess: reveal.guess,
+      actualPrice: reveal.actualPrice,
+      tier: reveal.tier,
+      accuracy,
+      savedAt: Date.now(),
+    });
+  }
+
   function handleSave(home: SavedHome) {
     const updated = [
       home,
@@ -248,8 +265,14 @@ export default function PlayPage() {
           </div>
         )}
         <div className="flex items-center gap-2">
-          <button className="btn-icon" aria-label="Save home">
-            <Icon.Heart size={18} />
+          <button
+            className="btn-icon"
+            aria-label="Save home"
+            onClick={reveal ? handleHeaderSave : undefined}
+            disabled={!reveal}
+            style={{ cursor: reveal ? "pointer" : "not-allowed", opacity: reveal ? 1 : 0.4 }}
+          >
+            <Icon.Heart size={18} filled={isAlreadySaved} />
           </button>
           <button
             className="btn-icon"
@@ -413,7 +436,7 @@ export default function PlayPage() {
             )}
             <button
               onClick={handleSubmit}
-              disabled={!hasInteracted || submitting}
+              disabled={!hasInteracted || submitting || (guessTab === "type" && !parsePrice(typeInput))}
               className="btn btn-primary"
               style={{ fontSize: 16, justifyContent: "space-between" }}
             >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { NumberTicker } from "./NumberTicker";
 import { Confetti } from "./Confetti";
@@ -21,6 +21,7 @@ interface Props {
 export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNext, onSave, alreadySaved }: Props) {
   const [tickerDone, setTickerDone] = useState(false);
   const [saved, setSaved] = useState(alreadySaved);
+  const handleTickerDone = useCallback(() => setTickerDone(true), []);
 
   const isNailed = result.tier === "expert" || result.tier === "nailed";
   const accuracy = Math.max(0, Math.round((1 - result.errorPct) * 100));
@@ -99,7 +100,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
                 value={result.actualPrice}
                 duration={1100}
                 className="display"
-                onDone={() => setTickerDone(true)}
+                onDone={handleTickerDone}
               />
             </div>
           </div>

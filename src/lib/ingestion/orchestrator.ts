@@ -80,7 +80,7 @@ export async function runFull(opts: OrchestratorOptions = {}): Promise<Ingestion
     const mirrored = await runMirror(normalized);
 
     // Stage 5: Persist
-    const { ingested, skipped } = await runPersist(mirrored);
+    const { ingested, skipped } = await runPersist(mirrored, prisma);
     stats.listingsIngested = ingested;
     stats.listingsSkipped = normalized.length - ingested;
 

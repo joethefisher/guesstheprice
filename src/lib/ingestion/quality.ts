@@ -6,7 +6,7 @@ export interface QualityResult {
   reasons: string[];
 }
 
-const SOLD_24_MONTHS_MS = 24 * 30 * 24 * 60 * 60 * 1000;
+const SOLD_24_MONTHS_MS = 2 * 365 * 24 * 60 * 60 * 1000;
 
 export function scoreRaw(raw: RawListing): QualityResult {
   const reasons: string[] = [];
@@ -39,7 +39,6 @@ export function scoreRaw(raw: RawListing): QualityResult {
   if (raw.description.year_built) { score += 5; }
   if (raw.description.lot_sqft) { score += 5; }
   if (price >= 100_000 && price <= 15_000_000) { score += 10; }
-  if (raw.address.neighborhood_name) { score += 10; }
   if (raw.address.coordinate) { score += 5; }
 
   if (raw.last_sold_date) {

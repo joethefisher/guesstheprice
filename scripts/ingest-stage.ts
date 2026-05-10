@@ -8,6 +8,7 @@
  *   npm run ingest:persist
  */
 
+import { PrismaClient } from "@prisma/client";
 import { runDiscover, planDistribution } from "../src/lib/ingestion/stages/discover";
 import { runFetch } from "../src/lib/ingestion/stages/fetch";
 import { runNormalize } from "../src/lib/ingestion/stages/normalize";
@@ -60,7 +61,12 @@ async function main() {
       if (!latest) throw new Error("No mirrored cache found — run mirror first");
       const data = await readCacheDir<MirroredListing[]>(".cache/mirrored", latest);
       if (!data) throw new Error("Could not read mirrored cache");
-      await runPersist(data);
+      const prisma = new PrismaClient();
+      try {
+        await runPersist(data, prisma);
+      } finally {
+        await prisma.$disconnect();
+      }
       break;
     }
 

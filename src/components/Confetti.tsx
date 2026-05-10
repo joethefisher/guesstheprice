@@ -1,23 +1,25 @@
 "use client";
 
-import { useMemo } from "react";
+import { useRef } from "react";
 
 const PALETTE = ["#FF5C39", "#4A6741", "#A8C5DA", "#C8A348", "#1A1A1A", "#EDE6D6"];
 
+type Piece = { x: number; delay: number; dur: number; rot: number; size: number; color: string; shape: number };
+
 export function Confetti({ count = 80, fire = false }: { count?: number; fire?: boolean }) {
-  const pieces = useMemo(
-    () =>
-      Array.from({ length: count }).map((_, i) => ({
-        x: Math.random() * 100,
-        delay: Math.random() * 0.4,
-        dur: 1.6 + Math.random() * 1.2,
-        rot: Math.random() * 360,
-        size: 6 + Math.random() * 8,
-        color: PALETTE[i % PALETTE.length],
-        shape: i % 3,
-      })),
-    [count]
-  );
+  const piecesRef = useRef<Piece[] | null>(null);
+  if (!piecesRef.current) {
+    piecesRef.current = Array.from({ length: count }).map((_, i) => ({
+      x: Math.random() * 100,
+      delay: Math.random() * 0.4,
+      dur: 1.6 + Math.random() * 1.2,
+      rot: Math.random() * 360,
+      size: 6 + Math.random() * 8,
+      color: PALETTE[i % PALETTE.length],
+      shape: i % 3,
+    }));
+  }
+  const pieces = piecesRef.current;
 
   if (!fire) return null;
 

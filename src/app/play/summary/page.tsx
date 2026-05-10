@@ -64,9 +64,27 @@ function SummaryContent() {
   );
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(shareText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(shareText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for HTTP or permission denied
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = shareText;
+        ta.style.cssText = "position:fixed;opacity:0;pointer-events:none";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // Both methods failed — nothing to do
+      }
+    }
   }
 
   if (!history.length) return null;
@@ -103,11 +121,10 @@ function SummaryContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="eyebrow mb-3">Round complete · 10 of 10</div>
+            <div className="eyebrow mb-3">{history.length} round{history.length !== 1 ? "s" : ""} scored</div>
             <div style={{ fontSize: "clamp(80px,9vw,132px)", lineHeight: 0.95, fontFamily: "var(--display)", fontStyle: "italic", fontWeight: 500 }}>
               <span>You scored </span>
               <span className="tnum" style={{ color: "var(--accent)" }}>{totalScore}</span>
-              <span style={{ fontSize: "0.45em", display: "block", lineHeight: 1.4, color: "var(--ink-mute)", fontStyle: "normal" }}>out of 1,000</span>
             </div>
           </motion.div>
 
