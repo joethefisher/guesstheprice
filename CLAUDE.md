@@ -64,9 +64,11 @@ Run a single test file: `npx vitest run src/lib/ingestion/__tests__/quality.test
 ### API Routes
 
 - `GET /api/listings?exclude=id1,id2` — Returns a random listing without `soldPrice` or `streetAddress` (server-side stripped). Quality gate: `isActive: true, qualityScore >= 50`.
-- `POST /api/score` — Body: `{ listingId, guess, gameId?, roundNumber? }`. Returns actual price, score, tier, reaction copy. Optionally persists a `Round` record.
+- `POST /api/score` — Body: `{ listingId, guess }`. Returns actual price, score, tier, reaction copy. Game state is client-only (localStorage); rounds are not persisted server-side.
 
 Scoring lives in `src/lib/scoring.ts` — pure functions, well-tested. Do not change the scoring formula without updating the tests.
+
+**Rate limiting**: `src/middleware.ts` applies Upstash sliding-window limits to both API routes (20 req/60s for score, 60 req/60s for listings). Gracefully disabled when `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` are absent.
 
 ### Ingestion Pipeline (5 stages)
 
@@ -98,6 +100,17 @@ The Prisma schema (`prisma/schema.prisma`) uses SQLite for dev. Switch `provider
 - `Photo.thumbnailUrl` is the 400w R2 URL; `Photo.sourceUrl` is the original third-party URL kept for debugging
 - `Listing.qualityScore` is indexed with `isActive` for efficient random selection
 
+### Infrastructure
+
+**OG image**: `src/app/opengraph-image.tsx` — branded 1200×630 card served at `/opengraph-image`. `layout.tsx` metadata wires it up with `metadataBase`, `openGraph.images`, and `twitter.card`. No dependencies — uses `next/og` built into Next.js 14.
+
+**Error tracking**: Sentry via `instrumentation.ts` (server + edge) and `instrumentation-client.ts` (browser). `src/app/global-error.tsx` catches React rendering errors. Wrapped in `next.config.js` via `withSentryConfig`. Requires `SENTRY_DSN` + `NEXT_PUBLIC_SENTRY_DSN` (same value).
+
+**Database connection**: Supabase transaction pooler (port 6543, `?pgbouncer=true`) with a Prisma singleton at `src/lib/db.ts`. `DIRECT_URL` (port 5432) is used only for `prisma migrate deploy`.
+
 ### Environment variables
 
-See `.env.example`. Required for ingestion: `RAPIDAPI_KEY`. R2 variables (`R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`) are optional — if absent, mirror stage uses source URLs directly (suitable for development).
+See `.env.example`. Required for ingestion: `RAPIDAPI_KEY`. Optional (dev works without them):
+- R2: `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL` — mirror stage uses source URLs if absent
+- Rate limiting: `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` — middleware is a no-op if absent
+- Sentry: `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` — errors are silently dropped if absent; `SENTRY_ORG`/`SENTRY_PROJECT` only needed for CI source map uploads

@@ -18,6 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://pricetag.app"),
   title: "Pricetag: Guess the home.",
   description:
     "Real homes. Real prices. How close can you get? A real-estate guessing game.",
@@ -25,6 +26,12 @@ export const metadata: Metadata = {
     title: "Pricetag",
     description: "Guess the price of real homes. It's harder than you think.",
     type: "website",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Pricetag" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Pricetag",
+    description: "Guess the price of real homes. It's harder than you think.",
   },
 };
 

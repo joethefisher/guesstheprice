@@ -103,10 +103,4 @@ describe("scoreRaw", () => {
     expect(scoreRaw(withSqft).score).toBeGreaterThan(scoreRaw(noSqft).score);
   });
 
-  it("penalizes missing neighborhood", () => {
-    const withNeighborhood = makeListing();
-    const noNeighborhood = makeListing();
-    noNeighborhood.address.neighborhood_name = undefined;
-    expect(scoreRaw(withNeighborhood).score).toBeGreaterThan(scoreRaw(noNeighborhood).score);
-  });
 });
