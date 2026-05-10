@@ -1,6 +1,7 @@
-import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { LandingClient } from "@/components/LandingClient";
+
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const listingCount = await prisma.listing.count({
