@@ -19,7 +19,6 @@ import {
 const TOTAL_ROUNDS = 10;
 
 type GuessTab = "slider" | "type";
-type PlayTab = "photos" | "floorplan";
 
 export default function PlayPage() {
   const router = useRouter();
@@ -39,7 +38,6 @@ export default function PlayPage() {
   const [submitting, setSubmitting] = useState(false);
   const [reveal, setReveal] = useState<RoundResult | null>(null);
   const [guessTab, setGuessTab] = useState<GuessTab>("slider");
-  const [playTab, setPlayTab] = useState<PlayTab>("photos");
   const [typeInput, setTypeInput] = useState("");
 
   // Load persisted state from localStorage on mount
@@ -57,7 +55,6 @@ export default function PlayPage() {
       setHasInteracted(false);
       setGuess(500_000);
       setTypeInput("");
-      setPlayTab("photos");
       try {
         const qs = exclude.length ? `?exclude=${exclude.join(",")}` : "";
         const res = await fetch(`/api/listings${qs}`);
@@ -210,48 +207,8 @@ export default function PlayPage() {
       >
         {/* Photo column */}
         <div className="relative" style={{ padding: 28 }}>
-          {/* Tab group overlay */}
-          <div
-            className="absolute top-[42px] left-[42px] z-10 flex"
-            style={{
-              background: "rgba(247,244,238,0.88)",
-              backdropFilter: "blur(8px)",
-              borderRadius: 12,
-              padding: 4,
-              gap: 4,
-            }}
-          >
-            {(["photos", "floorplan"] as PlayTab[]).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setPlayTab(tab)}
-                className="caption"
-                style={{
-                  padding: "7px 14px",
-                  borderRadius: 9,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: "0.1em",
-                  background:
-                    playTab === tab ? "var(--ink)" : "transparent",
-                  color:
-                    playTab === tab ? "var(--paper)" : "var(--ink-mute)",
-                  transition: "all 200ms cubic-bezier(0.32,0.72,0,1)",
-                  textTransform: "capitalize",
-                  cursor: "pointer",
-                }}
-              >
-                {tab === "photos" ? "Photos" : "Floor plan"}
-              </button>
-            ))}
-          </div>
-
           <div style={{ height: "100%", borderRadius: 18, overflow: "hidden" }}>
-            {playTab === "photos" ? (
-              <PhotoCarousel photos={listing.photos} />
-            ) : (
-              <FloorPlanPlaceholder />
-            )}
+            <PhotoCarousel photos={listing.photos} />
           </div>
         </div>
 
@@ -482,32 +439,3 @@ function PlaySkeleton() {
   );
 }
 
-function FloorPlanPlaceholder() {
-  return (
-    <div
-      className="w-full h-full flex flex-col items-center justify-center gap-4"
-      style={{
-        background: "var(--paper)",
-        border: "1.5px dashed var(--rule)",
-        borderRadius: 18,
-      }}
-    >
-      <svg
-        width={120}
-        height={90}
-        viewBox="0 0 120 90"
-        fill="none"
-        stroke="var(--ink-quiet)"
-        strokeWidth="1.5"
-      >
-        <rect x="10" y="10" width="100" height="70" rx="2" />
-        <path d="M10 40h40M50 10v30M80 40h30M80 10v30M10 60h100" />
-        <rect x="20" y="48" width="22" height="22" />
-        <rect x="60" y="48" width="40" height="22" />
-      </svg>
-      <p className="eyebrow" style={{ margin: 0 }}>
-        Floor plan unavailable
-      </p>
-    </div>
-  );
-}
