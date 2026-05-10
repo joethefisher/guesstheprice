@@ -18,13 +18,15 @@ import type { NormalizedListing, MirroredListing } from "../src/lib/ingestion/ty
 
 const stage = process.argv[2];
 const marketArg = process.argv.find((a) => a.startsWith("--market="))?.split("=")[1];
+const quotaArg = process.argv.find((a) => a.startsWith("--quota="))?.split("=")[1];
+const quota = quotaArg ? parseInt(quotaArg, 10) : 10_000;
 const apiKey = process.env.RAPIDAPI_KEY;
 
 async function main() {
   switch (stage) {
     case "fetch": {
       if (!apiKey) throw new Error("RAPIDAPI_KEY not set");
-      const plan = await runDiscover(10_000);
+      const plan = await runDiscover(quota);
       await runFetch(plan, apiKey, marketArg);
       break;
     }
