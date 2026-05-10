@@ -115,12 +115,16 @@ export default function PlayPage() {
       const newStreak = streak + 1;
       setStreak(newStreak);
       localStorage.setItem("pricetag_streak", String(newStreak));
-      const finalHistory = history;
-      router.push(
-        `/play/summary?data=${encodeURIComponent(
-          JSON.stringify({ history: finalHistory, streak: newStreak })
-        )}`
+      // Trim photos to 1 per listing — URL blows up with 10 rounds × 20 photos each
+      const summaryHistory = history.map((r) => ({
+        ...r,
+        listing: { ...r.listing, photos: r.listing.photos.slice(0, 1) },
+      }));
+      localStorage.setItem(
+        "pricetag_last_game",
+        JSON.stringify({ history: summaryHistory, streak: newStreak })
       );
+      router.push("/play/summary");
       return;
     }
     setRoundIdx(nextRound);

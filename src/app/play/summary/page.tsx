@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useMemo, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Wordmark } from "@/components/Wordmark";
 import { TierBadge } from "@/components/GameChips";
@@ -15,22 +15,21 @@ import {
 
 function SummaryContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [history, setHistory] = useState<RoundResult[]>([]);
   const [streak, setStreak] = useState(0);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    const raw = searchParams.get("data");
+    const raw = localStorage.getItem("pricetag_last_game");
     if (!raw) { router.push("/"); return; }
     try {
-      const parsed = JSON.parse(decodeURIComponent(raw));
+      const parsed = JSON.parse(raw);
       setHistory(parsed.history ?? []);
       setStreak(parsed.streak ?? 0);
     } catch {
       router.push("/");
     }
-  }, [searchParams, router]);
+  }, [router]);
 
   const totalScore = useMemo(
     () => history.reduce((sum, r) => sum + r.score, 0),
@@ -377,9 +376,5 @@ function SummaryContent() {
 }
 
 export default function SummaryPage() {
-  return (
-    <Suspense>
-      <SummaryContent />
-    </Suspense>
-  );
+  return <SummaryContent />;
 }
