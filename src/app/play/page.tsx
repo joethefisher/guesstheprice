@@ -33,24 +33,33 @@ export default function PlayPage() {
   // Round state
   const [listing, setListing] = useState<ListingPublic | null>(null);
   const [loading, setLoading] = useState(true);
+  const [listingError, setListingError] = useState(false);
   const [guess, setGuess] = useState(500_000);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [scoreError, setScoreError] = useState<string | null>(null);
   const [reveal, setReveal] = useState<RoundResult | null>(null);
   const [guessTab, setGuessTab] = useState<GuessTab>("slider");
   const [typeInput, setTypeInput] = useState("");
 
   // Load persisted state from localStorage on mount
   useEffect(() => {
-    const s = localStorage.getItem("pricetag_streak");
-    if (s) setStreak(parseInt(s, 10));
-    const saved = localStorage.getItem("pricetag_saved");
-    if (saved) setSavedHomes(JSON.parse(saved));
+    try {
+      const s = localStorage.getItem("pricetag_streak");
+      if (s) setStreak(parseInt(s, 10));
+    } catch { /* storage disabled or corrupted */ }
+    try {
+      const saved = localStorage.getItem("pricetag_saved");
+      if (saved) setSavedHomes(JSON.parse(saved));
+    } catch {
+      localStorage.removeItem("pricetag_saved");
+    }
   }, []);
 
   const fetchListing = useCallback(
     async (exclude: string[]) => {
       setLoading(true);
+      setListingError(false);
       setReveal(null);
       setHasInteracted(false);
       setGuess(500_000);
@@ -63,12 +72,12 @@ export default function PlayPage() {
         setListing(data);
         setUsedIds((prev) => [...prev, data.id]);
       } catch {
-        router.push("/");
+        setListingError(true);
       } finally {
         setLoading(false);
       }
     },
-    [router]
+    []
   );
 
   useEffect(() => {
@@ -79,6 +88,7 @@ export default function PlayPage() {
   async function handleSubmit() {
     if (!listing || submitting || !hasInteracted) return;
     setSubmitting(true);
+    setScoreError(null);
     try {
       const finalGuess =
         guessTab === "type" ? parsePrice(typeInput) ?? guess : guess;
@@ -87,7 +97,11 @@ export default function PlayPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingId: listing.id, guess: finalGuess }),
       });
+      if (!res.ok) throw new Error("score_api_error");
       const data = await res.json();
+      if (data.score == null || !data.tier || data.actualPrice == null) {
+        throw new Error("invalid_response");
+      }
       const result: RoundResult = {
         listing,
         guess: finalGuess,
@@ -101,6 +115,8 @@ export default function PlayPage() {
       };
       setReveal(result);
       setHistory((prev) => [...prev, result]);
+    } catch {
+      setScoreError("Couldn't score your guess — please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -111,13 +127,13 @@ export default function PlayPage() {
     if (nextRound >= TOTAL_ROUNDS) {
       const newStreak = streak + 1;
       setStreak(newStreak);
-      localStorage.setItem("pricetag_streak", String(newStreak));
+      safeSetItem("pricetag_streak", String(newStreak));
       // Trim photos to 1 per listing — URL blows up with 10 rounds × 20 photos each
       const summaryHistory = history.map((r) => ({
         ...r,
         listing: { ...r.listing, photos: r.listing.photos.slice(0, 1) },
       }));
-      localStorage.setItem(
+      safeSetItem(
         "pricetag_last_game",
         JSON.stringify({ history: summaryHistory, streak: newStreak })
       );
@@ -134,7 +150,7 @@ export default function PlayPage() {
       ...savedHomes.filter((s) => s.listingId !== home.listingId),
     ];
     setSavedHomes(updated);
-    localStorage.setItem("pricetag_saved", JSON.stringify(updated));
+    safeSetItem("pricetag_saved", JSON.stringify(updated));
   }
 
   function handleSkip() {
@@ -153,6 +169,36 @@ export default function PlayPage() {
     : false;
 
   if (loading) return <PlaySkeleton />;
+  if (listingError) {
+    return (
+      <div
+        className="min-h-screen flex flex-col items-center justify-center gap-5"
+        style={{ background: "var(--paper)" }}
+      >
+        <div className="eyebrow">Connection issue</div>
+        <h2 className="display m-0" style={{ fontSize: 32, color: "var(--ink)" }}>
+          Couldn't load a listing.
+        </h2>
+        <p style={{ color: "var(--ink-mute)", fontSize: 15, margin: 0 }}>
+          Check your connection and try again.
+        </p>
+        <button
+          className="btn btn-primary"
+          style={{ fontSize: 15 }}
+          onClick={() => fetchListing(usedIds)}
+        >
+          Try another home
+        </button>
+        <button
+          className="btn btn-secondary"
+          style={{ fontSize: 14 }}
+          onClick={() => router.push("/")}
+        >
+          Back to home
+        </button>
+      </div>
+    );
+  }
   if (!listing) return null;
 
   return (
@@ -345,6 +391,11 @@ export default function PlayPage() {
             className="flex flex-col gap-3 mt-6"
             style={{ paddingLeft: 28 }}
           >
+            {scoreError && (
+              <div style={{ fontSize: 13, color: "var(--flag)", fontWeight: 500 }}>
+                {scoreError}
+              </div>
+            )}
             <button
               onClick={handleSubmit}
               disabled={!hasInteracted || submitting}
@@ -382,6 +433,10 @@ export default function PlayPage() {
       </AnimatePresence>
     </div>
   );
+}
+
+function safeSetItem(key: string, value: string) {
+  try { localStorage.setItem(key, value); } catch { /* quota exceeded or storage disabled */ }
 }
 
 function parsePrice(s: string): number | null {
