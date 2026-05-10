@@ -20,14 +20,22 @@ export default function SavedPage() {
   const [sort, setSort] = useState<SortMode>("recent");
 
   useEffect(() => {
-    const raw = localStorage.getItem("pricetag_saved");
-    if (raw) setHomes(JSON.parse(raw));
+    try {
+      const raw = localStorage.getItem("pricetag_saved");
+      if (raw) setHomes(JSON.parse(raw));
+    } catch {
+      localStorage.removeItem("pricetag_saved");
+    }
   }, []);
+
+  function safeSetItem(key: string, value: string) {
+    try { localStorage.setItem(key, value); } catch { /* quota or disabled */ }
+  }
 
   function handleRemove(listingId: string) {
     const updated = homes.filter((h) => h.listingId !== listingId);
     setHomes(updated);
-    localStorage.setItem("pricetag_saved", JSON.stringify(updated));
+    safeSetItem("pricetag_saved", JSON.stringify(updated));
   }
 
   const filtered = useMemo(() => {
