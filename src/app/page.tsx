@@ -14,9 +14,11 @@ export default async function HomePage() {
     });
 
     if (listingCount > 0) {
-      const skip = Math.floor(Math.random() * listingCount);
+      const heroWhere = { isActive: true, qualityScore: { gte: 50 }, soldPrice: { gte: 1_000_000 } };
+      const heroCount = await prisma.listing.count({ where: heroWhere });
+      const skip = heroCount > 0 ? Math.floor(Math.random() * heroCount) : 0;
       const hero = await prisma.listing.findFirst({
-        where: { isActive: true, qualityScore: { gte: 50 } },
+        where: heroWhere,
         skip,
         include: { photos: { orderBy: { ordering: "asc" }, take: 1 } },
       });
