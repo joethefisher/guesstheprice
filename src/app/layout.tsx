@@ -19,18 +19,18 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://guesstheprice.ai"),
-  title: "Guess the Price",
+  title: "Guess the Housing Price!",
   description:
     "Real homes. Real prices. How close can you get? A real-estate guessing game.",
   openGraph: {
-    title: "Guess the Price",
+    title: "Guess the Housing Price!",
     description: "Guess the price of real homes. It's harder than you think.",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Guess the Price" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Guess the Housing Price!" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Guess the Price",
+    title: "Guess the Housing Price!",
     description: "Guess the price of real homes. It's harder than you think.",
   },
 };

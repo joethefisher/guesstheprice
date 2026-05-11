@@ -1,6 +1,8 @@
+import Link from "next/link";
+
 export function Wordmark({ size = 20 }: { size?: number }) {
   return (
-    <div className="inline-flex items-center" style={{ gap: 9 }}>
+    <Link href="/" className="inline-flex items-center" style={{ gap: 9, textDecoration: "none" }}>
       <svg width={size + 4} height={size + 4} viewBox="0 0 28 28" fill="none">
         <path d="M3 6 L17 4 L25 14 L11 24 Z" fill="var(--ink)" />
         <circle cx="13" cy="9" r="1.6" fill="var(--paper)" />
@@ -11,6 +13,6 @@ export function Wordmark({ size = 20 }: { size?: number }) {
       >
         pricetag
       </span>
-    </div>
+    </Link>
   );
 }
