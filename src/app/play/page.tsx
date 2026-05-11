@@ -18,7 +18,7 @@ import {
   type SavedHome,
 } from "@/lib/game";
 
-const TOTAL_ROUNDS = 10;
+const TOTAL_ROUNDS = 5;
 
 type GuessTab = "slider" | "type";
 
@@ -140,7 +140,7 @@ export default function PlayPage() {
       const newStreak = streak + 1;
       setStreak(newStreak);
       safeSetItem("pricetag_streak", String(newStreak));
-      // Trim photos to 1 per listing — URL blows up with 10 rounds × 20 photos each
+      // Trim photos to 1 per listing — URL blows up with 5 rounds × 20 photos each
       const summaryHistory = history.map((r) => ({
         ...r,
         listing: { ...r.listing, photos: r.listing.photos.slice(0, 1) },

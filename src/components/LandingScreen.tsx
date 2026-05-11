@@ -124,7 +124,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
                 className="btn btn-primary"
                 style={{ fontSize: 16, padding: "18px 28px", justifyContent: "space-between" }}
               >
-                <span>Play 10 rounds</span>
+                <span>Play 5 rounds</span>
                 <span style={{ opacity: 0.8 }}>→</span>
               </button>
               <button

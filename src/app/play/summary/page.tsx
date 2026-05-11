@@ -319,7 +319,7 @@ function SummaryContent() {
               className="display"
               style={{ fontSize: 28, color: "var(--paper)", lineHeight: 1.1 }}
             >
-              Play another 10?
+              Play another 5?
             </div>
             <button
               onClick={() => router.push("/play")}
