@@ -85,13 +85,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
         >
           {/* Left: headline */}
           <div>
-            <div
-              className="eyebrow mb-4"
-              style={{ color: "rgba(247,244,238,0.75)" }}
-            >
-              Real homes · Real prices
-            </div>
-            <motion.h1
+<motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
@@ -116,7 +110,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
             className="flex flex-col gap-5"
           >
             <p style={{ fontSize: 18, lineHeight: 1.55, color: "rgba(247,244,238,0.85)", margin: 0, maxWidth: "28ch" }}>
-              {listingCount.toLocaleString()} homes. One question. How close can you get?
+              {listingCount.toLocaleString()} Real homes. Real prices. How close can you get?
             </p>
             <div className="flex flex-col gap-3">
               <button
