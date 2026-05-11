@@ -68,7 +68,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
           <button className="btn btn-ghost" style={{ color: "var(--paper)", fontSize: 14 }}>
             Stats
           </button>
-          <button className="btn btn-secondary" style={{ padding: "10px 18px", fontSize: 13, color: "var(--paper)", boxShadow: "inset 0 0 0 1.5px rgba(247,244,238,0.6)" }}>
+          <button className="btn btn-primary" style={{ padding: "10px 18px", fontSize: 13 }}>
             Sign in
           </button>
         </nav>
