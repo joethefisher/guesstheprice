@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://guesstheprice.ai"),
-  title: "Guess the Price — How close can you get?",
+  title: "Guess the Price",
   description:
     "Real homes. Real prices. How close can you get? A real-estate guessing game.",
   openGraph: {
