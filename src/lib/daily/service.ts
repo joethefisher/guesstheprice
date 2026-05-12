@@ -234,6 +234,38 @@ export function bucketEmoji(bucket: AccuracyBucket): string {
   }
 }
 
+/** Payload encoded into a shareable URL. */
+export interface SharePayload {
+  n: number;               // dailyNumber
+  a: number;               // accuracy
+  s: number;               // streak
+  h: (number | null)[];    // last 7 history values
+  c: string;               // city
+  t: string;               // state (2-letter)
+  d: string;               // dateET (YYYY-MM-DD)
+}
+
+export function buildShareUrl(payload: SharePayload): string {
+  const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+  return `${window.location.origin}/daily/share?v=${encoded}`;
+}
+
+export function parseSharePayload(v: string): SharePayload | null {
+  try {
+    return JSON.parse(decodeURIComponent(atob(v))) as SharePayload;
+  } catch {
+    return null;
+  }
+}
+
+export function parseSharePayloadServer(v: string): SharePayload | null {
+  try {
+    return JSON.parse(decodeURIComponent(Buffer.from(v, "base64").toString("utf-8"))) as SharePayload;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Builds the shareable text block.
  */
@@ -242,15 +274,18 @@ export function buildShareText(
   accuracy: number,
   bucket: AccuracyBucket,
   streak: number,
-  history: (number | null)[]
+  history: (number | null)[],
+  shareUrl?: string
 ): string {
   const recent = history.slice(-7).filter((v) => v !== null) as number[];
   const emojiRow = recent.map((v) => bucketEmoji(accuracyToBucket(v))).join("");
-  return [
+  const lines = [
     `Pricetag #${dailyNumber} — ${accuracy}%`,
     emojiRow,
-    `🔥${streak} · guesstheprice.ai`,
-  ].join("\n");
+    `🔥${streak} · pricetag.app`,
+  ];
+  if (shareUrl) lines.push(shareUrl);
+  return lines.join("\n");
 }
 
 /**

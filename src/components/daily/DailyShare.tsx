@@ -2,8 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { buildShareText, bucketEmoji, accuracyToBucket } from "@/lib/daily/service";
-import type { DailyResult, DailyStorage } from "@/lib/daily/service";
+import { buildShareText, buildShareUrl, bucketEmoji, accuracyToBucket } from "@/lib/daily/service";
+import type { DailyResult, DailyStorage, SharePayload } from "@/lib/daily/service";
 import type { ListingPublic } from "@/lib/game";
 
 interface Props {
@@ -30,32 +30,53 @@ function accuracyColor(v: number): string {
 
 export function DailyShare({ result, storage, dailyNumber, listing, onClose }: Props) {
   const [copied, setCopied] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  const sharePayload: SharePayload = {
+    n: dailyNumber,
+    a: result.accuracy,
+    s: storage.currentStreak,
+    h: storage.history.slice(-7),
+    c: result.city,
+    t: result.state,
+    d: storage.lastPlayedDateET ?? "",
+  };
+
+  const shareUrl = typeof window !== "undefined" ? buildShareUrl(sharePayload) : "";
 
   const shareText = buildShareText(
     dailyNumber,
     result.accuracy,
     result.bucket,
     storage.currentStreak,
-    storage.history
+    storage.history,
+    shareUrl
   );
 
-  const handleCopy = useCallback(async () => {
+  async function copyToClipboard(text: string) {
     try {
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(text);
     } catch {
-      // Fallback for browsers without clipboard API
       const el = document.createElement("textarea");
-      el.value = shareText;
+      el.value = text;
       document.body.appendChild(el);
       el.select();
       document.execCommand("copy");
       document.body.removeChild(el);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
     }
+  }
+
+  const handleCopy = useCallback(async () => {
+    await copyToClipboard(shareText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }, [shareText]);
+
+  const handleCopyLink = useCallback(async () => {
+    await copyToClipboard(shareUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  }, [shareUrl]);
 
   // Last 7 days of history for emoji grid
   const recent = storage.history.slice(-7);
@@ -218,12 +239,12 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
           </div>
 
           {/* CTAs */}
-          <div style={{ display: "flex", gap: 10 }}>
+          <div style={{ display: "flex", gap: 8 }}>
             <button
               className="btn btn-primary"
               onClick={handleCopy}
               style={{
-                flex: 1, padding: "14px", fontSize: 14, borderRadius: 12,
+                flex: 1, padding: "13px", fontSize: 14, borderRadius: 12,
                 background: copied ? "var(--emerald)" : undefined,
                 transition: "background 0.2s",
               }}
@@ -231,15 +252,28 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
               {copied ? "Copied ✓" : "Copy result"}
             </button>
             <button
-              onClick={onClose}
+              onClick={handleCopyLink}
               style={{
-                padding: "14px 18px", fontSize: 14, borderRadius: 12,
-                background: "rgba(247,244,238,0.08)", color: "rgba(247,244,238,0.7)",
+                flex: 1, padding: "13px", fontSize: 14, borderRadius: 12,
+                background: copiedLink ? "rgba(100,180,100,0.25)" : "rgba(247,244,238,0.1)",
+                color: copiedLink ? "#7dc97d" : "rgba(247,244,238,0.8)",
                 border: "none", cursor: "pointer",
                 boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.15)",
+                fontWeight: 600, transition: "background 0.2s, color 0.2s",
               }}
             >
-              Close
+              {copiedLink ? "Link copied ✓" : "Copy link"}
+            </button>
+            <button
+              onClick={onClose}
+              style={{
+                padding: "13px 16px", fontSize: 14, borderRadius: 12,
+                background: "rgba(247,244,238,0.06)", color: "rgba(247,244,238,0.5)",
+                border: "none", cursor: "pointer",
+                boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
+              }}
+            >
+              ✕
             </button>
           </div>
         </div>
