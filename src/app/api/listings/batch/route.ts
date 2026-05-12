@@ -3,6 +3,8 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+function toHttps(url: string) { return url.replace(/^http:\/\//, "https://"); }
+
 /**
  * GET /api/listings/batch?count=5
  *
@@ -44,11 +46,16 @@ export async function GET(req: NextRequest) {
       yearBuilt: true,
       homeType: true,
       photos: {
-        select: { url: true, caption: true },
+        select: { url: true, thumbnailUrl: true, caption: true },
         orderBy: { ordering: "asc" },
       },
     },
   });
 
-  return NextResponse.json({ listings });
+  return NextResponse.json({
+    listings: listings.map((l) => ({
+      ...l,
+      photos: l.photos.map((p) => ({ ...p, url: toHttps(p.url) })),
+    })),
+  });
 }

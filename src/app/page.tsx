@@ -28,7 +28,8 @@ export default async function HomePage() {
         include: { photos: { orderBy: { ordering: "asc" }, take: 1 } },
       });
       if (hero) {
-        heroPhotoUrl = hero.photos[0]?.url ?? null;
+        const rawUrl = hero.photos[0]?.url ?? null;
+        heroPhotoUrl = rawUrl ? rawUrl.replace(/^http:\/\//, "https://") : null;
         heroLocation = { neighborhood: hero.neighborhood, city: hero.city, state: hero.state };
       }
     }

@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+function toHttps(url: string) { return url.replace(/^http:\/\//, "https://"); }
+
 /**
  * GET /api/listings?exclude=id1,id2
  *
@@ -73,7 +75,7 @@ export async function GET(req: NextRequest) {
     yearBuilt: listing.yearBuilt,
     homeType: listing.homeType,
     photos: listing.photos.map((p) => ({
-      url: p.url,
+      url: toHttps(p.url),
       caption: p.caption,
     })),
   });

@@ -4,6 +4,8 @@ import { hashDateString, getDailyNumber } from "@/lib/daily/service";
 
 export const dynamic = "force-dynamic";
 
+function toHttps(url: string) { return url.replace(/^http:\/\//, "https://"); }
+
 /**
  * GET /api/daily
  *
@@ -83,8 +85,8 @@ export async function GET() {
       yearBuilt: listing.yearBuilt,
       homeType: listing.homeType,
       photos: listing.photos.map((p) => ({
-        url: p.url,
-        thumbnailUrl: p.thumbnailUrl,
+        url: toHttps(p.url),
+        thumbnailUrl: p.thumbnailUrl ? toHttps(p.thumbnailUrl) : null,
         caption: p.caption,
       })),
     },
