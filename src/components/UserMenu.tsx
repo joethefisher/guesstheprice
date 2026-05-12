@@ -97,6 +97,24 @@ export function UserMenu({ variant = "light" }: Props) {
             <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>@{username}</p>
           </div>
           <button
+            onClick={() => { setOpen(false); router.push("/profile"); }}
+            style={{
+              width: "100%",
+              padding: "11px 14px",
+              background: "none",
+              border: "none",
+              textAlign: "left",
+              fontSize: 14,
+              color: "var(--ink)",
+              cursor: "pointer",
+              fontWeight: 500,
+            }}
+            onMouseEnter={(e) => ((e.target as HTMLButtonElement).style.background = "rgba(26,26,26,0.04)")}
+            onMouseLeave={(e) => ((e.target as HTMLButtonElement).style.background = "none")}
+          >
+            My profile
+          </button>
+          <button
             onClick={() => signOut({ callbackUrl: "/" })}
             style={{
               width: "100%",
@@ -108,6 +126,7 @@ export function UserMenu({ variant = "light" }: Props) {
               color: "var(--ink)",
               cursor: "pointer",
               fontWeight: 500,
+              borderTop: "1px solid rgba(26,26,26,0.06)",
             }}
             onMouseEnter={(e) => ((e.target as HTMLButtonElement).style.background = "rgba(26,26,26,0.04)")}
             onMouseLeave={(e) => ((e.target as HTMLButtonElement).style.background = "none")}
