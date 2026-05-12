@@ -330,11 +330,24 @@ function SummaryContent() {
               <span>→</span>
             </button>
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/leaderboard")}
               className="btn"
               style={{
                 fontSize: 14,
-                color: "rgba(247,244,238,0.65)",
+                color: "rgba(247,244,238,0.5)",
+                background: "rgba(247,244,238,0.07)",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>See leaderboard</span>
+              <span style={{ opacity: 0.6 }}>↗</span>
+            </button>
+            <button
+              onClick={() => router.push("/")}
+              className="btn"
+              style={{
+                fontSize: 13,
+                color: "rgba(247,244,238,0.4)",
                 background: "transparent",
               }}
             >

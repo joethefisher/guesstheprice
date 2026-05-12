@@ -29,9 +29,10 @@ interface Props {
   onPlay: () => void;
   onDaily: () => void;
   onLeaderboard: () => void;
+  onSaved: () => void;
 }
 
-export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, topScorer, onPlay, onDaily, onLeaderboard }: Props) {
+export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, topScorer, onPlay, onDaily, onLeaderboard, onSaved }: Props) {
   const photoUrl = heroPhotoUrl ?? FALLBACK_HERO_URL;
   const locationLabel = heroLocation
     ? [heroLocation.neighborhood, heroLocation.city, heroLocation.state].filter(Boolean).join(", ")
@@ -80,6 +81,9 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, topSco
           </button>
           <button className="btn btn-ghost" onClick={onLeaderboard} style={{ color: "var(--paper)", fontSize: 14 }}>
             Leaderboard
+          </button>
+          <button className="btn btn-ghost" onClick={onSaved} style={{ color: "var(--paper)", fontSize: 14 }}>
+            Saved
           </button>
           <UserMenu variant="dark" />
         </nav>

@@ -38,6 +38,7 @@ export function LandingClient({
       onPlay={() => router.push("/play")}
       onDaily={() => router.push("/daily")}
       onLeaderboard={() => router.push("/leaderboard")}
+      onSaved={() => router.push("/saved")}
     />
   );
 }
