@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { LandingClient } from "@/components/LandingClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // ISR: serve from CDN cache, regenerate at most every 5 min
 
 export default async function HomePage() {
   let listingCount = 0;

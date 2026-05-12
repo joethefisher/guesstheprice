@@ -17,6 +17,7 @@ import {
   type RoundResult,
   type SavedHome,
 } from "@/lib/game";
+import { popFromCache } from "@/lib/prefetch";
 
 const TOTAL_ROUNDS = 5;
 
@@ -68,10 +69,14 @@ export default function PlayPage() {
       setGuess(500_000);
       setTypeInput("");
       try {
-        const qs = exclude.length ? `?exclude=${exclude.join(",")}` : "";
-        const res = await fetch(`/api/listings${qs}`);
-        if (!res.ok) throw new Error("no listing");
-        const data = await res.json();
+        // Round 1 (no excludes): try the prefetched cache first for instant load
+        const cached = exclude.length === 0 ? popFromCache() : null;
+        const data: ListingPublic = cached ?? await (async () => {
+          const qs = exclude.length ? `?exclude=${exclude.join(",")}` : "";
+          const res = await fetch(`/api/listings${qs}`);
+          if (!res.ok) throw new Error("no listing");
+          return res.json();
+        })();
         setListing(data);
         setUsedIds((prev) => [...prev, data.id]);
       } catch {

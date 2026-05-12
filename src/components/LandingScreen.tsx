@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Wordmark } from "./Wordmark";
 
@@ -31,15 +32,20 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
   return (
     <div className="relative w-full h-screen overflow-hidden" style={{ background: "var(--paper)" }}>
       {/* Hero photo */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `url(${photoUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "saturate(0.78) brightness(0.92)",
-        }}
-      />
+      <div className="absolute inset-0" style={{ overflow: "hidden" }}>
+        <Image
+          src={photoUrl}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          style={{
+            objectFit: "cover",
+            objectPosition: "center",
+            filter: "saturate(0.78) brightness(0.92)",
+          }}
+        />
+      </div>
 
       {/* Overlay gradient */}
       <div

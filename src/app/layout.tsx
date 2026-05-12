@@ -44,6 +44,7 @@ export default function RootLayout({
     <html lang="en" className={`${fraunces.variable} ${jetbrainsMono.variable}`}>
       <head>
         {/* General Sans via Fontshare — not available in next/font/google */}
+        <link rel="dns-prefetch" href="https://api.fontshare.com" />
         <link
           rel="preconnect"
           href="https://api.fontshare.com"

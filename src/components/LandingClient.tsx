@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LandingScreen } from "./LandingScreen";
+import { prefetchBatch } from "@/lib/prefetch";
 
 interface HeroLocation {
   neighborhood: string | null;
@@ -19,6 +21,7 @@ export function LandingClient({
   heroLocation: HeroLocation | null;
 }) {
   const router = useRouter();
+  useEffect(() => { prefetchBatch(5); }, []);
   return (
     <LandingScreen
       listingCount={listingCount}

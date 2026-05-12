@@ -22,18 +22,25 @@ const limiterListings = redis
   ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), prefix: "rl:listings" })
   : null;
 
-export const config = { matcher: ["/api/score", "/api/listings"] };
+// Batch counts as 5 listings — same quota as /api/score (20 req/60s)
+const limiterBatch = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, "60 s"), prefix: "rl:batch" })
+  : null;
+
+export const config = { matcher: ["/api/score", "/api/listings", "/api/listings/batch"] };
 
 export async function middleware(req: NextRequest) {
-  if (!limiterScore || !limiterListings) return NextResponse.next();
+  if (!limiterScore || !limiterListings || !limiterBatch) return NextResponse.next();
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "anonymous";
-  const limiter = req.nextUrl.pathname === "/api/score" ? limiterScore : limiterListings;
-  const { success } = await limiter.limit(ip);
+  const path = req.nextUrl.pathname;
+  const limiter =
+    path === "/api/score" ? limiterScore :
+    path === "/api/listings/batch" ? limiterBatch :
+    limiterListings;
 
-  if (!success) {
-    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
-  }
+  const { success } = await limiter.limit(ip);
+  if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
 
   return NextResponse.next();
 }
