@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Wordmark } from "./Wordmark";
+import { UserMenu } from "./UserMenu";
 
 const FALLBACK_HERO_URL =
   "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=2400&q=85";
@@ -75,9 +76,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
           <button className="btn btn-ghost" style={{ color: "var(--paper)", fontSize: 14 }}>
             Stats
           </button>
-          <button className="btn btn-primary" style={{ padding: "10px 18px", fontSize: 13 }}>
-            Sign in
-          </button>
+          <UserMenu variant="dark" />
         </nav>
       </header>
 

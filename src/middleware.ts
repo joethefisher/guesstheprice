@@ -27,13 +27,47 @@ const limiterBatch = redis
   ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, "60 s"), prefix: "rl:batch" })
   : null;
 
-export const config = { matcher: ["/api/score", "/api/listings", "/api/listings/batch"] };
+// Auth: tight limits — bcrypt is CPU-heavy, so even a few parallel calls can pin a Lambda
+const limiterLogin = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, "10 m"), prefix: "rl:login" })
+  : null;
+
+const limiterSignup = redis
+  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(3, "60 m"), prefix: "rl:signup" })
+  : null;
+
+export const config = {
+  matcher: [
+    "/api/score",
+    "/api/listings",
+    "/api/listings/batch",
+    "/api/auth/signup",
+    "/api/auth/[...nextauth]",
+  ],
+};
 
 export async function middleware(req: NextRequest) {
-  if (!limiterScore || !limiterListings || !limiterBatch) return NextResponse.next();
-
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "anonymous";
   const path = req.nextUrl.pathname;
+
+  // Auth routes always rate-limited when Redis is available
+  if (path === "/api/auth/signup") {
+    if (!limiterSignup) return NextResponse.next();
+    const { success } = await limiterSignup.limit(ip);
+    if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return NextResponse.next();
+  }
+
+  if (path.startsWith("/api/auth/")) {
+    if (!limiterLogin) return NextResponse.next();
+    const { success } = await limiterLogin.limit(ip);
+    if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return NextResponse.next();
+  }
+
+  // Game routes
+  if (!limiterScore || !limiterListings || !limiterBatch) return NextResponse.next();
+
   const limiter =
     path === "/api/score" ? limiterScore :
     path === "/api/listings/batch" ? limiterBatch :

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { AnimatePresence, motion } from "framer-motion";
 import "./daily.css";
 
@@ -46,6 +47,7 @@ interface DailyListing {
 
 export default function DailyPage() {
   const router = useRouter();
+  const { data: session, status: sessionStatus } = useSession();
   const [route, setRoute] = useState<DailyRoute>("loading");
   const [storage, setStorage] = useState<DailyStorage | null>(null);
   const [dailyData, setDailyData] = useState<DailyListing | null>(null);
@@ -54,29 +56,22 @@ export default function DailyPage() {
   const [showShare, setShowShare] = useState(false);
   const [milestoneThreshold, setMilestoneThreshold] = useState<number | null>(null);
   const [streakBroken, setStreakBroken] = useState(false);
+  const syncedRef = useRef(false);
 
   const onExit = useCallback(() => router.push("/"), [router]);
 
-  // Load state on mount
+  const syncToServer = useCallback((s: DailyStorage) => {
+    if (!session) return;
+    fetch("/api/user/daily", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(s),
+    }).catch(() => {});
+  }, [session]);
+
+  // Load state on mount (localStorage first pass)
   useEffect(() => {
     const stored = loadStorage();
-    setStorage(stored);
-
-    const entryState = getDailyEntryState(stored);
-    if (entryState.type === "locked") {
-      // Already played today — restore last result
-      if (stored.lastResult) setResult(stored.lastResult);
-      setRoute("locked");
-    } else {
-      setStreakBroken(entryState.streakBroken);
-      if (entryState.streakBroken) {
-        // Reset streak to 0 immediately on entering (honest about the miss)
-        const reset = { ...stored, currentStreak: 0 };
-        saveStorage(reset);
-        setStorage(reset);
-      }
-      setRoute("intro");
-    }
 
     // Fetch today's listing regardless of state (needed for reveal/locked card)
     fetch("/api/daily")
@@ -86,7 +81,77 @@ export default function DailyPage() {
         else setFetchError(true);
       })
       .catch(() => setFetchError(true));
+
+    // If session is still loading, defer route decision to the session effect
+    if (sessionStatus === "loading") {
+      setStorage(stored);
+      return;
+    }
+
+    // No session — use localStorage directly
+    applyStorage(stored);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Once session resolves, sync from server if authenticated
+  useEffect(() => {
+    if (sessionStatus === "loading" || syncedRef.current) return;
+    syncedRef.current = true;
+
+    const localStored = loadStorage();
+
+    if (!session) {
+      // Not signed in — use localStorage
+      applyStorage(localStored);
+      return;
+    }
+
+    // Signed in — try to get server state
+    fetch("/api/user/daily")
+      .then((r) => r.json())
+      .then((serverData) => {
+        if (serverData && serverData.played != null) {
+          // Server has data — use it as source of truth
+          const merged: DailyStorage = {
+            version: 1,
+            lastPlayedDateET: serverData.lastPlayedDateET ?? null,
+            lastResult: serverData.lastResult ?? null,
+            currentStreak: serverData.currentStreak ?? 0,
+            bestStreak: serverData.bestStreak ?? 0,
+            played: serverData.played ?? 0,
+            history: serverData.history ?? [],
+            distribution: serverData.distribution ?? { "90+": 0, "80": 0, "70": 0, "60": 0, "50": 0, "<50": 0 },
+          };
+          saveStorage(merged);
+          applyStorage(merged);
+        } else if (localStored.played > 0) {
+          // Server has no data but local does — migrate
+          syncToServer(localStored);
+          applyStorage(localStored);
+        } else {
+          applyStorage(localStored);
+        }
+      })
+      .catch(() => applyStorage(localStored));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionStatus]);
+
+  function applyStorage(stored: DailyStorage) {
+    setStorage(stored);
+    const entryState = getDailyEntryState(stored);
+    if (entryState.type === "locked") {
+      if (stored.lastResult) setResult(stored.lastResult);
+      setRoute("locked");
+    } else {
+      setStreakBroken(entryState.streakBroken);
+      if (entryState.streakBroken) {
+        const reset = { ...stored, currentStreak: 0 };
+        saveStorage(reset);
+        setStorage(reset);
+      }
+      setRoute("intro");
+    }
+  }
 
   // Handle guess submission from DailyPlay
   const handleSubmit = useCallback(
@@ -122,6 +187,7 @@ export default function DailyPage() {
 
       setResult(newResult);
       setStorage(updated);
+      syncToServer(updated);
 
       if (milestone) {
         setMilestoneThreshold(milestone);
