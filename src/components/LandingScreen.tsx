@@ -39,6 +39,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
           alt=""
           fill
           priority
+          unoptimized
           sizes="100vw"
           style={{
             objectFit: "cover",
