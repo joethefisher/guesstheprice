@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PhotoCarousel } from "@/components/PhotoCarousel";
 import { PriceSlider } from "@/components/PriceSlider";
@@ -25,6 +26,9 @@ type GuessTab = "slider" | "type";
 
 export default function PlayPage() {
   const router = useRouter();
+  const { data: session } = useSession();
+  const gameIdRef = useRef<string | null>(null);
+  const sessionId = useRef(crypto.randomUUID());
 
   // Game state
   const [roundIdx, setRoundIdx] = useState(0);
@@ -59,6 +63,19 @@ export default function PlayPage() {
       localStorage.removeItem("pricetag_saved");
     }
   }, []);
+
+  // Create a game record when the session is available
+  useEffect(() => {
+    if (!session?.user?.id || gameIdRef.current) return;
+    fetch("/api/games", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId: sessionId.current }),
+    })
+      .then((r) => r.json())
+      .then((d) => { if (d.id) gameIdRef.current = d.id; })
+      .catch(() => { /* non-critical — leaderboard just won't record */ });
+  }, [session?.user?.id]);
 
   const fetchListing = useCallback(
     async (exclude: string[]) => {
@@ -100,10 +117,15 @@ export default function PlayPage() {
     try {
       const finalGuess =
         guessTab === "type" ? parsePrice(typeInput) ?? guess : guess;
+      const scoreBody: Record<string, unknown> = { listingId: listing.id, guess: finalGuess };
+      if (gameIdRef.current) {
+        scoreBody.gameId = gameIdRef.current;
+        scoreBody.roundNumber = roundIdx + 1;
+      }
       const res = await fetch("/api/score", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ listingId: listing.id, guess: finalGuess }),
+        body: JSON.stringify(scoreBody),
       });
       if (!res.ok) throw new Error("score_api_error");
       const data = await res.json();
@@ -150,10 +172,19 @@ export default function PlayPage() {
         ...r,
         listing: { ...r.listing, photos: r.listing.photos.slice(0, 1) },
       }));
+      const finalScore = history.reduce((s, r) => s + r.score, 0);
       safeSetItem(
         "pricetag_last_game",
         JSON.stringify({ history: summaryHistory, streak: newStreak })
       );
+      // Complete game record for leaderboard
+      if (gameIdRef.current) {
+        fetch(`/api/games/${gameIdRef.current}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ totalScore: finalScore }),
+        }).catch(() => { /* non-critical */ });
+      }
       router.push("/play/summary");
       return;
     }

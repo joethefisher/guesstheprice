@@ -16,15 +16,22 @@ interface HeroLocation {
   state: string;
 }
 
+interface TopScorer {
+  username: string;
+  score: number;
+}
+
 interface Props {
   listingCount: number;
   heroPhotoUrl: string | null;
   heroLocation: HeroLocation | null;
+  topScorer: TopScorer | null;
   onPlay: () => void;
   onDaily: () => void;
+  onLeaderboard: () => void;
 }
 
-export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay, onDaily }: Props) {
+export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, topScorer, onPlay, onDaily, onLeaderboard }: Props) {
   const photoUrl = heroPhotoUrl ?? FALLBACK_HERO_URL;
   const locationLabel = heroLocation
     ? [heroLocation.neighborhood, heroLocation.city, heroLocation.state].filter(Boolean).join(", ")
@@ -71,11 +78,8 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
           <button className="btn btn-ghost" onClick={onDaily} style={{ color: "var(--paper)", fontSize: 14 }}>
             Daily
           </button>
-          <button className="btn btn-ghost" style={{ color: "var(--paper)", fontSize: 14 }}>
-            Saved
-          </button>
-          <button className="btn btn-ghost" style={{ color: "var(--paper)", fontSize: 14 }}>
-            Stats
+          <button className="btn btn-ghost" onClick={onLeaderboard} style={{ color: "var(--paper)", fontSize: 14 }}>
+            Leaderboard
           </button>
           <UserMenu variant="dark" />
         </nav>
@@ -195,13 +199,23 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
         <div style={{ width: 1, height: 40, background: "rgba(247,244,238,0.12)", margin: "0 32px" }} />
 
         {/* Top scorer */}
-        <div className="flex flex-col gap-1">
+        <button
+          onClick={onLeaderboard}
+          className="flex flex-col gap-1"
+          style={{ cursor: "pointer", background: "transparent", border: "none", padding: 0, textAlign: "left" }}
+        >
           <div className="eyebrow" style={{ color: "rgba(247,244,238,0.5)" }}>Top scorer</div>
-          <div style={{ color: "var(--paper)", fontSize: 14, fontWeight: 500 }}>
-            @margaux_b
-            <span className="tnum ml-2" style={{ color: "var(--accent)", fontWeight: 700 }}>947/1000</span>
-          </div>
-        </div>
+          {topScorer ? (
+            <div style={{ color: "var(--paper)", fontSize: 14, fontWeight: 500 }}>
+              @{topScorer.username}
+              <span className="tnum ml-2" style={{ color: "var(--accent)", fontWeight: 700 }}>{topScorer.score.toLocaleString()}</span>
+            </div>
+          ) : (
+            <div style={{ color: "rgba(247,244,238,0.6)", fontSize: 14, fontStyle: "italic" }}>
+              Be the first →
+            </div>
+          )}
+        </button>
 
         {/* Divider */}
         <div style={{ width: 1, height: 40, background: "rgba(247,244,238,0.12)", margin: "0 32px" }} />

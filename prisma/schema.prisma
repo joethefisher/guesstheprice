@@ -75,15 +75,20 @@ model Photo {
 
 model Game {
   id          String    @id @default(cuid())
-  sessionId   String    // browser-generated UUID
-  totalRounds Int       @default(10)
+  sessionId   String
+  userId      String?
+  gameType    String    @default("freeplay")
+  totalRounds Int       @default(5)
   startedAt   DateTime  @default(now())
   completedAt DateTime?
   totalScore  Int?
 
+  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   rounds      Round[]
 
   @@index([sessionId])
+  @@index([userId, completedAt])
+  @@index([totalScore])
 }
 
 model Round {
@@ -111,6 +116,7 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  games         Game[]
   dailyProgress UserDailyProgress?
 }
 
