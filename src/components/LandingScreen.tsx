@@ -19,9 +19,10 @@ interface Props {
   heroPhotoUrl: string | null;
   heroLocation: HeroLocation | null;
   onPlay: () => void;
+  onDaily: () => void;
 }
 
-export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay }: Props) {
+export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay, onDaily }: Props) {
   const photoUrl = heroPhotoUrl ?? FALLBACK_HERO_URL;
   const locationLabel = heroLocation
     ? [heroLocation.neighborhood, heroLocation.city, heroLocation.state].filter(Boolean).join(", ")
@@ -59,7 +60,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
       >
         <Wordmark size={20} />
         <nav className="flex items-center gap-2">
-          <button className="btn btn-ghost" style={{ color: "var(--paper)", fontSize: 14 }}>
+          <button className="btn btn-ghost" onClick={onDaily} style={{ color: "var(--paper)", fontSize: 14 }}>
             Daily
           </button>
           <button className="btn btn-ghost" style={{ color: "var(--paper)", fontSize: 14 }}>
@@ -122,6 +123,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
                 <span style={{ opacity: 0.8 }}>→</span>
               </button>
               <button
+                onClick={onDaily}
                 className="btn"
                 style={{
                   fontSize: 14,
@@ -135,7 +137,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, onPlay
                 }}
               >
                 <span style={{ fontWeight: 600 }}>Daily</span>
-                <span style={{ opacity: 0.65, fontWeight: 400 }}>· May 9</span>
+                <span style={{ opacity: 0.65, fontWeight: 400 }}>· today's house</span>
               </button>
             </div>
           </motion.div>

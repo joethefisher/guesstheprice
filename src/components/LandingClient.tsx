@@ -25,6 +25,7 @@ export function LandingClient({
       heroPhotoUrl={heroPhotoUrl}
       heroLocation={heroLocation}
       onPlay={() => router.push("/play")}
+      onDaily={() => router.push("/daily")}
     />
   );
 }

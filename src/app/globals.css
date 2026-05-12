@@ -16,6 +16,9 @@
   --flag: #C8472D;
   --sky: #A8C5DA;
   --gold: #C8A348;
+  --spot: #FFD66B;
+  --emerald: #2E6F4A;
+  --velvet: #8B2A2A;
   --display: "Fraunces", "Georgia", serif;
   --body: "General Sans", -apple-system, system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
@@ -214,6 +217,32 @@ img { display: block; max-width: 100%; }
 @keyframes ringRotate {
   from { transform: translate(-50%, -50%) rotate(0deg); }
   to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ─── Daily feature animations ─────────────────── */
+@keyframes bulbFlash {
+  0%, 100% { opacity: 0.55; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+@keyframes spotSway {
+  0% { transform: translateX(-50%) rotate(-12deg); }
+  100% { transform: translateX(-50%) rotate(-4deg); }
+}
+@keyframes spotSwayR {
+  0% { transform: translateX(50%) rotate(12deg); }
+  100% { transform: translateX(50%) rotate(4deg); }
+}
+@keyframes pulseDot {
+  0% { box-shadow: 0 0 0 0 rgba(255,92,57,0.7); }
+  70% { box-shadow: 0 0 0 12px rgba(255,92,57,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,92,57,0); }
+}
+@keyframes cameraShake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
