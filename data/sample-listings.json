@@ -14,6 +14,7 @@
     "yearBuilt": 1928,
     "homeType": "condo",
     "soldPrice": 1150000,
+    "soldDate": "2025-08-15",
     "photos": [
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600",
       "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1600",
@@ -28,13 +29,14 @@
     "state": "CA",
     "zipCode": "94107",
     "latitude": 37.7596,
-    "longitude": -122.4030,
+    "longitude": -122.403,
     "beds": 3,
     "baths": 2.5,
     "sqft": 2100,
     "yearBuilt": 1992,
     "homeType": "single_family",
     "soldPrice": 2450000,
+    "soldDate": "2024-09-22",
     "photos": [
       "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600",
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600",
@@ -56,6 +58,7 @@
     "yearBuilt": 1910,
     "homeType": "condo",
     "soldPrice": 3200000,
+    "soldDate": "2026-01-10",
     "photos": [
       "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=1600",
       "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1600",
@@ -77,6 +80,7 @@
     "yearBuilt": 1925,
     "homeType": "condo",
     "soldPrice": 1075000,
+    "soldDate": "2025-11-03",
     "photos": [
       "https://images.unsplash.com/photo-1494203484021-3c454daf695d?w=1600",
       "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=1600"
@@ -98,6 +102,7 @@
     "yearBuilt": 2008,
     "homeType": "single_family",
     "soldPrice": 875000,
+    "soldDate": "2024-12-18",
     "photos": [
       "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1600",
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600",
@@ -119,6 +124,7 @@
     "yearBuilt": 1965,
     "homeType": "condo",
     "soldPrice": 1290000,
+    "soldDate": "2025-07-29",
     "photos": [
       "https://images.unsplash.com/photo-1600566753086-00f18fe6ba5d?w=1600",
       "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=1600",
@@ -141,6 +147,7 @@
     "yearBuilt": 1922,
     "homeType": "single_family",
     "soldPrice": 685000,
+    "soldDate": "2026-03-05",
     "photos": [
       "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1600",
       "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1600"
@@ -161,6 +168,7 @@
     "yearBuilt": 2018,
     "homeType": "condo",
     "soldPrice": 950000,
+    "soldDate": "2024-10-14",
     "photos": [
       "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1600",
       "https://images.unsplash.com/photo-1567496898669-ee935f5f647a?w=1600",
@@ -183,6 +191,7 @@
     "yearBuilt": 2014,
     "homeType": "single_family",
     "soldPrice": 1175000,
+    "soldDate": "2026-02-22",
     "photos": [
       "https://images.unsplash.com/photo-1605114558537-04ab4d77a1a4?w=1600",
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1600",
@@ -204,6 +213,7 @@
     "yearBuilt": 2005,
     "homeType": "townhouse",
     "soldPrice": 1080000,
+    "soldDate": "2025-11-08",
     "photos": [
       "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=1600",
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600"
@@ -225,6 +235,7 @@
     "yearBuilt": 1908,
     "homeType": "single_family",
     "soldPrice": 525000,
+    "soldDate": "2024-08-17",
     "photos": [
       "https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=1600",
       "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?w=1600"
@@ -237,7 +248,7 @@
     "city": "Brooklyn",
     "state": "NY",
     "zipCode": "11213",
-    "latitude": 40.6710,
+    "latitude": 40.671,
     "longitude": -73.9512,
     "beds": 4,
     "baths": 2.5,
@@ -245,6 +256,7 @@
     "yearBuilt": 1899,
     "homeType": "townhouse",
     "soldPrice": 1850000,
+    "soldDate": "2025-04-01",
     "photos": [
       "https://images.unsplash.com/photo-1564540583246-934409427776?w=1600",
       "https://images.unsplash.com/photo-1600573472556-e636c2acda88?w=1600",
@@ -267,6 +279,7 @@
     "yearBuilt": 1962,
     "homeType": "single_family",
     "soldPrice": 4750000,
+    "soldDate": "2026-01-09",
     "photos": [
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600",
       "https://images.unsplash.com/photo-1600585154084-4e5fe7c39198?w=1600",
@@ -288,6 +301,7 @@
     "yearBuilt": 1924,
     "homeType": "condo",
     "soldPrice": 695000,
+    "soldDate": "2024-06-25",
     "photos": [
       "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=1600",
       "https://images.unsplash.com/photo-1560448204-603b3fc33ddc?w=1600"
@@ -308,6 +322,7 @@
     "yearBuilt": 1885,
     "homeType": "condo",
     "soldPrice": 875000,
+    "soldDate": "2025-02-14",
     "photos": [
       "https://images.unsplash.com/photo-1600566753104-685f4f24cb4d?w=1600",
       "https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=1600"
@@ -328,6 +343,7 @@
     "yearBuilt": 2019,
     "homeType": "townhouse",
     "soldPrice": 485000,
+    "soldDate": "2024-11-30",
     "photos": [
       "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1600",
       "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1600"
@@ -349,6 +365,7 @@
     "yearBuilt": 1958,
     "homeType": "single_family",
     "soldPrice": 1325000,
+    "soldDate": "2025-05-19",
     "photos": [
       "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1600",
       "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=1600",
@@ -371,6 +388,7 @@
     "yearBuilt": 1928,
     "homeType": "single_family",
     "soldPrice": 1820000,
+    "soldDate": "2026-04-12",
     "photos": [
       "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=1600",
       "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600",
@@ -392,6 +410,7 @@
     "yearBuilt": 2016,
     "homeType": "condo",
     "soldPrice": 365000,
+    "soldDate": "2025-09-08",
     "photos": [
       "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600",
       "https://images.unsplash.com/photo-1560185007-cde436f6a4d0?w=1600"
@@ -413,6 +432,7 @@
     "yearBuilt": 2002,
     "homeType": "single_family",
     "soldPrice": 12500000,
+    "soldDate": "2024-07-21",
     "photos": [
       "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600",
       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1600",

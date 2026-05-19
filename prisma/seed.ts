@@ -20,6 +20,7 @@ type SeedListing = {
   yearBuilt?: number;
   homeType?: string;
   soldPrice: number;
+  soldDate?: string;
   photos: string[];
 };
 
@@ -55,6 +56,7 @@ async function main() {
         yearBuilt: l.yearBuilt,
         homeType: l.homeType,
         soldPrice: l.soldPrice,
+        soldDate: l.soldDate ? new Date(l.soldDate) : undefined,
         isSold: true,
         qualityScore: 80,
         photos: {
