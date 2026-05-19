@@ -6,6 +6,7 @@ import { Wordmark } from "@/components/Wordmark";
 import { PriceSlider } from "@/components/PriceSlider";
 import { PhotoCarousel } from "@/components/PhotoCarousel";
 import { Stat } from "@/components/GameChips";
+import { YearSoldPill } from "@/components/YearSoldPill";
 import { Icon } from "@/components/Icons";
 import { DailyBadge } from "./DailyShared";
 import { MapPreviewCard } from "./map/MapPreviewCard";
@@ -163,7 +164,18 @@ export function DailyPlay({
         }}>
           {/* Property info */}
           <div style={{ paddingBottom: 18, marginBottom: 18, borderBottom: "1px solid var(--rule)" }}>
-            <div className="eyebrow" style={{ marginBottom: 10 }}>Listed in {listing.city}</div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                marginBottom: 10,
+              }}
+            >
+              <div className="eyebrow">Listed in {listing.city}</div>
+              <YearSoldPill year={listing.yearSold} />
+            </div>
             <h2 style={{
               fontFamily: "var(--display)", fontStyle: "italic",
               fontWeight: 500, fontSize: 28, lineHeight: 1.05,

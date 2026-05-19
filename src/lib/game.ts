@@ -12,6 +12,7 @@ export interface ListingPublic {
   sqft: number | null;
   lotSqft: number | null;
   yearBuilt: number | null;
+  yearSold: number | null;
   homeType: string | null;
   photos: { url: string; caption?: string | null; thumbnailUrl?: string | null }[];
   /** Obfuscated centroid for pre-submit map preview. Null if listing has no coords. */

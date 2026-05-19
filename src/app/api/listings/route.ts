@@ -79,6 +79,7 @@ export async function GET(req: NextRequest) {
     sqft: listing.sqft,
     lotSqft: listing.lotSqft,
     yearBuilt: listing.yearBuilt,
+    yearSold: listing.soldDate ? listing.soldDate.getUTCFullYear() : null,
     homeType: listing.homeType,
     photos: listing.photos.map((p) => ({
       url: toHttps(p.url),

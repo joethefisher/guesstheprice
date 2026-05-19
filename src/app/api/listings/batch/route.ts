@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
       lotSqft: true,
       yearBuilt: true,
       homeType: true,
+      soldDate: true,
       latitude: true,
       longitude: true,
       photos: {
@@ -61,9 +62,10 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({
     listings: listings.map((l) => {
-      const { latitude, longitude, ...rest } = l;
+      const { latitude, longitude, soldDate, ...rest } = l;
       return {
         ...rest,
+        yearSold: soldDate ? soldDate.getUTCFullYear() : null,
         photos: l.photos.map((p) => ({ ...p, url: toHttps(p.url) })),
         map: buildMapBlock(latitude, longitude),
       };

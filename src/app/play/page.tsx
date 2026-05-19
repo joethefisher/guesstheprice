@@ -9,6 +9,7 @@ import { PriceSlider } from "@/components/PriceSlider";
 import { RevealOverlay } from "@/components/RevealOverlay";
 import { Wordmark } from "@/components/Wordmark";
 import { RoundPill, StreakFlame, ComboFlame, Stat } from "@/components/GameChips";
+import { YearSoldPill } from "@/components/YearSoldPill";
 import { Icon } from "@/components/Icons";
 import { MapPreviewCard } from "@/components/daily/map/MapPreviewCard";
 import { DailyMapsProvider } from "@/components/daily/map/DailyMapsProvider";
@@ -348,7 +349,18 @@ export default function PlayPage() {
             className="flex-1 overflow-y-auto"
             style={{ paddingLeft: 28 }}
           >
-            <div className="eyebrow mb-2">Listed in {listing.city}</div>
+            <div
+              className="mb-2"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+              }}
+            >
+              <div className="eyebrow">Listed in {listing.city}</div>
+              <YearSoldPill year={listing.yearSold} />
+            </div>
             <h2
               className="display m-0 mb-4"
               style={{ fontSize: 26, lineHeight: 1.15 }}
