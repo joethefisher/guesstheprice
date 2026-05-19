@@ -22,7 +22,6 @@ interface TopScorer {
 }
 
 interface Props {
-  listingCount: number;
   heroPhotoUrl: string | null;
   heroLocation: HeroLocation | null;
   topScorer: TopScorer | null;
@@ -32,7 +31,7 @@ interface Props {
   onSaved: () => void;
 }
 
-export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, topScorer, onPlay, onDaily, onLeaderboard, onSaved }: Props) {
+export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, onDaily, onLeaderboard, onSaved }: Props) {
   const photoUrl = heroPhotoUrl ?? FALLBACK_HERO_URL;
   const locationLabel = heroLocation
     ? [heroLocation.neighborhood, heroLocation.city, heroLocation.state].filter(Boolean).join(", ")
@@ -125,7 +124,9 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, topSco
             className="flex flex-col gap-5"
           >
             <p style={{ fontSize: 18, lineHeight: 1.55, color: "rgba(247,244,238,0.85)", margin: 0, maxWidth: "28ch" }}>
-              {listingCount.toLocaleString()} Real homes. Real prices. How close can you get?
+              Real homes. Real prices.
+              <br />
+              How close can you get?
             </p>
             <div className="flex flex-col gap-3">
               <button

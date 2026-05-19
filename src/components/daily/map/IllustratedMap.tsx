@@ -15,6 +15,7 @@
  */
 
 import type { LatLng } from "@/lib/map";
+import { getPreset } from "./presets";
 
 interface Props {
   listingId: string;
@@ -62,8 +63,24 @@ export function IllustratedMap({
   state,
   neighborhood,
   revealed,
+  centroid,
+  exact,
   mode,
 }: Props) {
+  // Prefer a hand-tuned preset for this city; fall through to generic if none.
+  const Preset = getPreset(city, state);
+  if (Preset) {
+    return (
+      <Preset
+        listingId={listingId}
+        revealed={revealed}
+        centroid={centroid}
+        exact={exact}
+        mode={mode}
+      />
+    );
+  }
+
   const r = rng(seedFrom(listingId));
   const isCompact = mode === "compact";
 
