@@ -3,13 +3,16 @@
 /**
  * MapRenderer — dispatches to the active provider.
  *
- * In v1 this always returns the illustrated variant. Step 6 expands it
- * to choose between illustrated and Google based on the feature flag
- * + per-listing override, with an error boundary that falls back to
- * illustrated if Google fails.
+ * The provider is decided by:
+ *   1. Explicit per-listing override (prop), if set
+ *   2. `daily.map.provider` global flag (env-backed)
+ *   3. Falls back to illustrated if the Google variant throws
  */
 
 import { IllustratedMap } from "./IllustratedMap";
+import { GoogleMapView } from "./GoogleMapView";
+import { MapErrorBoundary } from "./MapErrorBoundary";
+import { resolveMapProvider, type MapProvider } from "@/lib/map/config";
 import type { MapBlock, LatLng } from "@/lib/map";
 
 interface Props {
@@ -21,6 +24,8 @@ interface Props {
   mode: "compact" | "full";
   revealed: boolean;
   exact?: LatLng | null;
+  /** Per-listing override — wins over the global flag. */
+  providerOverride?: MapProvider | null;
 }
 
 export function MapRenderer({
@@ -28,12 +33,15 @@ export function MapRenderer({
   city,
   state,
   neighborhood,
-  map: _map,
+  map,
   mode,
   revealed,
   exact,
+  providerOverride = null,
 }: Props) {
-  return (
+  const provider = resolveMapProvider({ city, state, override: providerOverride });
+
+  const illustrated = (
     <IllustratedMap
       listingId={listingId}
       city={city}
@@ -41,8 +49,25 @@ export function MapRenderer({
       neighborhood={neighborhood}
       mode={mode}
       revealed={revealed}
-      centroid={_map.centroid}
+      centroid={map.centroid}
       exact={exact}
     />
   );
+
+  if (provider === "google") {
+    return (
+      <MapErrorBoundary fallback={illustrated}>
+        <GoogleMapView
+          centroid={map.centroid}
+          zoom={map.zoom}
+          mode={mode}
+          revealed={revealed}
+          exact={exact}
+          city={city}
+        />
+      </MapErrorBoundary>
+    );
+  }
+
+  return illustrated;
 }

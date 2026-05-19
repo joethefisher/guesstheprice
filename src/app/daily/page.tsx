@@ -25,6 +25,7 @@ import { DailyLocked } from "@/components/daily/DailyLocked";
 import { DailyStats } from "@/components/daily/DailyStats";
 import { DailyShare } from "@/components/daily/DailyShare";
 import { DailyMilestone } from "@/components/daily/DailyMilestone";
+import { DailyMapsProvider } from "@/components/daily/map/DailyMapsProvider";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -230,6 +231,7 @@ export default function DailyPage() {
   }
 
   return (
+    <DailyMapsProvider>
     <div style={{ position: "fixed", inset: 0, overflow: "hidden" }}>
       <AnimatePresence mode="wait">
         {route === "intro" && (
@@ -319,6 +321,7 @@ export default function DailyPage() {
         )}
       </AnimatePresence>
     </div>
+    </DailyMapsProvider>
   );
 }
 
