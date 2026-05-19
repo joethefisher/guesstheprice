@@ -7,7 +7,7 @@ interface TopScorer {
   score: number;
 }
 
-export const revalidate = 300; // ISR: serve from CDN cache, regenerate at most every 5 min
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   let listingCount = 0;
