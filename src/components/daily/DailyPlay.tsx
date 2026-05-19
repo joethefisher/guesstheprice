@@ -8,6 +8,7 @@ import { PhotoCarousel } from "@/components/PhotoCarousel";
 import { Stat } from "@/components/GameChips";
 import { Icon } from "@/components/Icons";
 import { DailyBadge } from "./DailyShared";
+import { MapPreviewCard } from "./map/MapPreviewCard";
 import type { ListingPublic } from "@/lib/game";
 
 interface Props {
@@ -207,6 +208,20 @@ export function DailyPlay({
             </svg>
             <span>Lock it in carefully — there's no second try until tomorrow.</span>
           </div>
+
+          {/* Neighborhood map preview — sits between warning + CTA per spec */}
+          {listing.map && (
+            <div style={{ marginTop: 14 }}>
+              <MapPreviewCard
+                listingId={listing.id}
+                city={listing.city}
+                state={listing.state}
+                neighborhood={listing.neighborhood}
+                map={listing.map}
+                revealed={false}
+              />
+            </div>
+          )}
 
           {error && (
             <div style={{ marginTop: 8, color: "var(--accent)", fontSize: 13 }}>{error}</div>
