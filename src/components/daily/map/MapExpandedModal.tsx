@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapRenderer } from "./MapRenderer";
 import "./map.css";
@@ -29,18 +29,22 @@ export function MapExpandedModal({
   streetAddress,
   onClose,
 }: Props) {
-  // Esc closes the modal
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  // Esc closes, focus the close button on mount, lock body scroll
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
     }
     window.addEventListener("keydown", onKey);
-    // Lock body scroll
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Defer focus so the scale-in animation gets a frame first.
+    const t = window.setTimeout(() => closeRef.current?.focus(), 60);
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
+      window.clearTimeout(t);
     };
   }, [onClose]);
 
@@ -132,6 +136,7 @@ export function MapExpandedModal({
             </div>
 
             <button
+              ref={closeRef}
               type="button"
               onClick={onClose}
               aria-label="Close map"
