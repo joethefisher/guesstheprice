@@ -245,22 +245,21 @@ export default function PlayPage() {
         style={{ background: "var(--paper)" }}
       >
         <div className="eyebrow">Connection issue</div>
-        <h2 className="display m-0" style={{ fontSize: 32, color: "var(--ink)" }}>
+        <h2 className="h2" style={{ color: "var(--ink)" }}>
           Couldn't load a listing.
         </h2>
-        <p style={{ color: "var(--ink-mute)", fontSize: 15, margin: 0 }}>
+        <p className="body" style={{ color: "var(--ink-mute)", margin: 0 }}>
           Check your connection and try again.
         </p>
         <button
           className="btn btn-primary"
-          style={{ fontSize: 15 }}
           onClick={() => fetchListing(usedIds)}
         >
           Try another home
         </button>
         <button
           className="btn btn-secondary"
-          style={{ fontSize: 14 }}
+          style={{ fontSize: "var(--text-sm)" }}
           onClick={() => router.push("/")}
         >
           Back to home
@@ -293,7 +292,7 @@ export default function PlayPage() {
           <div
             className="tnum"
             style={{
-              fontSize: 13,
+              fontSize: "var(--text-sm)",
               fontWeight: 700,
               color: "var(--ink)",
               position: "absolute",
@@ -361,10 +360,7 @@ export default function PlayPage() {
               <div className="eyebrow">Listed in {listing.city}</div>
               <YearSoldPill year={listing.yearSold} />
             </div>
-            <h2
-              className="display m-0 mb-4"
-              style={{ fontSize: 26, lineHeight: 1.15 }}
-            >
+            <h2 className="h3 mb-4">
               {listing.neighborhood ? `${listing.neighborhood}, ` : ""}
               {listing.city}, {listing.state}
             </h2>
@@ -403,7 +399,7 @@ export default function PlayPage() {
             <div
               className="display tnum mb-4"
               style={{
-                fontSize: 56,
+                fontSize: "var(--text-display-l)",
                 color: hasInteracted ? "var(--ink)" : "var(--ink-quiet)",
                 lineHeight: 1,
                 transition: "color 200ms ease",
@@ -422,7 +418,7 @@ export default function PlayPage() {
                   style={{
                     padding: "6px 14px",
                     borderRadius: 999,
-                    fontSize: 11,
+                    fontSize: "var(--text-xs)",
                     fontWeight: 600,
                     letterSpacing: "0.1em",
                     background:
@@ -467,7 +463,7 @@ export default function PlayPage() {
                   borderRadius: 12,
                   border: "1.5px solid var(--rule)",
                   background: "var(--paper)",
-                  fontSize: 18,
+                  fontSize: "var(--text-md)",
                   fontWeight: 600,
                   outline: "none",
                   marginTop: 8,
@@ -496,7 +492,7 @@ export default function PlayPage() {
             style={{ paddingLeft: 28 }}
           >
             {scoreError && (
-              <div style={{ fontSize: 13, color: "var(--flag)", fontWeight: 500 }}>
+              <div style={{ fontSize: "var(--text-sm)", color: "var(--flag)", fontWeight: 500 }}>
                 {scoreError}
               </div>
             )}
@@ -504,7 +500,7 @@ export default function PlayPage() {
               onClick={handleSubmit}
               disabled={!hasInteracted || submitting || (guessTab === "type" && !parsePrice(typeInput))}
               className="btn btn-primary"
-              style={{ fontSize: 16, justifyContent: "space-between" }}
+              style={{ fontSize: "var(--text-md)", justifyContent: "space-between" }}
             >
               <span>{submitting ? "Scoring…" : "Lock it in"}</span>
               <span>→</span>
@@ -512,7 +508,7 @@ export default function PlayPage() {
             <button
               onClick={handleSkip}
               className="btn btn-secondary"
-              style={{ fontSize: 14 }}
+              style={{ fontSize: "var(--text-sm)" }}
             >
               Skip
             </button>

@@ -89,7 +89,7 @@ export function DailyPlay({
           <Wordmark size={17} />
           <div style={{ width: 1, height: 18, background: "var(--rule)" }} />
           <DailyBadge dailyNumber={dailyNumber} />
-          <span className="tnum" style={{ fontSize: 13, color: "var(--ink-mute)" }}>
+          <span className="tnum" style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
             {formatDateLabel(dateET)}
           </span>
         </div>
@@ -99,7 +99,7 @@ export function DailyPlay({
               display: "flex", alignItems: "center", gap: 6,
               padding: "6px 12px", borderRadius: 999,
               background: "rgba(255,92,57,0.1)", color: "var(--accent)",
-              fontSize: 12, fontWeight: 700,
+              fontSize: "var(--text-sm)", fontWeight: 700,
             }}>
               <Icon.Flame size={13} />
               <span className="tnum">{currentStreak} day streak</span>
@@ -141,7 +141,7 @@ export function DailyPlay({
             <svg width={12} height={12} viewBox="0 0 16 16" fill="var(--spot)">
               <path d="M8 0l2 5.5h6L11 9l2 6-5-3.5L3 15l2-6-5-3.5h6z" />
             </svg>
-            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em" }}>
+            <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.1em" }}>
               ONE GUESS · NO DO-OVERS
             </span>
           </div>
@@ -151,7 +151,7 @@ export function DailyPlay({
             position: "absolute", bottom: 18, left: 18, right: 18, zIndex: 3,
             color: "var(--paper)",
           }}>
-            <div className="eyebrow" style={{ color: "rgba(247,244,238,0.7)", marginBottom: 4 }}>
+            <div className="eyebrow" style={{ color: "var(--paper-mute)", marginBottom: 4 }}>
               {listing.city}, {listing.state}
             </div>
           </div>
@@ -176,11 +176,7 @@ export function DailyPlay({
               <div className="eyebrow">Listed in {listing.city}</div>
               <YearSoldPill year={listing.yearSold} />
             </div>
-            <h2 style={{
-              fontFamily: "var(--display)", fontStyle: "italic",
-              fontWeight: 500, fontSize: 28, lineHeight: 1.05,
-              margin: "0 0 8px", color: "var(--ink)",
-            }}>
+            <h2 className="h3" style={{ marginBottom: 8, color: "var(--ink)" }}>
               {listing.neighborhood ? `${listing.neighborhood}, ` : ""}
               <span style={{ color: "var(--ink-mute)" }}>{listing.city}, {listing.state}</span>
             </h2>
@@ -197,7 +193,7 @@ export function DailyPlay({
             Your <span style={{ color: "var(--accent)", fontWeight: 700 }}>only</span> guess
           </div>
           <div className="display tnum" style={{
-            fontSize: 64, lineHeight: 1, color: "var(--ink)",
+            fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--ink)",
             letterSpacing: "-0.03em",
           }}>
             ${guess.toLocaleString()}
@@ -212,7 +208,7 @@ export function DailyPlay({
           <div style={{
             marginTop: 20, padding: "12px 14px", borderRadius: 10,
             background: "rgba(200,163,72,0.12)", color: "#7a6020",
-            fontSize: 12.5, display: "flex", alignItems: "center", gap: 10,
+            fontSize: "var(--text-sm)", display: "flex", alignItems: "center", gap: 10,
             boxShadow: "inset 0 0 0 1px rgba(200,163,72,0.3)",
           }}>
             <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
@@ -236,7 +232,7 @@ export function DailyPlay({
           )}
 
           {error && (
-            <div style={{ marginTop: 8, color: "var(--accent)", fontSize: 13 }}>{error}</div>
+            <div style={{ marginTop: 8, color: "var(--accent)", fontSize: "var(--text-sm)" }}>{error}</div>
           )}
 
           {/* Submit CTA */}
@@ -246,7 +242,7 @@ export function DailyPlay({
               onClick={handleSubmit}
               disabled={submitting}
               style={{
-                width: "100%", padding: "22px", fontSize: 17, borderRadius: 14,
+                width: "100%", padding: "22px", fontSize: "var(--text-md)", borderRadius: 14,
                 boxShadow: "0 1px 0 rgba(255,255,255,0.25) inset, 0 14px 32px -10px rgba(255,92,57,0.6)",
                 display: "flex", alignItems: "center", justifyContent: "space-between",
               }}
@@ -301,10 +297,10 @@ function ForfeitModal({
           textAlign: "center",
         }}
       >
-        <div className="display" style={{ fontSize: 28, marginBottom: 12 }}>
+        <h2 className="h2" style={{ marginBottom: 12 }}>
           Forfeit today's house?
-        </div>
-        <p style={{ fontSize: 15, color: "var(--ink-mute)", lineHeight: 1.55, marginBottom: 28 }}>
+        </h2>
+        <p className="body" style={{ color: "var(--ink-mute)", marginBottom: 28 }}>
           Your streak will reset to zero. You won't be able to play today's house again.
         </p>
         <div style={{ display: "flex", gap: 10 }}>

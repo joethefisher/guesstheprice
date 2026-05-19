@@ -75,13 +75,13 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, o
       >
         <Wordmark size={20} />
         <nav className="flex items-center gap-2">
-          <button className="btn btn-ghost" onClick={onDaily} style={{ color: "var(--paper)", fontSize: 14 }}>
+          <button className="btn btn-ghost" onClick={onDaily} style={{ color: "var(--paper-strong)", fontSize: "var(--text-sm)" }}>
             Daily
           </button>
-          <button className="btn btn-ghost" onClick={onLeaderboard} style={{ color: "var(--paper)", fontSize: 14 }}>
+          <button className="btn btn-ghost" onClick={onLeaderboard} style={{ color: "var(--paper-strong)", fontSize: "var(--text-sm)" }}>
             Leaderboard
           </button>
-          <button className="btn btn-ghost" onClick={onSaved} style={{ color: "var(--paper)", fontSize: 14 }}>
+          <button className="btn btn-ghost" onClick={onSaved} style={{ color: "var(--paper-strong)", fontSize: "var(--text-sm)" }}>
             Saved
           </button>
           <UserMenu variant="dark" />
@@ -123,16 +123,14 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, o
             transition={{ duration: 0.5, delay: 0.1, ease: [0.32, 0.72, 0, 1] }}
             className="flex flex-col gap-5"
           >
-            <p style={{ fontSize: 18, lineHeight: 1.55, color: "rgba(247,244,238,0.85)", margin: 0, maxWidth: "28ch" }}>
-              Real homes. Real prices.
-              <br />
-              How close can you get?
+            <p style={{ fontSize: "var(--text-xl)", fontWeight: 700, lineHeight: 1.4, color: "var(--paper-strong)", margin: 0 }}>
+              Real homes. Real prices. How close can you get?
             </p>
             <div className="flex flex-col gap-3">
               <button
                 onClick={onPlay}
                 className="btn btn-primary"
-                style={{ fontSize: 16, padding: "18px 28px", justifyContent: "space-between" }}
+                style={{ fontSize: "var(--text-md)", padding: "18px 28px", justifyContent: "space-between" }}
               >
                 <span>Play 5 rounds</span>
                 <span style={{ opacity: 0.8 }}>→</span>
@@ -141,18 +139,17 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, o
                 onClick={onDaily}
                 className="btn"
                 style={{
-                  fontSize: 14,
+                  fontSize: "var(--text-base)",
                   padding: "14px 20px",
                   background: "rgba(247,244,238,0.12)",
                   backdropFilter: "blur(12px)",
-                  color: "var(--paper)",
-                  border: "1px solid rgba(247,244,238,0.2)",
-                  borderRadius: 14,
+                  color: "var(--paper-strong)",
+                  border: "1px solid rgba(247,244,238,0.20)",
                   justifyContent: "space-between",
                 }}
               >
                 <span style={{ fontWeight: 600 }}>Daily</span>
-                <span style={{ opacity: 0.65, fontWeight: 400 }}>· today's house</span>
+                <span style={{ color: "var(--paper-mute)", fontWeight: 400 }}>· today's house</span>
               </button>
             </div>
           </motion.div>
@@ -176,15 +173,15 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, o
       >
         {/* Today stat */}
         <div className="flex flex-col gap-1">
-          <div className="eyebrow" style={{ color: "rgba(247,244,238,0.5)" }}>
+          <div className="eyebrow" style={{ color: "var(--paper-quiet)" }}>
             Today, around the world
           </div>
           <div className="flex items-center gap-3">
-            <span className="tnum font-semibold" style={{ color: "var(--paper)", fontSize: 22 }}>73%</span>
+            <span className="tnum font-semibold" style={{ color: "var(--paper-strong)", fontSize: "var(--text-xl)" }}>73%</span>
             <svg width={120} height={28} viewBox="0 0 120 28" fill="none">
               <polyline
                 points={SPARKLINE_POINTS}
-                stroke="rgba(247,244,238,0.45)"
+                stroke="var(--paper-quiet)"
                 strokeWidth="1.5"
                 fill="none"
                 strokeLinejoin="round"
@@ -209,14 +206,14 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, o
           className="flex flex-col gap-1"
           style={{ cursor: "pointer", background: "transparent", border: "none", padding: 0, textAlign: "left" }}
         >
-          <div className="eyebrow" style={{ color: "rgba(247,244,238,0.5)" }}>Top scorer</div>
+          <div className="eyebrow" style={{ color: "var(--paper-quiet)" }}>Top scorer</div>
           {topScorer ? (
-            <div style={{ color: "var(--paper)", fontSize: 14, fontWeight: 500 }}>
+            <div style={{ color: "var(--paper-strong)", fontSize: "var(--text-sm)", fontWeight: 500 }}>
               @{topScorer.username}
               <span className="tnum ml-2" style={{ color: "var(--accent)", fontWeight: 700 }}>{topScorer.score.toLocaleString()}</span>
             </div>
           ) : (
-            <div style={{ color: "rgba(247,244,238,0.6)", fontSize: 14, fontStyle: "italic" }}>
+            <div style={{ color: "var(--paper-mute)", fontSize: "var(--text-sm)", fontStyle: "italic" }}>
               Be the first →
             </div>
           )}
@@ -227,8 +224,8 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, o
 
         {/* Now showing */}
         <div className="flex flex-col gap-1">
-          <div className="eyebrow" style={{ color: "rgba(247,244,238,0.5)" }}>Now showing</div>
-          <div style={{ color: "var(--paper)", fontSize: 14, fontWeight: 500 }}>
+          <div className="eyebrow" style={{ color: "var(--paper-quiet)" }}>Now showing</div>
+          <div style={{ color: "var(--paper-strong)", fontSize: "var(--text-sm)", fontWeight: 500 }}>
             {locationLabel}
           </div>
         </div>
