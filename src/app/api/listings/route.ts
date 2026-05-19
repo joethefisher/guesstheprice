@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { recencyCutoffDate } from "@/lib/recency";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +24,8 @@ export async function GET(req: NextRequest) {
     ? excludeParam.split(",").filter(Boolean).slice(0, 50)
     : [];
 
+  const cutoff = recencyCutoffDate();
+
   let rows: Array<{ id: string }>;
   try {
     if (excludeIds.length > 0) {
@@ -30,6 +33,7 @@ export async function GET(req: NextRequest) {
         SELECT id FROM "Listing"
         WHERE "isActive" = true
         AND "qualityScore" >= 50
+        AND "soldDate" >= ${cutoff}
         AND id NOT IN (${Prisma.join(excludeIds)})
         ORDER BY RANDOM()
         LIMIT 1
@@ -39,6 +43,7 @@ export async function GET(req: NextRequest) {
         SELECT id FROM "Listing"
         WHERE "isActive" = true
         AND "qualityScore" >= 50
+        AND "soldDate" >= ${cutoff}
         ORDER BY RANDOM()
         LIMIT 1
       `;

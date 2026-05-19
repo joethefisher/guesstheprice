@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { recencyCutoffDate } from "@/lib/recency";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +16,15 @@ function toHttps(url: string) { return url.replace(/^http:\/\//, "https://"); }
 export async function GET(req: NextRequest) {
   const count = Math.min(10, Math.max(1, parseInt(req.nextUrl.searchParams.get("count") ?? "5", 10) || 5));
 
+  const cutoff = recencyCutoffDate();
+
   let rows: Array<{ id: string }>;
   try {
     rows = await prisma.$queryRaw<Array<{ id: string }>>`
       SELECT id FROM "Listing"
       WHERE "isActive" = true
       AND "qualityScore" >= 50
+      AND "soldDate" >= ${cutoff}
       ORDER BY RANDOM()
       LIMIT ${count}
     `;

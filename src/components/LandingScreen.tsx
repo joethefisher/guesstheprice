@@ -71,7 +71,7 @@ export function LandingScreen({ listingCount, heroPhotoUrl, heroLocation, topSco
 
       {/* Top nav */}
       <header
-        className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center"
+        className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center"
         style={{ padding: "26px 36px" }}
       >
         <Wordmark size={20} />

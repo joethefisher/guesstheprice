@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { LandingClient } from "@/components/LandingClient";
+import { recencyCutoffDate } from "@/lib/recency";
 
 interface TopScorer {
   username: string;
@@ -14,15 +15,18 @@ export default async function HomePage() {
   let heroLocation: { neighborhood: string | null; city: string; state: string } | null = null;
   let topScorer: TopScorer | null = null;
 
+  const cutoff = recencyCutoffDate();
+
   try {
     listingCount = await prisma.listing.count({
-      where: { isActive: true, qualityScore: { gte: 50 } },
+      where: { isActive: true, qualityScore: { gte: 50 }, soldDate: { gte: cutoff } },
     });
 
     const heroRows = await prisma.$queryRaw<Array<{ id: string }>>`
       SELECT id FROM "Listing"
       WHERE "isActive" = true
       AND "qualityScore" >= 50
+      AND "soldDate" >= ${cutoff}
       AND "soldPrice" >= 1000000
       ORDER BY RANDOM()
       LIMIT 1

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashDateString, getDailyNumber } from "@/lib/daily/service";
+import { recencyCutoffDate } from "@/lib/recency";
 
 export const dynamic = "force-dynamic";
 
@@ -27,10 +28,12 @@ export async function GET() {
 
   const dailyNumber = getDailyNumber(todayET);
 
+  const cutoff = recencyCutoffDate();
+
   let count: number;
   try {
     count = await prisma.listing.count({
-      where: { isActive: true, qualityScore: { gte: 50 } },
+      where: { isActive: true, qualityScore: { gte: 50 }, soldDate: { gte: cutoff } },
     });
   } catch {
     return NextResponse.json({ error: "db error" }, { status: 500 });
@@ -49,6 +52,7 @@ export async function GET() {
       SELECT id FROM "Listing"
       WHERE "isActive" = true
       AND "qualityScore" >= 50
+      AND "soldDate" >= ${cutoff}
       ORDER BY id
       LIMIT 1
       OFFSET ${offset}
