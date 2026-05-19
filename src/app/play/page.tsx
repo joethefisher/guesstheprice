@@ -153,6 +153,7 @@ export default function PlayPage() {
         actualPrice: data.actualPrice,
         streetAddress: data.streetAddress,
         reaction: data.reaction,
+        exact: data.exact ?? null,
       };
       setReveal(result);
       setHistory((prev) => [...prev, result]);

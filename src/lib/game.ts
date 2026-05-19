@@ -44,6 +44,8 @@ export interface RoundResult {
   actualPrice: number;
   streetAddress: string;
   reaction: string;
+  /** Exact lat/lng — only available after a guess has been scored. */
+  exact?: LatLng | null;
 }
 
 // Combo multiplier for a given consecutive-close-call count.

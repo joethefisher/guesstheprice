@@ -6,6 +6,7 @@ import { NumberTicker } from "./NumberTicker";
 import { Confetti } from "./Confetti";
 import { TierBadge } from "./GameChips";
 import { Icon } from "./Icons";
+import { MapExpandedModal } from "./daily/map/MapExpandedModal";
 import { formatPrice, formatDelta, type RoundResult, type SavedHome } from "@/lib/game";
 
 interface Props {
@@ -25,6 +26,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
 
   const isNailed = result.tier === "expert" || result.tier === "nailed";
   const accuracy = Math.max(0, Math.round((1 - result.errorPct) * 100));
+  const [mapOpen, setMapOpen] = useState(false);
 
   function handleSave() {
     if (saved) return;
@@ -158,8 +160,11 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
           </motion.div>
         )}
 
-        {/* Address sub-card */}
-        <motion.div
+        {/* Address sub-card — click to open map */}
+        <motion.button
+          type="button"
+          onClick={() => listing.map && setMapOpen(true)}
+          disabled={!listing.map}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
@@ -168,14 +173,61 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
             borderRadius: 16,
             padding: "16px 20px",
             marginBottom: 24,
+            border: "none",
+            width: "100%",
+            textAlign: "left",
+            cursor: listing.map ? "pointer" : "default",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
           }}
         >
-          <div className="eyebrow mb-1">Address</div>
-          <div style={{ fontWeight: 600, fontSize: 15 }}>{result.streetAddress}</div>
-          <div style={{ fontSize: 13, color: "var(--ink-mute)" }}>
-            {listing.neighborhood ? `${listing.neighborhood}, ` : ""}{listing.city}, {listing.state}
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div className="eyebrow mb-1">Address</div>
+            <div style={{ fontWeight: 600, fontSize: 15 }}>{result.streetAddress}</div>
+            <div style={{ fontSize: 13, color: "var(--ink-mute)" }}>
+              {listing.neighborhood ? `${listing.neighborhood}, ` : ""}{listing.city}, {listing.state}
+            </div>
           </div>
-        </motion.div>
+          {listing.map && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 12px",
+                borderRadius: 999,
+                background: "var(--paper)",
+                color: "var(--ink)",
+                fontSize: 12,
+                fontWeight: 600,
+                border: "1px solid var(--rule)",
+                flexShrink: 0,
+              }}
+            >
+              <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              View map
+            </div>
+          )}
+        </motion.button>
+
+        {mapOpen && listing.map && (
+          <MapExpandedModal
+            listingId={listing.id}
+            city={listing.city}
+            state={listing.state}
+            neighborhood={listing.neighborhood}
+            map={listing.map}
+            revealed
+            exact={result.exact ?? null}
+            streetAddress={result.streetAddress}
+            onClose={() => setMapOpen(false)}
+          />
+        )}
 
         {/* CTAs */}
         <div className="flex gap-3">
