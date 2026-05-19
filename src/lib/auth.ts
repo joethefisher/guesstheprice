@@ -6,7 +6,9 @@ import { prisma } from "@/lib/db";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "database", maxAge: 30 * 24 * 60 * 60 },
+  // NextAuth v5 requires JWT strategy when the Credentials provider is used —
+  // database sessions are not supported with credentials login.
+  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   providers: [
     Credentials({
       credentials: {
@@ -27,8 +29,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   pages: { signIn: "/auth/signin" },
   callbacks: {
-    session({ session, user }) {
-      if (user) session.user.id = user.id;
+    jwt({ token, user }) {
+      // On initial sign-in, persist the DB user id into the JWT.
+      if (user) token.id = user.id;
+      return token;
+    },
+    session({ session, token }) {
+      if (token?.id) session.user.id = token.id as string;
       return session;
     },
   },
