@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 :root {
+  /* Ink / paper */
   --ink: #1A1A1A;
   --ink-soft: #2C2C2A;
   --ink-mute: rgba(26, 26, 26, 0.6);
@@ -10,6 +11,14 @@
   --rule: rgba(26, 26, 26, 0.12);
   --paper: #F7F4EE;
   --cream: #EDE6D6;
+
+  /* Paper-on-dark scale — text over photos / dark surfaces */
+  --paper-strong: rgba(247, 244, 238, 0.95);
+  --paper-default: rgba(247, 244, 238, 0.80);
+  --paper-mute: rgba(247, 244, 238, 0.60);
+  --paper-quiet: rgba(247, 244, 238, 0.40);
+
+  /* Accent + extended palette */
   --accent: #FF5C39;
   --accent-deep: #E84A28;
   --moss: #4A6741;
@@ -19,9 +28,30 @@
   --spot: #FFD66B;
   --emerald: #2E6F4A;
   --velvet: #8B2A2A;
+
+  /* Type families */
   --display: "Fraunces", "Georgia", serif;
   --body: "General Sans", -apple-system, system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  /* Type scale — 10 steps. Every fontSize in components MUST snap to one of these. */
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --text-3xl: 44px;
+  --text-display-l: clamp(56px, 6vw, 78px);
+  --text-display-xl: clamp(64px, 9vw, 140px);
+
+  /* Container widths */
+  --w-narrow: 440px;
+  --w-default: 760px;
+  --w-wide: 1080px;
+
+  /* Easing */
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -103,6 +133,54 @@ img { display: block; max-width: 100%; }
 .tnum {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
+}
+
+/* ─── Headings (semantic + visual) ─────────── */
+/* Every heading in components should use one of these utilities instead of inline fontSize. */
+.h1 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: var(--text-3xl);
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: var(--text-2xl);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.h3 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: var(--text-xl);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.lede {
+  font-family: var(--body);
+  font-weight: 500;
+  font-size: var(--text-md);
+  line-height: 1.45;
+}
+.body {
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: var(--text-base);
+  line-height: 1.5;
+}
+.body-sm {
+  font-family: var(--body);
+  font-weight: 400;
+  font-size: var(--text-sm);
+  line-height: 1.45;
 }
 
 /* ─── Buttons ───────────────────────────────── */
