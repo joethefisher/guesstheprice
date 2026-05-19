@@ -1,4 +1,5 @@
 import type { RawListing, NormalizedListing } from "./types";
+import { recencyCutoffDate } from "@/lib/recency";
 
 export interface QualityResult {
   score: number;
@@ -24,6 +25,11 @@ export function scoreRaw(raw: RawListing): QualityResult {
   }
   if (!price) {
     return { score: 0, reject: true, reasons: ["missing price"] };
+  }
+  // Drop anything sold before the recency cutoff — mirrors the runtime filter
+  // so we stop ingesting old listings that gameplay would exclude anyway.
+  if (!raw.last_sold_date || new Date(raw.last_sold_date) < recencyCutoffDate()) {
+    return { score: 0, reject: true, reasons: ["sold before 24-month cutoff"] };
   }
   if (price < 50_000 || price > 50_000_000) {
     return { score: 0, reject: true, reasons: [`price out of range: ${price}`] };
