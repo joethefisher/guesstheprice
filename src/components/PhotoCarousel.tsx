@@ -96,7 +96,7 @@ export function PhotoCarousel({ photos, overlayCount, bandColor = "#bfae93", onI
 
       {/* Counter */}
       <div
-        className="tnum absolute top-4 right-4 text-[12px] font-semibold"
+        className="tnum absolute top-4 right-4 text-sm font-semibold"
         style={{
           background: "rgba(26,26,26,0.72)",
           color: "var(--paper)",

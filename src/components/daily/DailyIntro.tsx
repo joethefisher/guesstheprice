@@ -68,7 +68,7 @@ export function DailyIntro({
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <span style={{
             display: "flex", alignItems: "center", gap: 8,
-            fontSize: 12, color: "rgba(247,244,238,0.7)",
+            fontSize: "var(--text-sm)", color: "var(--paper-default)",
           }}>
             <span className="pulse-dot" />
             playing now
@@ -90,10 +90,10 @@ export function DailyIntro({
           transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
           style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 26, gap: 16 }}
         >
-          <div className="plaque" style={{ fontSize: 14 }}>
+          <div className="plaque" style={{ fontSize: "var(--text-sm)" }}>
             <span style={{
               fontStyle: "normal", fontFamily: "var(--body)",
-              fontSize: 10, letterSpacing: "0.22em", fontWeight: 700,
+              fontSize: "var(--text-xs)", letterSpacing: "0.22em", fontWeight: 700,
             }}>
               NOW OPEN
             </span>
@@ -147,8 +147,8 @@ export function DailyIntro({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.8 }}
           style={{
-            fontSize: 17, lineHeight: 1.5,
-            color: "rgba(247,244,238,0.7)",
+            fontSize: "var(--text-md)", lineHeight: 1.5,
+            color: "var(--paper-default)",
             maxWidth: "44ch", margin: "28px 0 36px",
           }}
         >
@@ -165,7 +165,7 @@ export function DailyIntro({
           onClick={onBegin}
           style={{
             background: "var(--accent)", color: "#fff",
-            padding: "24px 40px", fontSize: 18, borderRadius: 16,
+            padding: "24px 40px", fontSize: "var(--text-md)", borderRadius: 16,
             boxShadow: "0 1px 0 rgba(255,255,255,0.3) inset, 0 20px 50px -10px rgba(255,92,57,0.6)",
             display: "inline-flex", alignItems: "center", gap: 12,
           }}
@@ -181,7 +181,7 @@ export function DailyIntro({
           transition={{ duration: 0.3, delay: 1.0 }}
           style={{
             display: "flex", alignItems: "center", gap: 28,
-            marginTop: 38, color: "rgba(247,244,238,0.7)", fontSize: 13,
+            marginTop: 38, color: "var(--paper-default)", fontSize: "var(--text-sm)",
           }}
         >
           {currentStreak > 0 && (
@@ -220,12 +220,12 @@ export function DailyIntro({
           display: "flex", justifyContent: "space-between", alignItems: "center",
           padding: "14px 22px", borderRadius: 12,
           background: "rgba(247,244,238,0.06)", backdropFilter: "blur(12px)",
-          color: "rgba(247,244,238,0.75)", fontSize: 12,
+          color: "var(--paper-strong)", fontSize: "var(--text-sm)",
           boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.08)",
         }}
       >
         <span>One guess. No do-overs. Resets at midnight Eastern.</span>
-        <span style={{ color: "rgba(247,244,238,0.4)" }}>·</span>
+        <span style={{ color: "var(--paper-quiet)" }}>·</span>
         <span>Same house for everyone, everywhere.</span>
       </motion.div>
     </div>

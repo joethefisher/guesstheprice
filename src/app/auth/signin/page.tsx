@@ -69,17 +69,17 @@ function SignInForm() {
       >
         <h1
           className="display"
-          style={{ fontSize: 32, margin: "0 0 8px", color: "var(--ink)" }}
+          style={{ fontSize: "var(--text-2xl)", margin: "0 0 8px", color: "var(--ink)" }}
         >
           Welcome back.
         </h1>
-        <p style={{ margin: "0 0 32px", color: "rgba(26,26,26,0.55)", fontSize: 15 }}>
+        <p style={{ margin: "0 0 32px", color: "rgba(26,26,26,0.55)", fontSize: "var(--text-base)" }}>
           Sign in to keep your streak alive.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <label style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>
+            <label style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--ink)" }}>
               Username
             </label>
             <input
@@ -92,7 +92,7 @@ function SignInForm() {
                 padding: "12px 14px",
                 borderRadius: 12,
                 border: "1.5px solid rgba(26,26,26,0.15)",
-                fontSize: 15,
+                fontSize: "var(--text-base)",
                 color: "var(--ink)",
                 background: "rgba(26,26,26,0.02)",
                 outline: "none",
@@ -103,7 +103,7 @@ function SignInForm() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>
+            <label style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--ink)" }}>
               Password
             </label>
             <input
@@ -116,7 +116,7 @@ function SignInForm() {
                 padding: "12px 14px",
                 borderRadius: 12,
                 border: "1.5px solid rgba(26,26,26,0.15)",
-                fontSize: 15,
+                fontSize: "var(--text-base)",
                 color: "var(--ink)",
                 background: "rgba(26,26,26,0.02)",
                 outline: "none",
@@ -127,7 +127,7 @@ function SignInForm() {
           </div>
 
           {error && (
-            <p style={{ margin: 0, fontSize: 13, color: "#c0392b", fontWeight: 500 }}>
+            <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "#c0392b", fontWeight: 500 }}>
               {error}
             </p>
           )}
@@ -136,13 +136,13 @@ function SignInForm() {
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ marginTop: 8, fontSize: 15, padding: "14px 20px", opacity: loading ? 0.7 : 1 }}
+            style={{ marginTop: 8, fontSize: "var(--text-base)", padding: "14px 20px", opacity: loading ? 0.7 : 1 }}
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <p style={{ marginTop: 24, textAlign: "center", fontSize: 14, color: "rgba(26,26,26,0.55)" }}>
+        <p style={{ marginTop: 24, textAlign: "center", fontSize: "var(--text-sm)", color: "rgba(26,26,26,0.55)" }}>
           New here?{" "}
           <Link
             href="/auth/signup"

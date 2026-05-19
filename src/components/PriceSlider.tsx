@@ -89,7 +89,7 @@ export function PriceSlider({ value, onChange, locked = false }: Props) {
               position: "absolute",
               left: `${valueToPos(t) * 100}%`,
               transform: "translateX(-50%)",
-              fontSize: 10,
+              fontSize: "var(--text-xs)",
               color: "var(--ink-quiet)",
               fontWeight: 600,
               letterSpacing: "0.06em",

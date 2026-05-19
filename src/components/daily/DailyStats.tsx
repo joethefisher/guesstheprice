@@ -94,7 +94,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
         {/* LEFT — stats hero */}
         <div style={{ display: "flex", flexDirection: "column" }}>
           <motion.div {...fadeUp(0)}>
-            <div className="eyebrow" style={{ marginBottom: 16, color: "rgba(247,244,238,0.55)" }}>
+            <div className="eyebrow" style={{ marginBottom: 16, color: "var(--paper-mute)" }}>
               Your daily statistics
             </div>
           </motion.div>
@@ -108,34 +108,34 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
             }}
           >
             <div>
-              <div className="display tnum" style={{ fontSize: 84, lineHeight: 1, color: "var(--accent)", letterSpacing: "-0.03em" }}>
+              <div className="display tnum" style={{ fontSize: "var(--text-display-xl)", lineHeight: 1, color: "var(--accent)", letterSpacing: "-0.03em" }}>
                 {storage.currentStreak}
               </div>
-              <div className="eyebrow" style={{ marginTop: 6, color: "rgba(247,244,238,0.55)" }}>
+              <div className="eyebrow" style={{ marginTop: 6, color: "var(--paper-mute)" }}>
                 CURRENT STREAK 🔥
               </div>
             </div>
             <div>
-              <div className="display tnum" style={{ fontSize: 84, lineHeight: 1, color: "var(--spot)", letterSpacing: "-0.03em" }}>
+              <div className="display tnum" style={{ fontSize: "var(--text-display-xl)", lineHeight: 1, color: "var(--spot)", letterSpacing: "-0.03em" }}>
                 {storage.bestStreak}
               </div>
-              <div className="eyebrow" style={{ marginTop: 6, color: "rgba(247,244,238,0.55)" }}>
+              <div className="eyebrow" style={{ marginTop: 6, color: "var(--paper-mute)" }}>
                 BEST STREAK
               </div>
             </div>
             <div>
-              <div className="display tnum" style={{ fontSize: 56, lineHeight: 1, color: "var(--paper)", letterSpacing: "-0.025em" }}>
+              <div className="display tnum" style={{ fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--paper)", letterSpacing: "-0.025em" }}>
                 {storage.played}
               </div>
-              <div className="eyebrow" style={{ marginTop: 6, color: "rgba(247,244,238,0.55)" }}>
+              <div className="eyebrow" style={{ marginTop: 6, color: "var(--paper-mute)" }}>
                 PLAYED
               </div>
             </div>
             <div>
-              <div className="display tnum" style={{ fontSize: 56, lineHeight: 1, color: "var(--paper)", letterSpacing: "-0.025em" }}>
-                {avgAccuracy}<span style={{ fontSize: 28, color: "rgba(247,244,238,0.5)" }}>%</span>
+              <div className="display tnum" style={{ fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--paper)", letterSpacing: "-0.025em" }}>
+                {avgAccuracy}<span style={{ fontSize: "var(--text-2xl)", color: "var(--paper-quiet)" }}>%</span>
               </div>
-              <div className="eyebrow" style={{ marginTop: 6, color: "rgba(247,244,238,0.55)" }}>
+              <div className="eyebrow" style={{ marginTop: 6, color: "var(--paper-mute)" }}>
                 AVG ACCURACY
               </div>
             </div>
@@ -143,7 +143,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
 
           {/* Distribution */}
           <motion.div {...fadeUp(2)}>
-            <div className="eyebrow" style={{ marginBottom: 12, color: "rgba(247,244,238,0.55)" }}>
+            <div className="eyebrow" style={{ marginBottom: 12, color: "var(--paper-mute)" }}>
               Accuracy distribution · last {storage.played}
             </div>
             <div style={{ display: "grid", gap: 4 }}>
@@ -153,7 +153,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
                 const isLast = bucket === distribution_highlight(storage);
                 return (
                   <div key={bucket} className="dist-row">
-                    <span style={{ color: "rgba(247,244,238,0.55)", textAlign: "right" }}>{bucket}</span>
+                    <span style={{ color: "var(--paper-mute)", textAlign: "right" }}>{bucket}</span>
                     <div style={{ position: "relative", height: "100%", background: "rgba(247,244,238,0.08)", borderRadius: 3 }}>
                       <div className="dist-bar" style={{
                         width: w,
@@ -164,7 +164,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
                         {count > 0 ? count : ""}
                       </div>
                     </div>
-                    <span style={{ color: isLast ? "var(--accent)" : "rgba(247,244,238,0.4)", textAlign: "right", fontSize: 10 }}>
+                    <span style={{ color: isLast ? "var(--accent)" : "rgba(247,244,238,0.4)", textAlign: "right", fontSize: "var(--text-xs)" }}>
                       {isLast ? "← you" : ""}
                     </span>
                   </div>
@@ -185,13 +185,13 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
               <div>
-                <div className="eyebrow" style={{ marginBottom: 4, color: "rgba(247,244,238,0.55)" }}>
+                <div className="eyebrow" style={{ marginBottom: 4, color: "var(--paper-mute)" }}>
                   NEXT DAILY
                 </div>
                 <NextDailyCountdown size={26} color="var(--spot)" />
               </div>
               <div style={{
-                fontSize: 11, color: "rgba(247,244,238,0.55)",
+                fontSize: "var(--text-xs)", color: "var(--paper-mute)",
                 textAlign: "right", maxWidth: 160,
               }}>
                 Resets at midnight Eastern.<br />Miss it and your streak goes to zero.
@@ -205,10 +205,10 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
           <motion.div {...fadeUp(1)} style={{ marginBottom: 16 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
               <div>
-                <div className="eyebrow" style={{ marginBottom: 4, color: "rgba(247,244,238,0.55)" }}>
+                <div className="eyebrow" style={{ marginBottom: 4, color: "var(--paper-mute)" }}>
                   Five-week heatmap
                 </div>
-                <div className="display" style={{ fontSize: 24, fontStyle: "italic", color: "var(--paper)" }}>
+                <div className="display" style={{ fontSize: "var(--text-xl)", fontStyle: "italic", color: "var(--paper)" }}>
                   Last 35 days
                 </div>
               </div>
@@ -222,8 +222,8 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
             }}>
               {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
                 <div key={i} style={{
-                  textAlign: "center", fontSize: 10,
-                  color: "rgba(247,244,238,0.4)",
+                  textAlign: "center", fontSize: "var(--text-xs)",
+                  color: "var(--paper-quiet)",
                   fontFamily: "var(--mono)", fontWeight: 700, letterSpacing: "0.1em",
                 }}>
                   {d}
@@ -252,12 +252,12 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
                     title={v != null ? `${v}%` : "Missed"}
                   >
                     <div style={{
-                      fontSize: 8, opacity: 0.5,
+                      fontSize: "var(--text-xs)", opacity: 0.5,
                       position: "absolute", top: 3, left: 4,
                     }}>
                       {i + 1}
                     </div>
-                    <div className="tnum" style={{ fontSize: 11, fontWeight: 700 }}>
+                    <div className="tnum" style={{ fontSize: "var(--text-xs)", fontWeight: 700 }}>
                       {v == null ? "·" : v}
                     </div>
                   </motion.div>
@@ -268,7 +268,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
             {/* Legend */}
             <div style={{
               display: "flex", alignItems: "center", gap: 8,
-              fontSize: 10, color: "rgba(247,244,238,0.55)", marginBottom: 18,
+              fontSize: "var(--text-xs)", color: "var(--paper-mute)", marginBottom: 18,
             }}>
               <span>Missed</span>
               <div style={{ display: "flex", gap: 3 }}>
@@ -294,7 +294,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
               boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                <div className="eyebrow" style={{ color: "rgba(247,244,238,0.55)" }}>Accuracy trend</div>
+                <div className="eyebrow" style={{ color: "var(--paper-mute)" }}>Accuracy trend</div>
               </div>
               <svg viewBox="0 0 400 80" width="100%" height="60">
                 <defs>
@@ -327,14 +327,14 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
                 background: "rgba(247,244,238,0.06)",
                 boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
               }}>
-                <div className="eyebrow" style={{ fontSize: 9, color: "rgba(247,244,238,0.55)" }}>
+                <div className="eyebrow" style={{ fontSize: "var(--text-xs)", color: "var(--paper-mute)" }}>
                   HARDEST DAY
                 </div>
-                <div style={{ fontFamily: "var(--display)", fontStyle: "italic", fontSize: 18, color: "var(--paper)", marginTop: 4 }}>
+                <div style={{ fontFamily: "var(--display)", fontStyle: "italic", fontSize: "var(--text-md)", color: "var(--paper)", marginTop: 4 }}>
                   {hardestDay ? `Day ${hardestDay.i + 1}` : "—"}
                 </div>
                 {hardestDay && (
-                  <div style={{ fontSize: 11, color: "rgba(247,244,238,0.55)" }} className="tnum">
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--paper-mute)" }} className="tnum">
                     {hardestDay.v}% accuracy
                   </div>
                 )}
@@ -344,14 +344,14 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
                 background: "rgba(247,244,238,0.06)",
                 boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
               }}>
-                <div className="eyebrow" style={{ fontSize: 9, color: "rgba(247,244,238,0.55)" }}>
+                <div className="eyebrow" style={{ fontSize: "var(--text-xs)", color: "var(--paper-mute)" }}>
                   BEST DAY
                 </div>
-                <div style={{ fontFamily: "var(--display)", fontStyle: "italic", fontSize: 18, color: "var(--paper)", marginTop: 4 }}>
+                <div style={{ fontFamily: "var(--display)", fontStyle: "italic", fontSize: "var(--text-md)", color: "var(--paper)", marginTop: 4 }}>
                   {bestDay ? `Day ${bestDay.i + 1}` : "—"}
                 </div>
                 {bestDay && (
-                  <div style={{ fontSize: 11, color: "rgba(247,244,238,0.55)" }} className="tnum">
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--paper-mute)" }} className="tnum">
                     {bestDay.v}% accuracy
                   </div>
                 )}

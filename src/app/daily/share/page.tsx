@@ -37,13 +37,13 @@ export default function DailySharePage({ searchParams }: Props) {
         className="min-h-screen flex flex-col items-center justify-center gap-5"
         style={{ background: "var(--paper)" }}
       >
-        <h2 className="display m-0" style={{ fontSize: 32, color: "var(--ink)" }}>
+        <h2 className="display m-0" style={{ fontSize: "var(--text-2xl)", color: "var(--ink)" }}>
           This link has expired.
         </h2>
-        <p style={{ color: "var(--ink-mute)", fontSize: 15, margin: 0 }}>
+        <p style={{ color: "var(--ink-mute)", fontSize: "var(--text-base)", margin: 0 }}>
           Daily results are only shareable for a limited time.
         </p>
-        <Link href="/daily" className="btn btn-primary" style={{ fontSize: 15 }}>
+        <Link href="/daily" className="btn btn-primary" style={{ fontSize: "var(--text-base)" }}>
           Play today's house →
         </Link>
       </div>
@@ -93,20 +93,20 @@ export default function DailySharePage({ searchParams }: Props) {
           <div>
             <div
               className="eyebrow"
-              style={{ color: "rgba(247,244,238,0.4)", fontSize: 9, marginBottom: 4 }}
+              style={{ color: "var(--paper-quiet)", fontSize: "var(--text-xs)", marginBottom: 4 }}
             >
               DAILY #{payload.n} · {date}
             </div>
-            <div style={{ color: "var(--paper)", fontWeight: 600, fontSize: 14 }}>
+            <div style={{ color: "var(--paper)", fontWeight: 600, fontSize: "var(--text-sm)" }}>
               {payload.c}, {payload.t}
             </div>
           </div>
           <div
             className="display tnum"
-            style={{ fontSize: 52, lineHeight: 1, color: "var(--accent)", letterSpacing: "-0.03em" }}
+            style={{ fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--accent)", letterSpacing: "-0.03em" }}
           >
             {payload.a}
-            <span style={{ fontSize: 22, color: "rgba(247,244,238,0.4)" }}>%</span>
+            <span style={{ fontSize: "var(--text-lg)", color: "var(--paper-quiet)" }}>%</span>
           </div>
         </div>
 
@@ -114,7 +114,7 @@ export default function DailySharePage({ searchParams }: Props) {
         <div style={{ padding: "20px 24px 16px" }}>
           <div
             className="eyebrow"
-            style={{ color: "rgba(247,244,238,0.35)", fontSize: 9, marginBottom: 12 }}
+            style={{ color: "var(--paper-quiet)", fontSize: "var(--text-xs)", marginBottom: 12 }}
           >
             LAST 7 DAYS
           </div>
@@ -134,7 +134,7 @@ export default function DailySharePage({ searchParams }: Props) {
                     border,
                     display: "grid",
                     placeItems: "center",
-                    fontSize: 16,
+                    fontSize: "var(--text-md)",
                   }}
                 >
                   {v == null ? "·" : bucketEmoji(accuracyToBucket(v))}
@@ -145,8 +145,8 @@ export default function DailySharePage({ searchParams }: Props) {
           <div
             style={{
               marginTop: 10,
-              fontSize: 12,
-              color: "rgba(247,244,238,0.4)",
+              fontSize: "var(--text-sm)",
+              color: "var(--paper-quiet)",
               textAlign: "right",
             }}
           >
@@ -159,7 +159,7 @@ export default function DailySharePage({ searchParams }: Props) {
           <Link
             href="/daily"
             className="btn btn-primary"
-            style={{ fontSize: 15, justifyContent: "space-between" }}
+            style={{ fontSize: "var(--text-base)", justifyContent: "space-between" }}
           >
             <span>Play today's house</span>
             <span>→</span>
@@ -167,8 +167,8 @@ export default function DailySharePage({ searchParams }: Props) {
           <div
             style={{
               textAlign: "center",
-              fontSize: 12,
-              color: "rgba(247,244,238,0.3)",
+              fontSize: "var(--text-sm)",
+              color: "var(--paper-quiet)",
             }}
           >
             Can you get closer to the actual price?
@@ -177,7 +177,7 @@ export default function DailySharePage({ searchParams }: Props) {
       </div>
 
       {/* Wordmark below card */}
-      <div style={{ marginTop: 28, color: "rgba(247,244,238,0.25)", fontSize: 12, fontWeight: 600, letterSpacing: "0.12em" }}>
+      <div style={{ marginTop: 28, color: "var(--paper-quiet)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.12em" }}>
         PRICETAG
       </div>
     </div>

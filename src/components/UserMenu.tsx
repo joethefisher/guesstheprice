@@ -35,7 +35,7 @@ export function UserMenu({ variant = "light" }: Props) {
     return (
       <button
         className="btn btn-primary"
-        style={{ padding: "10px 18px", fontSize: 13 }}
+        style={{ padding: "10px 18px", fontSize: "var(--text-sm)" }}
         onClick={() => router.push("/auth/signin")}
       >
         Sign in
@@ -58,7 +58,7 @@ export function UserMenu({ variant = "light" }: Props) {
           border: `1px solid ${borderColor}`,
           background: "transparent",
           cursor: "pointer",
-          fontSize: 13,
+          fontSize: "var(--text-sm)",
           fontWeight: 600,
           color: textColor,
           transition: "opacity 0.15s",
@@ -93,8 +93,8 @@ export function UserMenu({ variant = "light" }: Props) {
           }}
         >
           <div style={{ padding: "10px 14px", borderBottom: "1px solid rgba(26,26,26,0.06)" }}>
-            <p style={{ margin: 0, fontSize: 12, color: "rgba(26,26,26,0.4)", fontWeight: 500 }}>Signed in as</p>
-            <p style={{ margin: "2px 0 0", fontSize: 14, fontWeight: 700, color: "var(--ink)" }}>@{username}</p>
+            <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "rgba(26,26,26,0.4)", fontWeight: 500 }}>Signed in as</p>
+            <p style={{ margin: "2px 0 0", fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--ink)" }}>@{username}</p>
           </div>
           <button
             onClick={() => { setOpen(false); router.push("/profile"); }}
@@ -104,7 +104,7 @@ export function UserMenu({ variant = "light" }: Props) {
               background: "none",
               border: "none",
               textAlign: "left",
-              fontSize: 14,
+              fontSize: "var(--text-sm)",
               color: "var(--ink)",
               cursor: "pointer",
               fontWeight: 500,
@@ -122,7 +122,7 @@ export function UserMenu({ variant = "light" }: Props) {
               background: "none",
               border: "none",
               textAlign: "left",
-              fontSize: 14,
+              fontSize: "var(--text-sm)",
               color: "var(--ink)",
               cursor: "pointer",
               fontWeight: 500,

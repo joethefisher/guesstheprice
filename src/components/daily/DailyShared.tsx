@@ -160,7 +160,7 @@ export function GhostButton({
         color: "var(--paper)",
         boxShadow: "inset 0 0 0 1.5px rgba(247,244,238,0.4)",
         padding: "16px 22px",
-        fontSize: 14,
+        fontSize: "var(--text-sm)",
         borderRadius: 12,
         ...style,
       }}

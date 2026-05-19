@@ -34,7 +34,7 @@ export default function OgImage() {
 
         <div
           style={{
-            fontSize: 88,
+            fontSize: "var(--text-display-xl)",
             fontStyle: "italic",
             color: "#F7F4EE",
             fontFamily: "Georgia, serif",
@@ -49,8 +49,8 @@ export default function OgImage() {
 
         <div
           style={{
-            fontSize: 34,
-            color: "rgba(247,244,238,0.6)",
+            fontSize: "var(--text-2xl)",
+            color: "var(--paper-mute)",
             fontFamily: "system-ui, sans-serif",
             fontWeight: 400,
           }}

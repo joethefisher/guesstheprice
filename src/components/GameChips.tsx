@@ -17,8 +17,8 @@ export function Stat({
       <span style={{ color: "var(--ink-mute)" }}>
         <IconComp size={16} />
       </span>
-      <span className="tnum font-semibold text-[15px]">{value}</span>
-      <span className="text-[12px]" style={{ color: "var(--ink-mute)", letterSpacing: "0.02em" }}>
+      <span className="tnum font-semibold text-base">{value}</span>
+      <span className="text-sm" style={{ color: "var(--ink-mute)", letterSpacing: "0.02em" }}>
         {label}
       </span>
     </div>
@@ -35,7 +35,7 @@ export function StreakFlame({ count }: { count: number }) {
         background: "var(--cream)",
         color: "var(--accent)",
         fontWeight: 700,
-        fontSize: 13,
+        fontSize: "var(--text-sm)",
       }}
     >
       <span style={{ animation: "flameFlicker 1.2s ease-in-out infinite", display: "inline-flex" }}>
@@ -55,7 +55,7 @@ export function RoundPill({ current, total }: { current: number; total: number }
         borderRadius: 999,
         background: "rgba(26,26,26,0.06)",
         color: "var(--ink)",
-        fontSize: 11,
+        fontSize: "var(--text-xs)",
         fontWeight: 700,
         letterSpacing: "0.1em",
       }}
@@ -88,7 +88,7 @@ export function ComboFlame({ combo }: { combo: number }) {
         background: isGoated ? "rgba(255,92,57,0.12)" : "var(--cream)",
         color: flameColor,
         fontWeight: 700,
-        fontSize: 13,
+        fontSize: "var(--text-sm)",
         animation: "comboPulse 200ms ease-out 1",
       }}
     >
@@ -129,7 +129,7 @@ export function ComboFlame({ combo }: { combo: number }) {
         )}
       </span>
 
-      <span className="display" style={{ fontSize: 13 }}>
+      <span className="display" style={{ fontSize: "var(--text-sm)" }}>
         ×{multiplier.toFixed(1)}
       </span>
     </div>
@@ -154,7 +154,7 @@ export function TierBadge({ tier }: { tier: string }) {
         borderRadius: 999,
         background: c.bg,
         color: c.color,
-        fontSize: 11,
+        fontSize: "var(--text-xs)",
         fontWeight: 700,
         letterSpacing: "0.12em",
       }}

@@ -79,7 +79,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
         {/* Reaction copy */}
         <h2
           className="display m-0 mb-6"
-          style={{ fontSize: 36, color: "var(--ink)", lineHeight: 1.1, maxWidth: "24ch" }}
+          style={{ fontSize: "var(--text-2xl)", color: "var(--ink)", lineHeight: 1.1, maxWidth: "24ch" }}
         >
           {result.reaction}
         </h2>
@@ -90,14 +90,14 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
             <div className="eyebrow">Your guess</div>
             <div
               className="display tnum"
-              style={{ fontSize: 38, color: "var(--ink-mute)" }}
+              style={{ fontSize: "var(--text-2xl)", color: "var(--ink-mute)" }}
             >
               {formatPrice(result.guess)}
             </div>
           </div>
           <div className="flex flex-col gap-1">
             <div className="eyebrow">Actual price</div>
-            <div style={{ fontSize: 64, lineHeight: 1, color: "var(--accent)" }}>
+            <div style={{ fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--accent)" }}>
               <NumberTicker
                 value={result.actualPrice}
                 duration={1100}
@@ -114,27 +114,27 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
         <div className="flex gap-8 mb-6">
           <div className="flex flex-col gap-1">
             <div className="eyebrow">Off by</div>
-            <div className="tnum font-semibold text-[18px]" style={{ color: result.errorDollars >= 0 ? "var(--flag)" : "var(--moss)" }}>
+            <div className="tnum font-semibold text-md" style={{ color: result.errorDollars >= 0 ? "var(--flag)" : "var(--moss)" }}>
               {formatDelta(result.errorDollars)}
             </div>
           </div>
           <div className="flex flex-col gap-1">
             <div className="eyebrow">Accuracy</div>
-            <div className="tnum font-semibold text-[18px]">{accuracy}%</div>
+            <div className="tnum font-semibold text-md">{accuracy}%</div>
           </div>
           <div className="flex flex-col gap-1">
             <div className="eyebrow">Score this round</div>
             {result.multiplier != null && result.multiplier > 1 ? (
               <>
-                <div className="tnum font-semibold text-[18px]" style={{ color: "var(--accent)" }}>
+                <div className="tnum font-semibold text-md" style={{ color: "var(--accent)" }}>
                   +{result.score}
                 </div>
-                <div className="tnum text-[11px]" style={{ color: "var(--ink-mute)", marginTop: 1 }}>
+                <div className="tnum text-xs" style={{ color: "var(--ink-mute)", marginTop: 1 }}>
                   {result.pointsRaw} × {result.multiplier.toFixed(1)}
                 </div>
               </>
             ) : (
-              <div className="tnum font-semibold text-[18px]" style={{ color: "var(--accent)" }}>
+              <div className="tnum font-semibold text-md" style={{ color: "var(--accent)" }}>
                 +{result.score}
               </div>
             )}
@@ -148,7 +148,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.3 }}
             style={{
-              fontSize: 12,
+              fontSize: "var(--text-sm)",
               fontWeight: 600,
               color: "var(--flag)",
               marginBottom: 8,
@@ -185,8 +185,8 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
         >
           <div style={{ minWidth: 0, flex: 1 }}>
             <div className="eyebrow mb-1">Address</div>
-            <div style={{ fontWeight: 600, fontSize: 15 }}>{result.streetAddress}</div>
-            <div style={{ fontSize: 13, color: "var(--ink-mute)" }}>
+            <div style={{ fontWeight: 600, fontSize: "var(--text-base)" }}>{result.streetAddress}</div>
+            <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
               {listing.neighborhood ? `${listing.neighborhood}, ` : ""}{listing.city}, {listing.state}
             </div>
           </div>
@@ -200,7 +200,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
                 borderRadius: 999,
                 background: "var(--paper)",
                 color: "var(--ink)",
-                fontSize: 12,
+                fontSize: "var(--text-sm)",
                 fontWeight: 600,
                 border: "1px solid var(--rule)",
                 flexShrink: 0,
@@ -234,14 +234,14 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
           <button
             onClick={onNext}
             className="btn btn-primary flex-1"
-            style={{ fontSize: 16 }}
+            style={{ fontSize: "var(--text-md)" }}
           >
             {roundNumber < totalRounds ? "Next round →" : "See results →"}
           </button>
           <button
             onClick={handleSave}
             className="btn btn-secondary"
-            style={{ gap: 8, fontSize: 14 }}
+            style={{ gap: 8, fontSize: "var(--text-sm)" }}
             aria-label="Save this home"
           >
             <Icon.Heart filled={saved} size={18} />

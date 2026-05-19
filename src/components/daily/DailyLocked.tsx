@@ -90,7 +90,7 @@ export function DailyLocked({
               padding: "6px 12px", borderRadius: 999,
               background: "rgba(46,111,74,0.22)", color: "var(--emerald)",
               boxShadow: "inset 0 0 0 1px rgba(46,111,74,0.4)",
-              fontSize: 12, fontWeight: 700, letterSpacing: "0.08em",
+              fontSize: "var(--text-sm)", fontWeight: 700, letterSpacing: "0.08em",
             }}
           >
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -103,7 +103,7 @@ export function DailyLocked({
           <motion.h1
             custom={1} variants={fadeUpVariant} initial="hidden" animate="show"
             className="display"
-            style={{ margin: 0, fontSize: 88, lineHeight: 0.95, letterSpacing: "-0.03em" }}
+            style={{ margin: 0, fontSize: "var(--text-display-xl)", lineHeight: 0.95, letterSpacing: "-0.03em" }}
           >
             See you<br />
             <span style={{ color: "var(--spot)", fontStyle: "italic" }}>tomorrow.</span>
@@ -113,7 +113,7 @@ export function DailyLocked({
           <motion.p
             custom={2} variants={fadeUpVariant} initial="hidden" animate="show"
             style={{
-              fontSize: 16, lineHeight: 1.55, color: "rgba(247,244,238,0.7)",
+              fontSize: "var(--text-md)", lineHeight: 1.55, color: "var(--paper-default)",
               maxWidth: "40ch", margin: "22px 0 28px",
             }}
           >
@@ -132,7 +132,7 @@ export function DailyLocked({
             }}
           >
             <div>
-              <div className="eyebrow" style={{ color: "rgba(247,244,238,0.55)", marginBottom: 6 }}>
+              <div className="eyebrow" style={{ color: "var(--paper-mute)", marginBottom: 6 }}>
                 NEXT HOUSE IN
               </div>
               <NextDailyCountdown size={40} color="var(--spot)" />
@@ -141,7 +141,7 @@ export function DailyLocked({
               className="btn"
               style={{
                 background: "rgba(247,244,238,0.1)", color: "var(--paper)",
-                padding: "12px 16px", fontSize: 12, borderRadius: 10,
+                padding: "12px 16px", fontSize: "var(--text-sm)", borderRadius: 10,
                 boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.25)",
               }}
             >
@@ -157,7 +157,7 @@ export function DailyLocked({
             <button
               className="btn btn-primary"
               onClick={onPractice}
-              style={{ padding: "16px 22px", fontSize: 14, borderRadius: 12 }}
+              style={{ padding: "16px 22px", fontSize: "var(--text-sm)", borderRadius: 12 }}
             >
               Play practice rounds
             </button>
@@ -165,7 +165,7 @@ export function DailyLocked({
               className="btn"
               onClick={onStats}
               style={{
-                padding: "16px 22px", fontSize: 14, borderRadius: 12,
+                padding: "16px 22px", fontSize: "var(--text-sm)", borderRadius: 12,
                 background: "rgba(247,244,238,0.08)", color: "var(--paper)",
                 boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)",
               }}
@@ -179,7 +179,7 @@ export function DailyLocked({
         <motion.div
           custom={1} variants={fadeUpVariant} initial="hidden" animate="show"
         >
-          <div className="eyebrow" style={{ marginBottom: 14, color: "rgba(247,244,238,0.55)" }}>
+          <div className="eyebrow" style={{ marginBottom: 14, color: "var(--paper-mute)" }}>
             Today's result · #{dailyNumber}
           </div>
 
@@ -210,7 +210,7 @@ export function DailyLocked({
               position: "absolute", top: 18, right: 18,
               padding: "6px 12px", borderRadius: 999,
               background: "var(--paper)", color: "var(--ink)",
-              fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+              fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.1em",
               display: "flex", alignItems: "center", gap: 6,
             }}>
               <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -223,10 +223,10 @@ export function DailyLocked({
               <div style={{
                 position: "absolute", bottom: 18, left: 20, right: 20, color: "var(--paper)",
               }}>
-                <div className="display" style={{ fontSize: 20, fontStyle: "italic", marginBottom: 4 }}>
+                <div className="display" style={{ fontSize: "var(--text-lg)", fontStyle: "italic", marginBottom: 4 }}>
                   {result.streetAddress}
                 </div>
-                <div style={{ fontSize: 12, opacity: 0.85 }}>
+                <div style={{ fontSize: "var(--text-sm)", opacity: 0.85 }}>
                   {result.city}, {result.state}
                 </div>
               </div>
@@ -246,11 +246,11 @@ export function DailyLocked({
                   background: "rgba(247,244,238,0.06)",
                   boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
                 }}>
-                  <div className="eyebrow" style={{ fontSize: 9, marginBottom: 4, color: "rgba(247,244,238,0.55)" }}>
+                  <div className="eyebrow" style={{ fontSize: "var(--text-xs)", marginBottom: 4, color: "var(--paper-mute)" }}>
                     {s.l}
                   </div>
                   <div className="display tnum" style={{
-                    fontSize: 22, fontStyle: "italic",
+                    fontSize: "var(--text-lg)", fontStyle: "italic",
                     color: s.accent ? "var(--spot)" : "var(--paper)",
                   }}>
                     {s.v}
@@ -263,7 +263,7 @@ export function DailyLocked({
               padding: 14, borderRadius: 12,
               background: "rgba(247,244,238,0.06)",
               boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
-              color: "rgba(247,244,238,0.5)", fontSize: 13,
+              color: "var(--paper-quiet)", fontSize: "var(--text-sm)",
             }}>
               Result details unavailable
             </div>
@@ -275,11 +275,11 @@ export function DailyLocked({
               marginTop: 14, padding: "10px 14px", borderRadius: 10,
               background: "rgba(255,92,57,0.12)",
               display: "flex", alignItems: "center", gap: 8,
-              color: "var(--accent)", fontSize: 13, fontWeight: 700,
+              color: "var(--accent)", fontSize: "var(--text-sm)", fontWeight: 700,
             }}>
               🔥 {storage.currentStreak} day streak
               {storage.bestStreak > storage.currentStreak && (
-                <span style={{ color: "rgba(247,244,238,0.5)", fontWeight: 400, fontSize: 12 }}>
+                <span style={{ color: "var(--paper-quiet)", fontWeight: 400, fontSize: "var(--text-sm)" }}>
                   · best: {storage.bestStreak}
                 </span>
               )}
@@ -295,7 +295,7 @@ export function DailyLocked({
                 marginTop: 14,
                 width: "100%",
                 padding: "12px 14px",
-                fontSize: 13,
+                fontSize: "var(--text-sm)",
                 borderRadius: 10,
                 background: "rgba(247,244,238,0.06)",
                 color: "var(--paper)",
@@ -314,7 +314,7 @@ export function DailyLocked({
                 </svg>
                 View map of today's house
               </span>
-              <span style={{ opacity: 0.55, fontSize: 13 }}>↗</span>
+              <span style={{ opacity: 0.55, fontSize: "var(--text-sm)" }}>↗</span>
             </button>
           )}
         </motion.div>

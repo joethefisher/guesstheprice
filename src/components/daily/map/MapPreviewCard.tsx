@@ -96,7 +96,7 @@ export function MapPreviewCard({
           <div
             className="eyebrow"
             style={{
-              fontSize: 10,
+              fontSize: "var(--text-xs)",
               color: revealed ? "var(--accent)" : "var(--ink-mute)",
               marginBottom: 4,
               letterSpacing: "0.12em",
@@ -109,7 +109,7 @@ export function MapPreviewCard({
               fontFamily: "var(--display)",
               fontStyle: "italic",
               fontWeight: 500,
-              fontSize: 18,
+              fontSize: "var(--text-md)",
               lineHeight: 1.15,
               color: "var(--ink)",
               whiteSpace: "nowrap",
@@ -121,7 +121,7 @@ export function MapPreviewCard({
           </div>
           <div
             style={{
-              fontSize: 12,
+              fontSize: "var(--text-sm)",
               color: "var(--ink-mute)",
               marginTop: 2,
               whiteSpace: "nowrap",
@@ -146,7 +146,7 @@ export function MapPreviewCard({
             background: hovered ? "var(--ink)" : "transparent",
             color: hovered ? "var(--paper)" : "var(--ink)",
             border: "1px solid var(--rule)",
-            fontSize: 12,
+            fontSize: "var(--text-sm)",
             fontWeight: 600,
             letterSpacing: "0.04em",
             transition: "background 180ms var(--ease), color 180ms var(--ease)",

@@ -81,7 +81,7 @@ export default function LeaderboardPage() {
               style={{
                 padding: "8px 18px",
                 borderRadius: 999,
-                fontSize: 12,
+                fontSize: "var(--text-sm)",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 background: tab === key ? "var(--ink)" : "rgba(26,26,26,0.06)",
@@ -152,7 +152,7 @@ function ScoresTable({ entries }: { entries: LeaderboardResponse["highScores"] }
           <div
             className="tnum display"
             style={{
-              fontSize: 20,
+              fontSize: "var(--text-lg)",
               fontWeight: 700,
               color: RANK_COLORS[e.rank] ?? "var(--ink-mute)",
               textAlign: "center",
@@ -161,16 +161,16 @@ function ScoresTable({ entries }: { entries: LeaderboardResponse["highScores"] }
             {e.rank <= 3 ? ["🥇", "🥈", "🥉"][e.rank - 1] : `#${e.rank}`}
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 15, color: "var(--ink)" }}>
+            <div style={{ fontWeight: 600, fontSize: "var(--text-base)", color: "var(--ink)" }}>
               @{e.username}
             </div>
-            <div style={{ fontSize: 12, color: "var(--ink-mute)", marginTop: 2 }}>
+            <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)", marginTop: 2 }}>
               {formatDate(e.completedAt)}
             </div>
           </div>
           <div
             className="tnum"
-            style={{ fontSize: 22, fontWeight: 700, color: "var(--accent)" }}
+            style={{ fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--accent)" }}
           >
             {e.score.toLocaleString()}
           </div>
@@ -203,7 +203,7 @@ function StreaksTable({ entries }: { entries: LeaderboardResponse["streaks"] }) 
           <div
             className="tnum display"
             style={{
-              fontSize: 20,
+              fontSize: "var(--text-lg)",
               fontWeight: 700,
               color: RANK_COLORS[e.rank] ?? "var(--ink-mute)",
               textAlign: "center",
@@ -212,19 +212,19 @@ function StreaksTable({ entries }: { entries: LeaderboardResponse["streaks"] }) 
             {e.rank <= 3 ? ["🥇", "🥈", "🥉"][e.rank - 1] : `#${e.rank}`}
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: 15, color: "var(--ink)" }}>
+            <div style={{ fontWeight: 600, fontSize: "var(--text-base)", color: "var(--ink)" }}>
               @{e.username}
             </div>
-            <div style={{ fontSize: 12, color: "var(--ink-mute)", marginTop: 2 }}>
+            <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)", marginTop: 2 }}>
               {e.played.toLocaleString()} days played
             </div>
           </div>
           <div
             className="tnum"
-            style={{ fontSize: 22, fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: 6 }}
+            style={{ fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: 6 }}
           >
             {e.bestStreak}
-            <span style={{ fontSize: 18 }}>🔥</span>
+            <span style={{ fontSize: "var(--text-md)" }}>🔥</span>
           </div>
         </motion.div>
       ))}
@@ -239,7 +239,7 @@ function EmptyState({ message }: { message: string }) {
         padding: "48px 24px",
         textAlign: "center",
         color: "var(--ink-mute)",
-        fontSize: 15,
+        fontSize: "var(--text-base)",
         background: "var(--cream)",
         borderRadius: 16,
       }}

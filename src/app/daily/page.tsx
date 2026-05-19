@@ -212,7 +212,7 @@ export default function DailyPage() {
   if (route === "loading") {
     return (
       <div className="stage-bg" style={{ position: "fixed", inset: 0, display: "grid", placeItems: "center" }}>
-        <div style={{ color: "rgba(247,244,238,0.4)", fontSize: 14, fontFamily: "var(--mono)" }}>
+        <div style={{ color: "var(--paper-quiet)", fontSize: "var(--text-sm)", fontFamily: "var(--mono)" }}>
           Loading today's house…
         </div>
       </div>
@@ -223,7 +223,7 @@ export default function DailyPage() {
     return (
       <div style={{ position: "fixed", inset: 0, display: "grid", placeItems: "center", background: "#15110d" }}>
         <div style={{ textAlign: "center", color: "var(--paper)" }}>
-          <div className="display" style={{ fontSize: 40, marginBottom: 16 }}>Couldn't load today's house.</div>
+          <div className="display" style={{ fontSize: "var(--text-3xl)", marginBottom: 16 }}>Couldn't load today's house.</div>
           <button className="btn btn-primary" onClick={onExit}>Go back</button>
         </div>
       </div>

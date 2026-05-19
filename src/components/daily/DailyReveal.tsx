@@ -132,7 +132,7 @@ export function DailyReveal({
           textAlign: "center",
         }}
       >
-        <div className="eyebrow" style={{ color: "var(--spot)", letterSpacing: "0.3em", fontSize: 11 }}>
+        <div className="eyebrow" style={{ color: "var(--spot)", letterSpacing: "0.3em", fontSize: "var(--text-xs)" }}>
           THE REVEAL · DAILY #{dailyNumber}
         </div>
       </motion.div>
@@ -155,12 +155,12 @@ export function DailyReveal({
             style={{ textAlign: "right" }}
           >
             <div className="eyebrow" style={{
-              marginBottom: 12, color: "rgba(247,244,238,0.55)", letterSpacing: "0.22em",
+              marginBottom: 12, color: "var(--paper-mute)", letterSpacing: "0.22em",
             }}>
               YOUR GUESS
             </div>
             <div className="display tnum" style={{
-              fontSize: 72, lineHeight: 1, color: "rgba(247,244,238,0.6)",
+              fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--paper-mute)",
               letterSpacing: "-0.025em",
             }}>
               {formatPrice(result.guess)}
@@ -179,7 +179,7 @@ export function DailyReveal({
               animation: shake ? "cameraShake 0.4s ease-in-out" : undefined,
             }}
           >
-            <div className="sold-stamp" style={{ fontSize: 26, color: "var(--accent)" }}>
+            <div className="sold-stamp" style={{ fontSize: "var(--text-xl)", color: "var(--accent)" }}>
               Sold
             </div>
           </motion.div>
@@ -202,7 +202,7 @@ export function DailyReveal({
               transition={{ duration: 0.3, delay: 1.3 }}
               className="display tnum"
               style={{
-                fontSize: 100, lineHeight: 1, color: "var(--spot)",
+                fontSize: "var(--text-display-xl)", lineHeight: 1, color: "var(--spot)",
                 letterSpacing: "-0.03em",
                 textShadow: "0 0 60px rgba(255,214,107,0.4)",
               }}
@@ -223,12 +223,12 @@ export function DailyReveal({
             display: "inline-block",
             padding: "6px 14px", borderRadius: 999,
             background: "var(--accent)", color: "#fff",
-            fontSize: 11, fontWeight: 800, letterSpacing: "0.18em", marginBottom: 14,
+            fontSize: "var(--text-xs)", fontWeight: 800, letterSpacing: "0.18em", marginBottom: 14,
           }}>
             {reactionLabel(result.accuracy)}
           </div>
           <div className="display" style={{
-            fontSize: 44, lineHeight: 1, color: "var(--paper)",
+            fontSize: "var(--text-3xl)", lineHeight: 1, color: "var(--paper)",
           }}>
             {reactionHeadline(result.guess, result.actual, result.accuracy)}
           </div>
@@ -262,17 +262,17 @@ export function DailyReveal({
               padding: "20px 18px", textAlign: "center",
             }}>
               <div className="eyebrow" style={{
-                color: "rgba(247,244,238,0.5)", marginBottom: 8, fontSize: 9.5,
+                color: "var(--paper-quiet)", marginBottom: 8, fontSize: "var(--text-xs)",
               }}>
                 {m.label}
               </div>
               <div className="display tnum" style={{
-                fontSize: 36, lineHeight: 1, color: m.tone, letterSpacing: "-0.025em",
+                fontSize: "var(--text-2xl)", lineHeight: 1, color: m.tone, letterSpacing: "-0.025em",
               }}>
                 {m.value}
               </div>
               {m.sub && (
-                <div style={{ color: "rgba(247,244,238,0.5)", fontSize: 11, marginTop: 4 }}>
+                <div style={{ color: "var(--paper-quiet)", fontSize: "var(--text-xs)", marginTop: 4 }}>
                   {m.sub}
                 </div>
               )}
@@ -290,7 +290,7 @@ export function DailyReveal({
           <button
             className="btn btn-primary"
             onClick={onShare}
-            style={{ padding: "18px 32px", fontSize: 15, borderRadius: 14 }}
+            style={{ padding: "18px 32px", fontSize: "var(--text-base)", borderRadius: 14 }}
           >
             <Icon.Share size={16} /> Share my result
           </button>
@@ -300,8 +300,8 @@ export function DailyReveal({
           <button
             onClick={onExit}
             style={{
-              background: "transparent", color: "rgba(247,244,238,0.7)",
-              padding: "18px 18px", fontSize: 14, borderRadius: 14,
+              background: "transparent", color: "var(--paper-default)",
+              padding: "18px 18px", fontSize: "var(--text-sm)", borderRadius: 14,
               border: "none", cursor: "pointer",
             }}
           >

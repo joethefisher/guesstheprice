@@ -82,7 +82,7 @@ export default async function ProfilePage() {
         style={{ borderBottom: "1px solid var(--rule)" }}
       >
         <Link href="/" style={{ textDecoration: "none" }}>
-          <span className="display" style={{ fontSize: 20, fontStyle: "italic", color: "var(--ink)" }}>
+          <span className="display" style={{ fontSize: "var(--text-lg)", fontStyle: "italic", color: "var(--ink)" }}>
             Pricetag
           </span>
         </Link>
@@ -123,10 +123,10 @@ export default async function ProfilePage() {
               }}
             >
               <div className="eyebrow mb-2" style={{ color: "var(--ink-mute)" }}>{s.label}</div>
-              <div className="display tnum" style={{ fontSize: 36, color: "var(--ink)", lineHeight: 1 }}>
+              <div className="display tnum" style={{ fontSize: "var(--text-2xl)", color: "var(--ink)", lineHeight: 1 }}>
                 {s.value}
               </div>
-              <div style={{ fontSize: 11, color: "var(--ink-quiet)", marginTop: 4, fontWeight: 500 }}>
+              <div style={{ fontSize: "var(--text-xs)", color: "var(--ink-quiet)", marginTop: 4, fontWeight: 500 }}>
                 {s.sub}
               </div>
             </div>
@@ -144,7 +144,7 @@ export default async function ProfilePage() {
           >
             <div className="eyebrow mb-4" style={{ color: "var(--ink-mute)" }}>Daily accuracy breakdown</div>
             {totalDistribution === 0 ? (
-              <div style={{ color: "var(--ink-quiet)", fontSize: 13, padding: "16px 0" }}>
+              <div style={{ color: "var(--ink-quiet)", fontSize: "var(--text-sm)", padding: "16px 0" }}>
                 No daily games played yet.
               </div>
             ) : (
@@ -155,10 +155,10 @@ export default async function ProfilePage() {
                   return (
                     <div key={b}>
                       <div className="flex items-center justify-between mb-1">
-                        <div style={{ fontSize: 12, color: "var(--ink-mute)", fontWeight: 500 }}>
+                        <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)", fontWeight: 500 }}>
                           {bucketEmoji(b)} {BUCKET_LABELS[b]}
                         </div>
-                        <div className="tnum" style={{ fontSize: 12, fontWeight: 600, color: "var(--ink)" }}>
+                        <div className="tnum" style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--ink)" }}>
                           {count}
                         </div>
                       </div>
@@ -190,7 +190,7 @@ export default async function ProfilePage() {
           >
             <div className="eyebrow mb-4" style={{ color: "var(--ink-mute)" }}>Last 14 days</div>
             {recentHistory.every((v) => v == null) ? (
-              <div style={{ color: "var(--ink-quiet)", fontSize: 13, padding: "16px 0" }}>
+              <div style={{ color: "var(--ink-quiet)", fontSize: "var(--text-sm)", padding: "16px 0" }}>
                 No daily games played yet.
               </div>
             ) : (
@@ -210,7 +210,7 @@ export default async function ProfilePage() {
                         border,
                         display: "grid",
                         placeItems: "center",
-                        fontSize: 16,
+                        fontSize: "var(--text-md)",
                         cursor: "default",
                       }}
                     >
@@ -221,7 +221,7 @@ export default async function ProfilePage() {
               </div>
             )}
             {dailyProgress && (
-              <div style={{ marginTop: 16, fontSize: 12, color: "var(--ink-mute)" }}>
+              <div style={{ marginTop: 16, fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
                 {dailyProgress.played} total days played
               </div>
             )}
@@ -251,22 +251,22 @@ export default async function ProfilePage() {
                       : "1px solid transparent",
                   }}
                 >
-                  <div style={{ fontSize: 11, color: "var(--ink-quiet)", fontWeight: 600, textAlign: "center" }}>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--ink-quiet)", fontWeight: 600, textAlign: "center" }}>
                     #{i + 1}
                   </div>
-                  <div style={{ fontSize: 13, color: "var(--ink-mute)" }}>
+                  <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
                     {new Date(g.completedAt!).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     })}
                     {i === 0 && bestGame?.totalScore === g.totalScore && (
-                      <span style={{ marginLeft: 8, fontSize: 11, color: "var(--accent)", fontWeight: 700 }}>
+                      <span style={{ marginLeft: 8, fontSize: "var(--text-xs)", color: "var(--accent)", fontWeight: 700 }}>
                         Personal best
                       </span>
                     )}
                   </div>
-                  <div className="tnum" style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)" }}>
+                  <div className="tnum" style={{ fontSize: "var(--text-md)", fontWeight: 700, color: "var(--accent)" }}>
                     {g.totalScore?.toLocaleString() ?? "—"}
                   </div>
                 </div>
@@ -280,7 +280,7 @@ export default async function ProfilePage() {
           <Link
             href="/play"
             className="btn btn-primary"
-            style={{ fontSize: 15, justifyContent: "space-between", flex: 1 }}
+            style={{ fontSize: "var(--text-base)", justifyContent: "space-between", flex: 1 }}
           >
             <span>Play freeplay</span>
             <span>→</span>
@@ -288,14 +288,14 @@ export default async function ProfilePage() {
           <Link
             href="/daily"
             className="btn btn-secondary"
-            style={{ fontSize: 14, flex: 1 }}
+            style={{ fontSize: "var(--text-sm)", flex: 1 }}
           >
             Today's daily
           </Link>
           <Link
             href="/leaderboard"
             className="btn btn-secondary"
-            style={{ fontSize: 14 }}
+            style={{ fontSize: "var(--text-sm)" }}
           >
             Leaderboard
           </Link>

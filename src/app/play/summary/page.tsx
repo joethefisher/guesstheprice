@@ -140,7 +140,7 @@ function SummaryContent() {
               <div className="eyebrow mb-1">Average accuracy</div>
               <div
                 className="display tnum"
-                style={{ fontSize: 36, color: "var(--ink)" }}
+                style={{ fontSize: "var(--text-2xl)", color: "var(--ink)" }}
               >
                 {avgAccuracy}%
               </div>
@@ -154,10 +154,10 @@ function SummaryContent() {
                 }}
               >
                 <div className="eyebrow mb-1">Best market</div>
-                <div style={{ fontWeight: 600, fontSize: 15 }}>
+                <div style={{ fontWeight: 600, fontSize: "var(--text-base)" }}>
                   {bestRound.listing.city}, {bestRound.listing.state}
                 </div>
-                <div style={{ fontSize: 13, color: "var(--ink-mute)" }}>
+                <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
                   {formatDelta(bestRound.errorDollars)} off
                 </div>
               </div>
@@ -196,7 +196,7 @@ function SummaryContent() {
                     style={{
                       padding: "3px 8px",
                       borderRadius: 999,
-                      fontSize: 9,
+                      fontSize: "var(--text-xs)",
                       background: isBest ? "var(--moss)" : "var(--flag)",
                       color: "#fff",
                     }}
@@ -218,18 +218,18 @@ function SummaryContent() {
                 )}
 
                 <div style={{ padding: "10px 12px" }}>
-                  <div className="eyebrow mb-1" style={{ fontSize: 9 }}>
+                  <div className="eyebrow mb-1" style={{ fontSize: "var(--text-xs)" }}>
                     R{i + 1}
                   </div>
                   <div
                     className="tnum"
-                    style={{ fontWeight: 700, fontSize: 13, color: "var(--accent)" }}
+                    style={{ fontWeight: 700, fontSize: "var(--text-sm)", color: "var(--accent)" }}
                   >
                     {accuracy}%
                   </div>
                   <div
                     style={{
-                      fontSize: 11,
+                      fontSize: "var(--text-xs)",
                       color: "var(--ink-mute)",
                       marginTop: 2,
                       overflow: "hidden",
@@ -241,7 +241,7 @@ function SummaryContent() {
                   </div>
                   <div
                     className="tnum"
-                    style={{ fontSize: 10, color: "var(--ink-quiet)", marginTop: 3 }}
+                    style={{ fontSize: "var(--text-xs)", color: "var(--ink-quiet)", marginTop: 3 }}
                   >
                     {formatPrice(r.guess)} →{" "}
                     <span style={{ color: "var(--ink)" }}>
@@ -271,7 +271,7 @@ function SummaryContent() {
               className="font-mono"
               style={{
                 fontFamily: "var(--mono)",
-                fontSize: 20,
+                fontSize: "var(--text-lg)",
                 lineHeight: 1.5,
                 margin: "0 0 16px",
                 color: "var(--ink)",
@@ -282,7 +282,7 @@ function SummaryContent() {
             </pre>
             <div
               style={{
-                fontSize: 13,
+                fontSize: "var(--text-sm)",
                 color: "var(--ink-mute)",
                 marginBottom: 20,
                 fontFamily: "var(--mono)",
@@ -293,7 +293,7 @@ function SummaryContent() {
             <button
               onClick={handleCopy}
               className="btn btn-ink"
-              style={{ gap: 8, fontSize: 14, width: "100%", justifyContent: "center" }}
+              style={{ gap: 8, fontSize: "var(--text-sm)", width: "100%", justifyContent: "center" }}
             >
               <Icon.Share size={16} />
               {copied ? "Copied!" : "Copy to clipboard"}
@@ -312,19 +312,19 @@ function SummaryContent() {
               justifyContent: "center",
             }}
           >
-            <div className="eyebrow" style={{ color: "rgba(247,244,238,0.5)" }}>
+            <div className="eyebrow" style={{ color: "var(--paper-quiet)" }}>
               Keep going
             </div>
             <div
               className="display"
-              style={{ fontSize: 28, color: "var(--paper)", lineHeight: 1.1 }}
+              style={{ fontSize: "var(--text-2xl)", color: "var(--paper)", lineHeight: 1.1 }}
             >
               Play another 5?
             </div>
             <button
               onClick={() => router.push("/play")}
               className="btn btn-primary"
-              style={{ fontSize: 15, justifyContent: "space-between" }}
+              style={{ fontSize: "var(--text-base)", justifyContent: "space-between" }}
             >
               <span>Play again</span>
               <span>→</span>
@@ -333,8 +333,8 @@ function SummaryContent() {
               onClick={() => router.push("/leaderboard")}
               className="btn"
               style={{
-                fontSize: 14,
-                color: "rgba(247,244,238,0.5)",
+                fontSize: "var(--text-sm)",
+                color: "var(--paper-quiet)",
                 background: "rgba(247,244,238,0.07)",
                 justifyContent: "space-between",
               }}
@@ -346,8 +346,8 @@ function SummaryContent() {
               onClick={() => router.push("/")}
               className="btn"
               style={{
-                fontSize: 13,
-                color: "rgba(247,244,238,0.4)",
+                fontSize: "var(--text-sm)",
+                color: "var(--paper-quiet)",
                 background: "transparent",
               }}
             >
@@ -386,14 +386,14 @@ function SummaryContent() {
               <div className="eyebrow mb-2">Worst guess</div>
               <div
                 className="display"
-                style={{ fontSize: 22, color: "var(--ink)", lineHeight: 1.2 }}
+                style={{ fontSize: "var(--text-lg)", color: "var(--ink)", lineHeight: 1.2 }}
               >
                 {formatPrice(worstRound.guess)} for a{" "}
                 {formatPrice(worstRound.actualPrice)} home.
               </div>
               <div
                 className="tnum"
-                style={{ fontSize: 13, color: "var(--flag)", marginTop: 4 }}
+                style={{ fontSize: "var(--text-sm)", color: "var(--flag)", marginTop: 4 }}
               >
                 {formatDelta(worstRound.errorDollars)} · {Math.round(worstRound.errorPct * 100)}% off
               </div>

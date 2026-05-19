@@ -120,7 +120,7 @@ export function MapExpandedModal({
                   fontFamily: "var(--display)",
                   fontStyle: "italic",
                   fontWeight: 500,
-                  fontSize: 28,
+                  fontSize: "var(--text-2xl)",
                   lineHeight: 1,
                   color: "var(--ink)",
                   whiteSpace: "nowrap",
@@ -210,7 +210,7 @@ export function MapExpandedModal({
                   borderRadius: 999,
                   background: "rgba(15, 13, 10, 0.78)",
                   color: "var(--paper)",
-                  fontSize: 12,
+                  fontSize: "var(--text-sm)",
                   fontWeight: 600,
                   letterSpacing: "0.06em",
                   backdropFilter: "blur(8px)",
@@ -248,7 +248,7 @@ export function MapExpandedModal({
                 </div>
                 <div
                   style={{
-                    fontSize: 15,
+                    fontSize: "var(--text-base)",
                     fontWeight: 600,
                     color: "var(--ink)",
                     lineHeight: 1.3,
@@ -258,7 +258,7 @@ export function MapExpandedModal({
                 </div>
                 <div
                   style={{
-                    fontSize: 13,
+                    fontSize: "var(--text-sm)",
                     color: "var(--ink-mute)",
                     marginTop: 2,
                   }}
@@ -290,7 +290,7 @@ export function MapExpandedModal({
             </div>
             <div
               style={{
-                fontSize: 11,
+                fontSize: "var(--text-xs)",
                 color: "var(--ink-quiet)",
                 letterSpacing: "0.06em",
                 textTransform: "uppercase",
@@ -321,7 +321,7 @@ function LegendSwatch({ color, label }: { color: string; label: string }) {
       />
       <span
         style={{
-          fontSize: 12,
+          fontSize: "var(--text-sm)",
           color: "var(--ink-mute)",
           fontWeight: 500,
         }}

@@ -126,14 +126,14 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
               display: "flex", alignItems: "flex-end", gap: 8,
             }}>
               <div className="display tnum" style={{
-                fontSize: 64, lineHeight: 1, letterSpacing: "-0.03em",
+                fontSize: "var(--text-display-l)", lineHeight: 1, letterSpacing: "-0.03em",
                 color: result.accuracy >= 90 ? "var(--spot)" : "var(--paper)",
                 textShadow: result.accuracy >= 90 ? "0 0 40px rgba(255,214,107,0.5)" : "none",
               }}>
                 {result.accuracy}
               </div>
               <div style={{
-                fontSize: 20, color: "rgba(247,244,238,0.55)",
+                fontSize: "var(--text-lg)", color: "var(--paper-mute)",
                 paddingBottom: 8,
               }}>%</div>
             </div>
@@ -144,7 +144,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
               background: "rgba(15,17,13,0.7)",
               backdropFilter: "blur(8px)",
               boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.15)",
-              fontSize: 11, fontWeight: 700, letterSpacing: "0.1em",
+              fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.1em",
               color: "var(--spot)",
             }}>
               DAILY #{dailyNumber}
@@ -155,10 +155,10 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
         <div style={{ padding: "20px 24px 24px" }}>
           {/* Address */}
           <div style={{ marginBottom: 16 }}>
-            <div className="display" style={{ fontSize: 18, fontStyle: "italic", color: "var(--paper)" }}>
+            <div className="display" style={{ fontSize: "var(--text-md)", fontStyle: "italic", color: "var(--paper)" }}>
               {result.streetAddress}
             </div>
-            <div style={{ fontSize: 12, color: "rgba(247,244,238,0.55)", marginTop: 2 }}>
+            <div style={{ fontSize: "var(--text-sm)", color: "var(--paper-mute)", marginTop: 2 }}>
               {result.city}, {result.state}
             </div>
           </div>
@@ -176,11 +176,11 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
                 background: "rgba(247,244,238,0.06)",
                 boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
               }}>
-                <div className="eyebrow" style={{ fontSize: 9, color: "rgba(247,244,238,0.45)", marginBottom: 4 }}>
+                <div className="eyebrow" style={{ fontSize: "var(--text-xs)", color: "var(--paper-quiet)", marginBottom: 4 }}>
                   {s.l}
                 </div>
                 <div className="display tnum" style={{
-                  fontSize: 20, fontStyle: "italic",
+                  fontSize: "var(--text-lg)", fontStyle: "italic",
                   color: s.accent ? "var(--spot)" : "var(--paper)",
                 }}>
                   {s.v}
@@ -195,7 +195,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
             background: "rgba(247,244,238,0.06)",
             boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
           }}>
-            <div className="eyebrow" style={{ fontSize: 9, color: "rgba(247,244,238,0.45)", marginBottom: 10 }}>
+            <div className="eyebrow" style={{ fontSize: "var(--text-xs)", color: "var(--paper-quiet)", marginBottom: 10 }}>
               LAST 7 DAYS
             </div>
             <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
@@ -208,7 +208,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
                     background: bg,
                     display: "grid", placeItems: "center",
                     boxShadow: isToday ? "0 0 0 2px var(--spot)" : "none",
-                    fontSize: 14,
+                    fontSize: "var(--text-sm)",
                     transition: "all 0.2s",
                   }}
                     title={v != null ? `${v}%` : "Missed"}
@@ -220,7 +220,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
             </div>
             {storage.currentStreak > 0 && (
               <div style={{
-                marginTop: 8, fontSize: 11, color: "rgba(247,244,238,0.5)", textAlign: "right",
+                marginTop: 8, fontSize: "var(--text-xs)", color: "var(--paper-quiet)", textAlign: "right",
               }}>
                 🔥 {storage.currentStreak} day streak
               </div>
@@ -232,8 +232,8 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
             marginBottom: 16, padding: "10px 12px", borderRadius: 10,
             background: "rgba(247,244,238,0.04)",
             boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.08)",
-            fontFamily: "var(--mono)", fontSize: 12, lineHeight: 1.7,
-            color: "rgba(247,244,238,0.6)", whiteSpace: "pre-wrap",
+            fontFamily: "var(--mono)", fontSize: "var(--text-sm)", lineHeight: 1.7,
+            color: "var(--paper-mute)", whiteSpace: "pre-wrap",
           }}>
             {shareText}
           </div>
@@ -244,7 +244,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
               className="btn btn-primary"
               onClick={handleCopy}
               style={{
-                flex: 1, padding: "13px", fontSize: 14, borderRadius: 12,
+                flex: 1, padding: "13px", fontSize: "var(--text-sm)", borderRadius: 12,
                 background: copied ? "var(--emerald)" : undefined,
                 transition: "background 0.2s",
               }}
@@ -254,7 +254,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
             <button
               onClick={handleCopyLink}
               style={{
-                flex: 1, padding: "13px", fontSize: 14, borderRadius: 12,
+                flex: 1, padding: "13px", fontSize: "var(--text-sm)", borderRadius: 12,
                 background: copiedLink ? "rgba(100,180,100,0.25)" : "rgba(247,244,238,0.1)",
                 color: copiedLink ? "#7dc97d" : "rgba(247,244,238,0.8)",
                 border: "none", cursor: "pointer",
@@ -267,8 +267,8 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
             <button
               onClick={onClose}
               style={{
-                padding: "13px 16px", fontSize: 14, borderRadius: 12,
-                background: "rgba(247,244,238,0.06)", color: "rgba(247,244,238,0.5)",
+                padding: "13px 16px", fontSize: "var(--text-sm)", borderRadius: 12,
+                background: "rgba(247,244,238,0.06)", color: "var(--paper-quiet)",
                 border: "none", cursor: "pointer",
                 boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
               }}

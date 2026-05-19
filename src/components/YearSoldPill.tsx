@@ -39,7 +39,7 @@ export function YearSoldPill({ year }: { year: number | null | undefined }) {
           fontFamily: "var(--mono)",
           letterSpacing: "0.12em",
           opacity: 0.78,
-          fontSize: 10,
+          fontSize: "var(--text-xs)",
           fontWeight: 500,
         }}
       >
@@ -52,7 +52,7 @@ export function YearSoldPill({ year }: { year: number | null | undefined }) {
           fontFamily: "var(--display)",
           fontStyle: "italic",
           fontWeight: 600,
-          fontSize: 16,
+          fontSize: "var(--text-md)",
           lineHeight: 1,
         }}
       >

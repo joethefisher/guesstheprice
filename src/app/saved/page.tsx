@@ -90,7 +90,7 @@ export default function SavedPage() {
         style={{ borderBottom: "1px solid var(--rule)" }}
       >
         <Wordmark size={20} />
-        <button className="btn btn-secondary" style={{ fontSize: 13 }} onClick={() => router.push("/play")}>
+        <button className="btn btn-secondary" style={{ fontSize: "var(--text-sm)" }} onClick={() => router.push("/play")}>
           Play again →
         </button>
       </header>
@@ -124,7 +124,7 @@ export default function SavedPage() {
               style={{
                 padding: "7px 14px",
                 borderRadius: 999,
-                fontSize: 11,
+                fontSize: "var(--text-xs)",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 background: priceFilter === f.key ? "var(--ink)" : "transparent",
@@ -148,7 +148,7 @@ export default function SavedPage() {
               style={{
                 padding: "7px 14px",
                 borderRadius: 999,
-                fontSize: 11,
+                fontSize: "var(--text-xs)",
                 fontWeight: 600,
                 letterSpacing: "0.08em",
                 background: sort === s.key ? "rgba(26,26,26,0.08)" : "transparent",
@@ -235,20 +235,20 @@ export default function SavedPage() {
                 <div style={{ padding: "14px 16px 16px" }}>
                   <div
                     className="display tnum"
-                    style={{ fontSize: 22, color: "var(--ink)", marginBottom: 4 }}
+                    style={{ fontSize: "var(--text-lg)", color: "var(--ink)", marginBottom: 4 }}
                   >
                     {formatPrice(home.actualPrice)}
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 2 }}>
+                  <div style={{ fontWeight: 600, fontSize: "var(--text-sm)", marginBottom: 2 }}>
                     {home.neighborhood ?? home.city}
                   </div>
-                  <div className="tnum" style={{ fontSize: 12, color: "var(--ink-mute)" }}>
+                  <div className="tnum" style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
                     {home.city}, {home.state}
                   </div>
 
                   <hr className="hairline my-3" />
 
-                  <div className="tnum" style={{ fontSize: 12, color: "var(--ink-mute)" }}>
+                  <div className="tnum" style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
                     You guessed{" "}
                     <span style={{ fontWeight: 600, color: "var(--ink)" }}>
                       {formatPrice(home.guess)}
@@ -279,16 +279,16 @@ function EmptyState({ onPlay }: { onPlay: () => void }) {
       <div className="text-center">
         <h2
           className="display m-0 mb-2"
-          style={{ fontSize: 32, color: "var(--ink)" }}
+          style={{ fontSize: "var(--text-2xl)", color: "var(--ink)" }}
         >
           No saved homes yet.
         </h2>
-        <p style={{ color: "var(--ink-mute)", fontSize: 16, margin: 0 }}>
+        <p style={{ color: "var(--ink-mute)", fontSize: "var(--text-md)", margin: 0 }}>
           Save homes during a game with the heart button.
         </p>
       </div>
 
-      <button onClick={onPlay} className="btn btn-primary" style={{ fontSize: 15 }}>
+      <button onClick={onPlay} className="btn btn-primary" style={{ fontSize: "var(--text-base)" }}>
         Start playing →
       </button>
     </div>

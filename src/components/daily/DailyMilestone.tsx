@@ -83,7 +83,7 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
             background: medalBg,
             boxShadow: `inset 0 -6px 14px rgba(0,0,0,0.25), inset 0 4px 8px rgba(255,255,255,0.45), ${medalGlow}`,
             display: "grid", placeItems: "center",
-            fontSize: 44,
+            fontSize: "var(--text-3xl)",
           }}>
             {threshold >= 365 ? "🌟" : threshold >= 100 ? "🏆" : threshold >= 50 ? "🥈" : "🔥"}
           </div>
@@ -107,7 +107,7 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
             padding: "6px 16px", borderRadius: 999, marginBottom: 20,
             background: "rgba(255,214,107,0.15)",
             boxShadow: "inset 0 0 0 1px rgba(255,214,107,0.35)",
-            fontSize: 11, fontWeight: 700, letterSpacing: "0.2em",
+            fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.2em",
             color: "var(--spot)",
           }}
         >
@@ -137,8 +137,8 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.7 }}
           style={{
-            fontSize: 18, lineHeight: 1.55,
-            color: "rgba(247,244,238,0.7)",
+            fontSize: "var(--text-md)", lineHeight: 1.55,
+            color: "var(--paper-default)",
             maxWidth: "42ch", margin: "0 0 36px",
           }}
         >
@@ -164,16 +164,16 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
               padding: "18px 36px", textAlign: "center",
               background: "rgba(15,17,13,0.6)",
             }}>
-              <div className="eyebrow" style={{ color: "rgba(247,244,238,0.45)", marginBottom: 8, fontSize: 9.5 }}>
+              <div className="eyebrow" style={{ color: "var(--paper-quiet)", marginBottom: 8, fontSize: "var(--text-xs)" }}>
                 {m.label}
               </div>
               <div className="display tnum" style={{
-                fontSize: 48, lineHeight: 1, color: m.tone, letterSpacing: "-0.025em",
+                fontSize: "var(--text-3xl)", lineHeight: 1, color: m.tone, letterSpacing: "-0.025em",
               }}>
                 {m.value}
               </div>
               {m.sub && (
-                <div style={{ color: "rgba(247,244,238,0.45)", fontSize: 12, marginTop: 4 }}>
+                <div style={{ color: "var(--paper-quiet)", fontSize: "var(--text-sm)", marginTop: 4 }}>
                   {m.sub}
                 </div>
               )}
@@ -189,7 +189,7 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
           className="btn btn-primary"
           onClick={onContinue}
           style={{
-            padding: "22px 44px", fontSize: 17, borderRadius: 16,
+            padding: "22px 44px", fontSize: "var(--text-md)", borderRadius: 16,
             boxShadow: "0 1px 0 rgba(255,255,255,0.25) inset, 0 20px 50px -10px rgba(255,92,57,0.6)",
           }}
         >
