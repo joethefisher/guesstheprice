@@ -113,7 +113,7 @@ export function MapExpandedModal({
                   marginBottom: 4,
                 }}
               >
-                {revealed ? "Exact location" : "Approximate area"}
+                {revealed ? "Exact location" : "Neighborhood"}
               </div>
               <div
                 style={{

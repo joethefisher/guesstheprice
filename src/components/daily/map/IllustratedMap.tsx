@@ -301,7 +301,7 @@ export function IllustratedMap({
             fill="#4a4540"
             style={{ textTransform: "uppercase" }}
           >
-            {revealed ? "EXACT LOCATION" : "APPROX. AREA"}
+            {revealed ? "EXACT LOCATION" : "NEIGHBORHOOD"}
           </text>
         </g>
       )}

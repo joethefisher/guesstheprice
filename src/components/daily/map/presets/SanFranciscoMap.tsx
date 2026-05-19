@@ -87,7 +87,7 @@ export function SanFranciscoMap({ listingId, revealed, mode }: PresetProps) {
 
       {!isCompact && (
         <text x={centerX} y={centerY + (revealed ? 38 : 150)} textAnchor="middle" fontFamily="var(--mono, monospace)" fontSize={13} fontWeight={600} letterSpacing={1.2} fill="#4a4540" style={{ textTransform: "uppercase" }}>
-          {revealed ? "EXACT LOCATION" : "APPROX. AREA"}
+          {revealed ? "EXACT LOCATION" : "NEIGHBORHOOD"}
         </text>
       )}
     </svg>

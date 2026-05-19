@@ -36,7 +36,7 @@ export function MapPreviewCard({
   // If we have no map data at all, don't render the card.
   if (!map) return null;
 
-  const eyebrow = revealed ? "EXACT LOCATION" : "APPROX. AREA";
+  const eyebrow = revealed ? "EXACT LOCATION" : "NEIGHBORHOOD";
   const headline = neighborhood ?? city;
   const sub = neighborhood ? `${city}, ${state}` : state;
 
