@@ -52,14 +52,14 @@ function SignInForm() {
       className="min-h-screen flex flex-col items-center justify-center"
       style={{ background: "var(--paper)", padding: "24px" }}
     >
-      <div style={{ marginBottom: 40 }}>
+ <div className="mb-10">
         <Wordmark size={22} />
       </div>
 
       <div
         style={{
           width: "100%",
-          maxWidth: 400,
+          maxWidth: "var(--w-narrow)",
           background: "var(--paper)",
           border: "1px solid rgba(26,26,26,0.1)",
           borderRadius: 20,

@@ -85,7 +85,7 @@ export function DailyPlay({
         justifyContent: "space-between", padding: "18px 28px", zIndex: 5,
         borderBottom: "1px solid var(--rule)",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+ <div className="flex items-center gap-3.5">
           <Wordmark size={17} />
           <div style={{ width: 1, height: 18, background: "var(--rule)" }} />
           <DailyBadge dailyNumber={dailyNumber} />
@@ -93,7 +93,7 @@ export function DailyPlay({
             {formatDateLabel(dateET)}
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+ <div className="flex items-center gap-3">
           {currentStreak > 0 && (
             <span style={{
               display: "flex", alignItems: "center", gap: 6,
@@ -189,7 +189,7 @@ export function DailyPlay({
           </div>
 
           {/* Guess display */}
-          <div className="eyebrow" style={{ marginBottom: 6 }}>
+ <div className="eyebrow mb-1.5">
             Your <span style={{ color: "var(--accent)", fontWeight: 700 }}>only</span> guess
           </div>
           <div className="display tnum" style={{
@@ -200,7 +200,7 @@ export function DailyPlay({
           </div>
 
           {/* Slider */}
-          <div style={{ marginTop: 18 }}>
+ <div className="mt-[18px]">
             <PriceSlider value={guess} onChange={handleSlider} />
           </div>
 
@@ -219,7 +219,7 @@ export function DailyPlay({
 
           {/* Neighborhood map preview — sits between warning + CTA per spec */}
           {listing.map && (
-            <div style={{ marginTop: 14 }}>
+ <div className="mt-3.5">
               <MapPreviewCard
                 listingId={listing.id}
                 city={listing.city}
@@ -297,13 +297,13 @@ function ForfeitModal({
           textAlign: "center",
         }}
       >
-        <h2 className="h2" style={{ marginBottom: 12 }}>
+ <h2 className="h2 mb-3">
           Forfeit today's house?
         </h2>
         <p className="body" style={{ color: "var(--ink-mute)", marginBottom: 28 }}>
           Your streak will reset to zero. You won't be able to play today's house again.
         </p>
-        <div style={{ display: "flex", gap: 10 }}>
+ <div className="flex gap-2.5">
           <button
             className="btn btn-secondary"
             onClick={onCancel}

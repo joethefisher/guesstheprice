@@ -65,7 +65,7 @@ export function DailyIntro({
         <div style={{ filter: "invert(1) hue-rotate(180deg)" }}>
           <Wordmark size={18} />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
+ <div className="flex items-center gap-[18px]">
           <span style={{
             display: "flex", alignItems: "center", gap: 8,
             fontSize: "var(--text-sm)", color: "var(--paper-default)",
@@ -186,7 +186,7 @@ export function DailyIntro({
         >
           {currentStreak > 0 && (
             <>
-              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+ <span className="flex items-center gap-2">
                 <Icon.Flame size={14} />
                 <span style={{ color: "var(--paper)", fontWeight: 700 }} className="tnum">
                   {currentStreak}

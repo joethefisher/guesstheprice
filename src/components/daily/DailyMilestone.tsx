@@ -72,11 +72,11 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
         textAlign: "center",
       }}>
         {/* Medal */}
-        <motion.div
+        <motion.div className="mb-8"
           initial={{ scale: 0, rotate: -20, opacity: 0 }}
           animate={{ scale: 1, rotate: 0, opacity: 1 }}
           transition={{ type: "spring", stiffness: 350, damping: 14, delay: 0.1 }}
-          style={{ marginBottom: 32 }}
+ 
         >
           <div style={{
             width: 100, height: 100, borderRadius: "50%",

@@ -56,7 +56,7 @@ export default function LeaderboardPage() {
         </button>
       </header>
 
-      <div style={{ maxWidth: 760, margin: "0 auto", padding: "48px 32px" }}>
+      <div style={{ maxWidth: "var(--w-default)", margin: "0 auto", padding: "48px 32px" }}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}

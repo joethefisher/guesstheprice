@@ -94,7 +94,7 @@ export default async function ProfilePage() {
         </Link>
       </header>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "48px 32px" }}>
+      <div style={{ maxWidth: "var(--w-default)", margin: "0 auto", padding: "48px 32px" }}>
         {/* Hero: username + member since */}
         <div className="mb-12">
           <div className="eyebrow mb-3" style={{ color: "var(--ink-mute)" }}>Member since {memberSince}</div>
@@ -230,7 +230,7 @@ export default async function ProfilePage() {
 
         {/* Recent freeplay games */}
         {recentGames.length > 0 && (
-          <div style={{ marginTop: 32 }}>
+ <div className="mt-8">
             <div className="eyebrow mb-4" style={{ color: "var(--ink-mute)" }}>Recent freeplay games</div>
             <div className="flex flex-col gap-2">
               {recentGames.map((g, i) => (

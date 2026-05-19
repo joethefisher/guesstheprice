@@ -154,7 +154,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
 
         <div style={{ padding: "20px 24px 24px" }}>
           {/* Address */}
-          <div style={{ marginBottom: 16 }}>
+ <div className="mb-4">
             <div className="display" style={{ fontSize: "var(--text-md)", fontStyle: "italic", color: "var(--paper)" }}>
               {result.streetAddress}
             </div>
@@ -198,7 +198,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
             <div className="eyebrow" style={{ fontSize: "var(--text-xs)", color: "var(--paper-quiet)", marginBottom: 10 }}>
               LAST 7 DAYS
             </div>
-            <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+ <div className="flex gap-1 items-center">
               {recent.map((v, i) => {
                 const isToday = i === recent.length - 1;
                 const bg = v == null ? "rgba(247,244,238,0.08)" : accuracyColor(v);
@@ -239,7 +239,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
           </div>
 
           {/* CTAs */}
-          <div style={{ display: "flex", gap: 8 }}>
+ <div className="flex gap-2">
             <button
               className="btn btn-primary"
               onClick={handleCopy}

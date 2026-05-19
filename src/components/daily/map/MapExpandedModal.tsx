@@ -84,7 +84,7 @@ export function MapExpandedModal({
           className="map-modal-card"
           style={{
             width: "100%",
-            maxWidth: 980,
+            maxWidth: "var(--w-wide)",
             maxHeight: 660,
             background: "var(--paper)",
             borderRadius: 22,
@@ -308,7 +308,7 @@ export function MapExpandedModal({
 
 function LegendSwatch({ color, label }: { color: string; label: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+ <div className="flex items-center gap-2">
       <span
         aria-hidden
         style={{

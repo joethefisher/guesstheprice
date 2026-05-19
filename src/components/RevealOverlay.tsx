@@ -62,7 +62,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
           background: "var(--paper)",
           borderRadius: 24,
           width: "100%",
-          maxWidth: 760,
+          maxWidth: "var(--w-default)",
           margin: "0 24px",
           padding: "36px 40px 40px",
           boxShadow: "0 30px 80px -20px rgba(0,0,0,0.5)",

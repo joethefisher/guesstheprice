@@ -110,7 +110,7 @@ function SummaryContent() {
         </div>
       </header>
 
-      <div style={{ maxWidth: 1080, margin: "0 auto", padding: "48px 40px 0" }}>
+      <div style={{ maxWidth: "var(--w-wide)", margin: "0 auto", padding: "48px 40px 0" }}>
         {/* Hero stat row */}
         <div
           className="grid gap-8 mb-12 items-start"

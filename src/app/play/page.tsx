@@ -344,10 +344,7 @@ export default function PlayPage() {
             borderLeft: "1px solid var(--rule)",
           }}
         >
-          <div
-            className="flex-1 overflow-y-auto"
-            style={{ paddingLeft: 28 }}
-          >
+          <div className="flex-1 overflow-y-auto pl-7">
             <div
               className="mb-2"
               style={{
@@ -473,7 +470,7 @@ export default function PlayPage() {
 
             {/* Neighborhood map preview */}
             {listing.map && (
-              <div style={{ marginTop: 18 }}>
+ <div className="mt-[18px]">
                 <MapPreviewCard
                   listingId={listing.id}
                   city={listing.city}
@@ -487,10 +484,7 @@ export default function PlayPage() {
           </div>
 
           {/* CTA row */}
-          <div
-            className="flex flex-col gap-3 mt-6"
-            style={{ paddingLeft: 28 }}
-          >
+          <div className="flex flex-col gap-3 mt-6 pl-7">
             {scoreError && (
               <div style={{ fontSize: "var(--text-sm)", color: "var(--flag)", fontWeight: 500 }}>
                 {scoreError}

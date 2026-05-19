@@ -242,7 +242,7 @@ export function DailyReveal({
           style={{
             display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 1,
             background: "rgba(247,244,238,0.1)", borderRadius: 14,
-            overflow: "hidden", maxWidth: 980, margin: "0 auto", width: "100%",
+            overflow: "hidden", maxWidth: "var(--w-wide)", margin: "0 auto", width: "100%",
           }}
         >
           {[
@@ -281,11 +281,11 @@ export function DailyReveal({
         </motion.div>
 
         {/* CTAs */}
-        <motion.div
+        <motion.div className="flex justify-center gap-3 mt-7"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 2.0 }}
-          style={{ display: "flex", justifyContent: "center", gap: 12, marginTop: 28 }}
+ 
         >
           <button
             className="btn btn-primary"

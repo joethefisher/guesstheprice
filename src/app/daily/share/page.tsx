@@ -73,7 +73,7 @@ export default function DailySharePage({ searchParams }: Props) {
       <div
         style={{
           width: "100%",
-          maxWidth: 440,
+          maxWidth: "var(--w-narrow)",
           borderRadius: 28,
           background: "rgba(247,244,238,0.04)",
           boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1), 0 40px 80px -20px rgba(0,0,0,0.6)",

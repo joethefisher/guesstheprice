@@ -21,12 +21,12 @@ export default function OgImage() {
         }}
       >
         {/* Diamond logo mark — matches Wordmark.tsx viewBox 0 0 28 28 */}
-        <svg
+        <svg className="mb-6"
           width="52"
           height="52"
           viewBox="0 0 28 28"
           fill="none"
-          style={{ marginBottom: 24 }}
+ 
         >
           <path d="M3 6 L17 4 L25 14 L11 24 Z" fill="#F7F4EE" />
           <circle cx="13" cy="9" r="1.6" fill="#1A1A1A" />

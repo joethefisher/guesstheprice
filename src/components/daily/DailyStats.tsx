@@ -72,7 +72,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
         display: "flex", justifyContent: "space-between", alignItems: "center",
         padding: "26px 36px",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+ <div className="flex items-center gap-3.5">
           <div style={{ filter: "invert(1) hue-rotate(180deg)" }}>
             <Wordmark size={18} />
           </div>
@@ -92,7 +92,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
         overflowY: "auto",
       }}>
         {/* LEFT — stats hero */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
+ <div className="flex flex-col">
           <motion.div {...fadeUp(0)}>
             <div className="eyebrow" style={{ marginBottom: 16, color: "var(--paper-mute)" }}>
               Your daily statistics
@@ -146,7 +146,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
             <div className="eyebrow" style={{ marginBottom: 12, color: "var(--paper-mute)" }}>
               Accuracy distribution · last {storage.played}
             </div>
-            <div style={{ display: "grid", gap: 4 }}>
+ <div className="grid gap-1">
               {DISTRIBUTION_BUCKETS.map((bucket) => {
                 const count = dist[bucket] ?? 0;
                 const w = `${Math.max(8, (count / maxDist) * 100)}%`;
@@ -201,9 +201,9 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
         </div>
 
         {/* RIGHT — calendar */}
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <motion.div {...fadeUp(1)} style={{ marginBottom: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+ <div className="flex flex-col">
+ <motion.div className="mb-4" {...fadeUp(1)}>
+ <div className="flex justify-between items-baseline">
               <div>
                 <div className="eyebrow" style={{ marginBottom: 4, color: "var(--paper-mute)" }}>
                   Five-week heatmap
@@ -287,13 +287,13 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
           </motion.div>
 
           {/* Accuracy trend chart */}
-          <motion.div {...fadeUp(3)} style={{ marginBottom: 14 }}>
+ <motion.div className="mb-3.5" {...fadeUp(3)}>
             <div style={{
               padding: 18, borderRadius: 14,
               background: "rgba(247,244,238,0.06)",
               boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+ <div className="flex justify-between mb-2.5">
                 <div className="eyebrow" style={{ color: "var(--paper-mute)" }}>Accuracy trend</div>
               </div>
               <svg viewBox="0 0 400 80" width="100%" height="60">
