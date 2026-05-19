@@ -1,0 +1,50 @@
+/* Daily map feature — responsive overrides + touch handling. */
+
+/* Preview card: tighter grid on narrow viewports */
+@media (max-width: 480px) {
+  .map-preview-card {
+    grid-template-columns: 88px 1fr 32px !important;
+    gap: 12px !important;
+  }
+  .map-preview-card > div:first-child {
+    width: 88px !important;
+    height: 64px !important;
+  }
+  .map-preview-chip {
+    padding: 8px !important;
+    margin-right: 8px !important;
+  }
+  .map-preview-chip-label {
+    display: none;
+  }
+}
+
+/* Modal: full-bleed on mobile */
+@media (max-width: 600px) {
+  .map-modal-backdrop {
+    padding: 0 !important;
+  }
+  .map-modal-card {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Prevent the body from scrolling when the user pinches the map */
+.map-modal-body {
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
+/* Focus rings */
+.map-preview-card:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.map-modal-close:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}

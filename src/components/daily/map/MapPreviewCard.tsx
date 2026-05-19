@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MapExpandedModal } from "./MapExpandedModal";
 import { MapRenderer } from "./MapRenderer";
+import "./map.css";
 import type { MapBlock, LatLng } from "@/lib/map";
 
 interface Props {

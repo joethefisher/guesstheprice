@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapRenderer } from "./MapRenderer";
+import "./map.css";
 import type { MapBlock, LatLng } from "@/lib/map";
 
 interface Props {
