@@ -17,12 +17,10 @@ interface TopScorer {
 }
 
 export function LandingClient({
-  listingCount,
   heroPhotoUrl,
   heroLocation,
   topScorer,
 }: {
-  listingCount: number;
   heroPhotoUrl: string | null;
   heroLocation: HeroLocation | null;
   topScorer: TopScorer | null;
@@ -31,7 +29,6 @@ export function LandingClient({
   useEffect(() => { prefetchBatch(5); }, []);
   return (
     <LandingScreen
-      listingCount={listingCount}
       heroPhotoUrl={heroPhotoUrl}
       heroLocation={heroLocation}
       topScorer={topScorer}

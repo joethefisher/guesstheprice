@@ -10,7 +10,6 @@ interface TopScorer {
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  let listingCount = 0;
   let heroPhotoUrl: string | null = null;
   let heroLocation: { neighborhood: string | null; city: string; state: string } | null = null;
   let topScorer: TopScorer | null = null;
@@ -18,10 +17,6 @@ export default async function HomePage() {
   const cutoff = recencyCutoffDate();
 
   try {
-    listingCount = await prisma.listing.count({
-      where: { isActive: true, qualityScore: { gte: 50 }, soldDate: { gte: cutoff } },
-    });
-
     const heroRows = await prisma.$queryRaw<Array<{ id: string }>>`
       SELECT id FROM "Listing"
       WHERE "isActive" = true
@@ -71,5 +66,5 @@ export default async function HomePage() {
     // DB unavailable — landing still renders with fallback photo
   }
 
-  return <LandingClient listingCount={listingCount} heroPhotoUrl={heroPhotoUrl} heroLocation={heroLocation} topScorer={topScorer} />;
+  return <LandingClient heroPhotoUrl={heroPhotoUrl} heroLocation={heroLocation} topScorer={topScorer} />;
 }
