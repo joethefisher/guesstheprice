@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Wordmark } from "@/components/Wordmark";
 import {
@@ -9,6 +10,7 @@ import {
   NextDailyCountdown,
   DarkIconButton,
 } from "./DailyShared";
+import { MapExpandedModal } from "./map/MapExpandedModal";
 import type { DailyResult, DailyStorage } from "@/lib/daily/service";
 import type { ListingPublic } from "@/lib/game";
 
@@ -47,6 +49,8 @@ export function DailyLocked({
 }: Props) {
   // Prefer the live listing's R2-mirrored URL; fall back to stored source URL
   const photoUrl = listing?.photos?.[0]?.url || result?.photoUrl || null;
+  const [mapOpen, setMapOpen] = useState(false);
+  const canShowMap = !!(listing?.map && result);
 
   return (
     <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", color: "var(--paper)" }}>
@@ -281,8 +285,55 @@ export function DailyLocked({
               )}
             </div>
           )}
+
+          {/* View map link — opens the revealed-mode modal */}
+          {canShowMap && (
+            <button
+              onClick={() => setMapOpen(true)}
+              className="btn"
+              style={{
+                marginTop: 14,
+                width: "100%",
+                padding: "12px 14px",
+                fontSize: 13,
+                borderRadius: 10,
+                background: "rgba(247,244,238,0.06)",
+                color: "var(--paper)",
+                boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.18)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 8,
+                cursor: "pointer",
+              }}
+            >
+              <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                View map of today's house
+              </span>
+              <span style={{ opacity: 0.55, fontSize: 13 }}>↗</span>
+            </button>
+          )}
         </motion.div>
       </div>
+
+      {/* Map modal — revealed mode */}
+      {mapOpen && canShowMap && listing && result && listing.map && (
+        <MapExpandedModal
+          listingId={listing.id}
+          city={listing.city}
+          state={listing.state}
+          neighborhood={listing.neighborhood}
+          map={listing.map}
+          revealed
+          exact={result.exact ?? null}
+          streetAddress={result.streetAddress}
+          onClose={() => setMapOpen(false)}
+        />
+      )}
     </div>
   );
 }
