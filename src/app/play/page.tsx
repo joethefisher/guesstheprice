@@ -10,6 +10,8 @@ import { RevealOverlay } from "@/components/RevealOverlay";
 import { Wordmark } from "@/components/Wordmark";
 import { RoundPill, StreakFlame, ComboFlame, Stat } from "@/components/GameChips";
 import { Icon } from "@/components/Icons";
+import { MapPreviewCard } from "@/components/daily/map/MapPreviewCard";
+import { DailyMapsProvider } from "@/components/daily/map/DailyMapsProvider";
 import {
   formatPrice,
   comboMultiplier,
@@ -233,7 +235,7 @@ export default function PlayPage() {
     ? savedHomes.some((s) => s.listingId === listing.id)
     : false;
 
-  if (loading) return <PlaySkeleton />;
+  if (loading) return <DailyMapsProvider><PlaySkeleton /></DailyMapsProvider>;
   if (listingError) {
     return (
       <div
@@ -267,6 +269,7 @@ export default function PlayPage() {
   if (!listing) return null;
 
   return (
+    <DailyMapsProvider>
     <div
       className="min-h-screen flex flex-col"
       style={{ background: "var(--paper)" }}
@@ -458,6 +461,20 @@ export default function PlayPage() {
                 }}
               />
             )}
+
+            {/* Neighborhood map preview */}
+            {listing.map && (
+              <div style={{ marginTop: 18 }}>
+                <MapPreviewCard
+                  listingId={listing.id}
+                  city={listing.city}
+                  state={listing.state}
+                  neighborhood={listing.neighborhood}
+                  map={listing.map}
+                  revealed={false}
+                />
+              </div>
+            )}
           </div>
 
           {/* CTA row */}
@@ -506,6 +523,7 @@ export default function PlayPage() {
         )}
       </AnimatePresence>
     </div>
+    </DailyMapsProvider>
   );
 }
 
