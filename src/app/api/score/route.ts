@@ -67,6 +67,10 @@ export async function POST(req: NextRequest) {
     errorDollars: result.errorDollars,
     actualPrice: listing.soldPrice,
     streetAddress: listing.streetAddress,
+    // Exact coords are only revealed here, post-submit — never in the pre-guess payload.
+    exact: listing.latitude != null && listing.longitude != null
+      ? { lat: listing.latitude, lng: listing.longitude }
+      : null,
     reaction,
     subReaction
   });

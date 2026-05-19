@@ -28,6 +28,8 @@ export interface DailyResult {
   city: string;
   state: string;
   photoUrl: string;
+  /** Exact lat/lng, only set after the guess was submitted. */
+  exact?: { lat: number; lng: number } | null;
 }
 
 export interface DailyStorage {

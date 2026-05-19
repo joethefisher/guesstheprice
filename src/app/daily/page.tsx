@@ -160,6 +160,7 @@ export default function DailyPage() {
       score: number;
       errorPct: number;
       streetAddress: string;
+      exact?: { lat: number; lng: number } | null;
     }) => {
       if (!dailyData || !storage) return;
 
@@ -179,6 +180,7 @@ export default function DailyPage() {
         city: dailyData.listing.city,
         state: dailyData.listing.state,
         photoUrl: dailyData.listing.photos[0]?.url ?? "",
+        exact: scoreResponse.exact ?? null,
       };
 
       const oldStreak = storage.currentStreak;

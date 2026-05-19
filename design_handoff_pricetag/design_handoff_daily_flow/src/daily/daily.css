@@ -1,0 +1,168 @@
+/* Daily-specific styles ─────────────────────────── */
+
+:root {
+  --gold: #C8A348;
+  --emerald: #2E6F4A;
+  --velvet: #8B2A2A;
+  --spot: #FFD66B;
+}
+
+/* Marquee bulb-light row used on game-show intro */
+.bulbs {
+  display: flex; gap: 14px; align-items: center;
+}
+.bulbs span {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--spot);
+  box-shadow: 0 0 12px rgba(255,214,107,0.85), 0 0 28px rgba(255,214,107,0.45);
+  animation: bulbFlash 1.4s ease-in-out infinite;
+}
+.bulbs span:nth-child(2n) { animation-delay: 0.2s; }
+.bulbs span:nth-child(3n) { animation-delay: 0.45s; }
+.bulbs span:nth-child(5n) { animation-delay: 0.7s; }
+@keyframes bulbFlash {
+  0%, 100% { opacity: 0.55; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* The "stage" backdrop on intro / milestone */
+.stage-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255,214,107,0.18) 0%, rgba(255,214,107,0) 42%),
+    radial-gradient(circle at 30% 80%, rgba(255,92,57,0.14) 0%, rgba(255,92,57,0) 55%),
+    radial-gradient(circle at 80% 60%, rgba(255,214,107,0.10) 0%, rgba(255,214,107,0) 50%),
+    linear-gradient(180deg, #15110d 0%, #1a1a1a 100%);
+}
+
+/* Spotlight cones — kept, this is the keeper element */
+.spotlight {
+  position: absolute; left: 50%; top: 0;
+  width: 900px; height: 700px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,214,107,0.32) 0%, rgba(255,214,107,0) 55%);
+  pointer-events: none;
+}
+.spotlight-l, .spotlight-r {
+  position: absolute; top: 0; width: 520px; height: 600px;
+  pointer-events: none; mix-blend-mode: screen; opacity: 0.7;
+}
+.spotlight-l {
+  left: 18%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,214,107,0.22) 0%, rgba(255,214,107,0) 60%);
+  transform: translateX(-50%) rotate(-10deg);
+  transform-origin: top center;
+  animation: spotSway 6s ease-in-out infinite alternate;
+}
+.spotlight-r {
+  right: 18%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,92,57,0.18) 0%, rgba(255,92,57,0) 60%);
+  transform: translateX(50%) rotate(10deg);
+  transform-origin: top center;
+  animation: spotSway 6s ease-in-out infinite alternate-reverse;
+}
+@keyframes spotSway {
+  0% { transform: translateX(-50%) rotate(-12deg); }
+  100% { transform: translateX(-50%) rotate(-4deg); }
+}
+
+/* Streak heatmap (Wordle-style stats) */
+.heatcell {
+  width: 100%; aspect-ratio: 1/1; border-radius: 4px;
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 9px; font-weight: 700;
+  color: rgba(26,26,26,0.65);
+}
+
+/* Big tick-tock for countdown */
+.countdown {
+  display: inline-flex; align-items: baseline; gap: 6px;
+  font-family: var(--mono); font-weight: 700; font-variant-numeric: tabular-nums;
+}
+
+/* Distribution bar */
+.dist-row {
+  display: grid; grid-template-columns: 28px 1fr 36px;
+  gap: 10px; align-items: center; height: 22px;
+  font-family: var(--mono); font-size: 11px; font-weight: 700;
+}
+.dist-bar {
+  height: 100%; border-radius: 3px;
+  display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 8px; color: var(--paper); font-weight: 700;
+  font-family: var(--mono); font-size: 10px;
+}
+
+/* Pulsing dot for "live now" */
+.pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 0 0 rgba(255,92,57,0.6);
+  animation: pulseDot 1.8s ease-out infinite;
+}
+@keyframes pulseDot {
+  0% { box-shadow: 0 0 0 0 rgba(255,92,57,0.7); }
+  70% { box-shadow: 0 0 0 12px rgba(255,92,57,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,92,57,0); }
+}
+
+/* Marquee bulbs for milestone */
+.medal-shine {
+  background:
+    radial-gradient(circle at 30% 30%, #FFE89A 0%, #C8A348 35%, #8C7022 80%);
+  box-shadow:
+    inset 0 -6px 14px rgba(0,0,0,0.25),
+    inset 0 4px 8px rgba(255,255,255,0.45),
+    0 12px 30px -8px rgba(200,163,72,0.6);
+}
+
+/* Lighter stage variant — same lighting feel, different room */
+.stage-bg-soft {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,214,107,0.14) 0%, rgba(255,214,107,0) 40%),
+    radial-gradient(circle at 18% 90%, rgba(255,92,57,0.10) 0%, rgba(255,92,57,0) 50%),
+    radial-gradient(circle at 84% 70%, rgba(168,197,218,0.08) 0%, rgba(168,197,218,0) 50%),
+    linear-gradient(180deg, #1f1d1a 0%, #161412 100%);
+}
+.stage-bg-deep {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,214,107,0.20) 0%, rgba(255,214,107,0) 45%),
+    radial-gradient(circle at 50% 100%, rgba(200,71,45,0.16) 0%, rgba(200,71,45,0) 60%),
+    linear-gradient(180deg, #0d0b09 0%, #15110d 100%);
+} — slanted rubber stamp for the reveal */
+.sold-stamp {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 10px 22px;
+  border: 4px double currentColor;
+  font-family: var(--display); font-style: italic; font-weight: 700;
+  letter-spacing: 0.04em;
+  transform: rotate(-8deg);
+  color: var(--accent);
+  opacity: 0.92;
+  text-transform: uppercase;
+  position: relative;
+}
+.sold-stamp::after {
+  content: ""; position: absolute; inset: -3px;
+  background-image:
+    radial-gradient(circle at 12% 30%, rgba(0,0,0,0.2) 0, transparent 1px),
+    radial-gradient(circle at 78% 70%, rgba(0,0,0,0.2) 0, transparent 1px),
+    radial-gradient(circle at 42% 80%, rgba(0,0,0,0.2) 0, transparent 1px);
+  pointer-events: none; opacity: 0.4;
+}
+
+/* Open-house style plaque */
+.plaque {
+  background: linear-gradient(180deg, #2a2a28 0%, #1c1c1a 100%);
+  color: var(--spot);
+  padding: 10px 18px;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 4px rgba(0,0,0,0.4), 0 6px 18px rgba(0,0,0,0.4);
+  font-family: var(--display); font-style: italic;
+  display: inline-flex; align-items: center; gap: 10px;
+}
+.plaque::before, .plaque::after {
+  content: ""; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--spot); opacity: 0.6;
+}

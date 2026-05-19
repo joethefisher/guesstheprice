@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { recencyCutoffDate } from "@/lib/recency";
+import { buildMapBlock } from "@/lib/map";
 
 export const dynamic = "force-dynamic";
 
@@ -83,5 +84,6 @@ export async function GET(req: NextRequest) {
       url: toHttps(p.url),
       caption: p.caption,
     })),
+    map: buildMapBlock(listing.latitude, listing.longitude),
   });
 }

@@ -22,6 +22,7 @@ interface Props {
       score: number;
       errorPct: number;
       streetAddress: string;
+      exact?: { lat: number; lng: number } | null;
     }
   ) => void;
   onExit: () => void;

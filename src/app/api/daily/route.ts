@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashDateString, getDailyNumber } from "@/lib/daily/service";
 import { recencyCutoffDate } from "@/lib/recency";
+import { buildMapBlock } from "@/lib/map";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,8 @@ export async function GET() {
         thumbnailUrl: p.thumbnailUrl ? toHttps(p.thumbnailUrl) : null,
         caption: p.caption,
       })),
+      // Obfuscated centroid only — exact coords are returned by /api/score after submit.
+      map: buildMapBlock(listing.latitude, listing.longitude),
     },
   });
 }

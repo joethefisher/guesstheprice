@@ -1,3 +1,5 @@
+import type { MapBlock, LatLng } from "@/lib/map";
+
 export type AccuracyTier = "expert" | "nailed" | "solid" | "ballpark" | "off" | "yikes";
 
 export interface ListingPublic {
@@ -12,6 +14,8 @@ export interface ListingPublic {
   yearBuilt: number | null;
   homeType: string | null;
   photos: { url: string; caption?: string | null; thumbnailUrl?: string | null }[];
+  /** Obfuscated centroid for pre-submit map preview. Null if listing has no coords. */
+  map?: MapBlock | null;
 }
 
 export interface ScoreResponse {
@@ -21,6 +25,8 @@ export interface ScoreResponse {
   errorDollars: number;
   actualPrice: number;
   streetAddress: string;
+  /** Exact coords — only returned after a guess is locked in. */
+  exact?: LatLng | null;
   reaction: string;
   subReaction: string;
 }

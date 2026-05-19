@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { recencyCutoffDate } from "@/lib/recency";
+import { buildMapBlock } from "@/lib/map";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,8 @@ export async function GET(req: NextRequest) {
       lotSqft: true,
       yearBuilt: true,
       homeType: true,
+      latitude: true,
+      longitude: true,
       photos: {
         select: { url: true, thumbnailUrl: true, caption: true },
         orderBy: { ordering: "asc" },
@@ -57,9 +60,13 @@ export async function GET(req: NextRequest) {
   });
 
   return NextResponse.json({
-    listings: listings.map((l) => ({
-      ...l,
-      photos: l.photos.map((p) => ({ ...p, url: toHttps(p.url) })),
-    })),
+    listings: listings.map((l) => {
+      const { latitude, longitude, ...rest } = l;
+      return {
+        ...rest,
+        photos: l.photos.map((p) => ({ ...p, url: toHttps(p.url) })),
+        map: buildMapBlock(latitude, longitude),
+      };
+    }),
   });
 }
