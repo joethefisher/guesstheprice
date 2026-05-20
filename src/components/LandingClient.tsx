@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LandingScreen } from "./LandingScreen";
-import { prefetchBatch } from "@/lib/prefetch";
+import { prefetchBatch, prefetchDaily } from "@/lib/prefetch";
 import type { RecentStats } from "@/app/page";
 
 interface HeroLocation {
@@ -29,7 +29,12 @@ export function LandingClient({
   recentStats: RecentStats;
 }) {
   const router = useRouter();
-  useEffect(() => { prefetchBatch(5); }, []);
+  useEffect(() => {
+    // Warm sessionStorage so /play and /daily render their first listing
+    // without waiting on a network round-trip.
+    prefetchBatch(5);
+    prefetchDaily();
+  }, []);
   return (
     <LandingScreen
       heroPhotoUrl={heroPhotoUrl}

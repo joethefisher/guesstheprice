@@ -17,6 +17,7 @@ import {
   type DailyResult,
 } from "@/lib/daily/service";
 import type { ListingPublic } from "@/lib/game";
+import { readDailyCache } from "@/lib/prefetch";
 
 import { DailyIntro } from "@/components/daily/DailyIntro";
 import { DailyPlay } from "@/components/daily/DailyPlay";
@@ -74,14 +75,20 @@ export default function DailyPage() {
   useEffect(() => {
     const stored = loadStorage();
 
-    // Fetch today's listing regardless of state (needed for reveal/locked card)
-    fetch("/api/daily")
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.listing) setDailyData(data as DailyListing);
-        else setFetchError(true);
-      })
-      .catch(() => setFetchError(true));
+    // Try the prefetched daily payload first — landing warms this on visit, so
+    // most users arrive at /daily with it already in sessionStorage.
+    const cached = readDailyCache<DailyListing>();
+    if (cached?.listing) {
+      setDailyData(cached);
+    } else {
+      fetch("/api/daily")
+        .then((r) => r.json())
+        .then((data) => {
+          if (data.listing) setDailyData(data as DailyListing);
+          else setFetchError(true);
+        })
+        .catch(() => setFetchError(true));
+    }
 
     // If session is still loading, defer route decision to the session effect
     if (sessionStatus === "loading") {

@@ -75,8 +75,11 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
           alt=""
           fill
           priority
-          unoptimized
+          // Lets Vercel's image CDN resize the source (R2 or Unsplash) and serve
+          // a per-device-width WebP from the edge — typically 60-80% smaller than
+          // the raw source and cached after the first request.
           sizes="100vw"
+          quality={80}
           style={{
             objectFit: "cover",
             objectPosition: "center",
