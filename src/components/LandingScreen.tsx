@@ -4,11 +4,34 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Wordmark } from "./Wordmark";
 import { UserMenu } from "./UserMenu";
+import type { RecentStats } from "@/app/page";
 
 const FALLBACK_HERO_URL =
   "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=2400&q=85";
 
-const SPARKLINE_POINTS = "0,24 12,18 24,20 36,10 48,14 60,6 72,12 84,4 96,8 108,2 120,8";
+const SPARK_W = 120;
+const SPARK_H = 28;
+
+/**
+ * Project an array of 7 daily accuracies (0..1, null for empty days) to an
+ * SVG polyline points string spanning a 120×28 viewBox. Empty days hold the
+ * previous point's value so the line doesn't dive to zero on a quiet day.
+ */
+function buildSparkline(series: RecentStats["last7Days"]): { line: string; tail: string } | null {
+  const valid = series.some((d) => d.accuracy != null);
+  if (!valid) return null;
+  let last = 0.5; // sensible default until we see real data
+  const xs = series.map((_, i) => (i / (series.length - 1)) * SPARK_W);
+  const ys = series.map((d) => {
+    if (d.accuracy != null) last = d.accuracy;
+    // Higher accuracy = closer to top (lower y). Map [0,1] → [SPARK_H, 0].
+    return SPARK_H - last * SPARK_H;
+  });
+  const line = xs.map((x, i) => `${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
+  // Last two segments get the accent stroke — same visual rhythm as the prior static spark.
+  const tail = xs.slice(-3).map((x, i) => `${x.toFixed(1)},${ys[ys.length - 3 + i].toFixed(1)}`).join(" ");
+  return { line, tail };
+}
 
 interface HeroLocation {
   neighborhood: string | null;
@@ -25,17 +48,23 @@ interface Props {
   heroPhotoUrl: string | null;
   heroLocation: HeroLocation | null;
   topScorer: TopScorer | null;
+  recentStats: RecentStats;
   onPlay: () => void;
   onDaily: () => void;
   onLeaderboard: () => void;
   onSaved: () => void;
 }
 
-export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, onDaily, onLeaderboard, onSaved }: Props) {
+export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentStats, onPlay, onDaily, onLeaderboard, onSaved }: Props) {
   const photoUrl = heroPhotoUrl ?? FALLBACK_HERO_URL;
   const locationLabel = heroLocation
     ? [heroLocation.neighborhood, heroLocation.city, heroLocation.state].filter(Boolean).join(", ")
     : "Carbon Beach · Malibu, CA";
+
+  const accuracyPct = recentStats.recentAccuracy != null
+    ? Math.round(recentStats.recentAccuracy * 100)
+    : null;
+  const spark = buildSparkline(recentStats.last7Days);
 
   return (
     <div className="relative w-full h-screen overflow-hidden" style={{ background: "var(--paper)" }}>
@@ -171,29 +200,45 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, onPlay, o
           gap: 0,
         }}
       >
-        {/* Today stat */}
+        {/* Last 24h average accuracy across all players */}
         <div className="flex flex-col gap-1">
           <div className="eyebrow" style={{ color: "var(--paper-quiet)" }}>
-            Today, around the world
+            Last 24 hours, around the world
           </div>
           <div className="flex items-center gap-3">
-            <span className="tnum font-semibold" style={{ color: "var(--paper-strong)", fontSize: "var(--text-xl)" }}>73%</span>
-            <svg width={120} height={28} viewBox="0 0 120 28" fill="none">
-              <polyline
-                points={SPARKLINE_POINTS}
-                stroke="var(--paper-quiet)"
-                strokeWidth="1.5"
-                fill="none"
-                strokeLinejoin="round"
-              />
-              <polyline
-                points={SPARKLINE_POINTS.split(" ").slice(-4).join(" ")}
-                stroke="var(--accent)"
-                strokeWidth="2"
-                fill="none"
-                strokeLinejoin="round"
-              />
-            </svg>
+            {accuracyPct != null ? (
+              <span className="tnum font-semibold" style={{ color: "var(--paper-strong)", fontSize: "var(--text-xl)" }}>
+                {accuracyPct}%
+              </span>
+            ) : (
+              <span className="tnum font-semibold" style={{ color: "var(--paper-mute)", fontSize: "var(--text-xl)" }}>
+                —
+              </span>
+            )}
+            {spark ? (
+              <svg width={SPARK_W} height={SPARK_H} viewBox={`0 0 ${SPARK_W} ${SPARK_H}`} fill="none">
+                <polyline
+                  points={spark.line}
+                  stroke="var(--paper-quiet)"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+                <polyline
+                  points={spark.tail}
+                  stroke="var(--accent)"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              </svg>
+            ) : (
+              <span style={{ color: "var(--paper-mute)", fontSize: "var(--text-sm)", fontStyle: "italic" }}>
+                {recentStats.recentCount === 0 ? "Be the first today" : `${recentStats.recentCount} ${recentStats.recentCount === 1 ? "guess" : "guesses"}`}
+              </span>
+            )}
           </div>
         </div>
 
