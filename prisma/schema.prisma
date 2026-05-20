@@ -101,10 +101,15 @@ model Round {
   roundNumber Int
   guess       Int?
   score       Int?
+  // 0..1 accuracy snapshot, clamped from 1 - |guess - soldPrice| / soldPrice.
+  // Materialised at score time so aggregates don't have to recompute and join.
+  accuracy    Float?
   guessedAt   DateTime?
 
   @@unique([gameId, roundNumber])
   @@index([gameId, roundNumber])
+  // Covering index for the landing "last 24h" aggregate.
+  @@index([guessedAt])
 }
 
 model User {

@@ -45,6 +45,13 @@ export async function POST(req: NextRequest) {
   const reaction = getReaction(result.tier, listingId);
   const subReaction = getSubReaction(result.tier);
 
+  // Materialised 0..1 accuracy stored on the Round so aggregates don't have
+  // to recompute + join Listing on every read. Clamped so wild guesses can't
+  // make AVG() go negative.
+  const accuracy = listing.soldPrice > 0
+    ? Math.max(0, 1 - Math.abs(guess - listing.soldPrice) / listing.soldPrice)
+    : 0;
+
   // Persist round for any active game — anonymous or signed-in.
   // Anonymous rounds power the landing "around the world" aggregate; signed-in
   // rounds additionally feed the leaderboard. Authorization: if the game has
@@ -61,8 +68,8 @@ export async function POST(req: NextRequest) {
       if (authorized) {
         await prisma.round.upsert({
           where: { gameId_roundNumber: { gameId, roundNumber } },
-          create: { gameId, listingId, roundNumber, guess, score: result.score, guessedAt: new Date() },
-          update: { guess, score: result.score, guessedAt: new Date() },
+          create: { gameId, listingId, roundNumber, guess, score: result.score, accuracy, guessedAt: new Date() },
+          update: { guess, score: result.score, accuracy, guessedAt: new Date() },
         });
       }
     }
