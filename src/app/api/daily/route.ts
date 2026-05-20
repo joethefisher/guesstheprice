@@ -53,49 +53,81 @@ const getCachedDaily = unstable_cache(
     const hash = hashDateString(todayET);
     const offset = hash % count;
 
-    let rows: Array<{ id: string }>;
+    interface DailyRow {
+      id: string;
+      neighborhood: string | null;
+      city: string;
+      state: string;
+      beds: number;
+      baths: number;
+      sqft: number | null;
+      lotSqft: number | null;
+      yearBuilt: number | null;
+      homeType: string | null;
+      soldDate: Date | null;
+      latitude: number | null;
+      longitude: number | null;
+      photos: { url: string; thumbnailUrl: string | null; caption: string | null }[];
+    }
+
+    // Single CTE: pick deterministic id by offset, join Listing + JSON-aggregate
+    // its photos in one round-trip. Half the Supabase latency of the prior
+    // (raw id-query → findUnique-with-include) pair.
+    let rows: DailyRow[];
     try {
-      rows = await prisma.$queryRaw<Array<{ id: string }>>`
-        SELECT id FROM "Listing"
-        WHERE "isActive" = true
-        AND "qualityScore" >= 50
-        AND "soldDate" >= ${cutoff}
-        ORDER BY id
-        LIMIT 1
-        OFFSET ${offset}
+      rows = await prisma.$queryRaw<DailyRow[]>`
+        WITH picked AS (
+          SELECT id FROM "Listing"
+          WHERE "isActive" = true
+          AND "qualityScore" >= 50
+          AND "soldDate" >= ${cutoff}
+          ORDER BY id
+          LIMIT 1
+          OFFSET ${offset}
+        )
+        SELECT
+          l.id, l.neighborhood, l.city, l.state, l.beds, l.baths,
+          l.sqft, l."lotSqft", l."yearBuilt", l."homeType", l."soldDate",
+          l.latitude, l.longitude,
+          COALESCE(
+            (SELECT json_agg(json_build_object(
+               'url', p.url,
+               'thumbnailUrl', p."thumbnailUrl",
+               'caption', p.caption
+             ) ORDER BY p.ordering)
+             FROM "Photo" p WHERE p."listingId" = l.id),
+            '[]'::json
+          ) AS photos
+        FROM "Listing" l
+        JOIN picked ON picked.id = l.id
       `;
     } catch {
       return { error: "db error" };
     }
     if (!rows.length) return { error: "listing not found" };
-
-    const listing = await prisma.listing.findUnique({
-      where: { id: rows[0].id },
-      include: { photos: { orderBy: { ordering: "asc" } } },
-    });
-    if (!listing) return { error: "listing not found" };
+    const l = rows[0];
 
     return {
       dailyNumber,
       dateET: todayET,
       listing: {
-        id: listing.id,
-        neighborhood: listing.neighborhood,
-        city: listing.city,
-        state: listing.state,
-        beds: listing.beds,
-        baths: listing.baths,
-        sqft: listing.sqft,
-        lotSqft: listing.lotSqft,
-        yearBuilt: listing.yearBuilt,
-        yearSold: listing.soldDate ? listing.soldDate.getUTCFullYear() : null,
-        homeType: listing.homeType,
-        photos: listing.photos.map((p) => ({
+        id: l.id,
+        neighborhood: l.neighborhood,
+        city: l.city,
+        state: l.state,
+        beds: l.beds,
+        baths: l.baths,
+        sqft: l.sqft,
+        lotSqft: l.lotSqft,
+        yearBuilt: l.yearBuilt,
+        yearSold: l.soldDate ? new Date(l.soldDate).getUTCFullYear() : null,
+        homeType: l.homeType,
+        photos: l.photos.map((p) => ({
           url: toHttps(p.url),
           thumbnailUrl: p.thumbnailUrl ? toHttps(p.thumbnailUrl) : null,
           caption: p.caption,
         })),
-        map: buildMapBlock(listing.latitude, listing.longitude),
+        map: buildMapBlock(l.latitude, l.longitude),
       },
     };
   },
