@@ -61,7 +61,10 @@ async function main() {
       if (!latest) throw new Error("No mirrored cache found — run mirror first");
       const data = await readCacheDir<MirroredListing[]>(".cache/mirrored", latest);
       if (!data) throw new Error("Could not read mirrored cache");
-      const prisma = new PrismaClient();
+      // Use the direct DB connection for batch persists — pgbouncer's
+      // pooled connections get dropped during long-running loops.
+      const url = process.env.DIRECT_URL || process.env.DATABASE_URL;
+      const prisma = new PrismaClient({ datasources: { db: { url } } });
       try {
         await runPersist(data, prisma);
       } finally {
