@@ -67,9 +67,11 @@ export default function PlayPage() {
     }
   }, []);
 
-  // Create a game record when the session is available
+  // Create a Game row up-front for every play session — anonymous or signed-in.
+  // Anonymous rounds power the landing "around the world" aggregate; signed-in
+  // rounds additionally feed the leaderboard.
   useEffect(() => {
-    if (!session?.user?.id || gameIdRef.current) return;
+    if (gameIdRef.current) return;
     fetch("/api/games", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,8 +79,8 @@ export default function PlayPage() {
     })
       .then((r) => r.json())
       .then((d) => { if (d.id) gameIdRef.current = d.id; })
-      .catch(() => { /* non-critical — leaderboard just won't record */ });
-  }, [session?.user?.id]);
+      .catch(() => { /* non-critical — aggregates just won't record this session */ });
+  }, []);
 
   const fetchListing = useCallback(
     async (exclude: string[]) => {

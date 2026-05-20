@@ -45,12 +45,20 @@ export async function POST(req: NextRequest) {
   const reaction = getReaction(result.tier, listingId);
   const subReaction = getSubReaction(result.tier);
 
-  // Persist round for authenticated users with an active game
+  // Persist round for any active game — anonymous or signed-in.
+  // Anonymous rounds power the landing "around the world" aggregate; signed-in
+  // rounds additionally feed the leaderboard. Authorization: if the game has
+  // a userId, the request must come from that user; if the game is anonymous
+  // (userId null), the unguessable gameId acts as the bearer.
   if (gameId && roundNumber != null) {
     const session = await auth();
-    if (session?.user?.id) {
-      const game = await prisma.game.findUnique({ where: { id: gameId } });
-      if (game && game.userId === session.user.id && !game.completedAt) {
+    const game = await prisma.game.findUnique({ where: { id: gameId } });
+    if (game && !game.completedAt) {
+      const authorized =
+        game.userId === null
+          ? true
+          : session?.user?.id === game.userId;
+      if (authorized) {
         await prisma.round.upsert({
           where: { gameId_roundNumber: { gameId, roundNumber } },
           create: { gameId, listingId, roundNumber, guess, score: result.score, guessedAt: new Date() },
