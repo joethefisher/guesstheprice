@@ -284,7 +284,7 @@ export function buildShareText(
   const lines = [
     `Pricetag #${dailyNumber} — ${accuracy}%`,
     emojiRow,
-    `🔥${streak} · pricetag.app`,
+    `🔥${streak} · guesstheprice.ai`,
   ];
   if (shareUrl) lines.push(shareUrl);
   return lines.join("\n");

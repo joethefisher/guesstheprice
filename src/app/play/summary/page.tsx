@@ -59,7 +59,7 @@ function SummaryContent() {
 
   const shareText = useMemo(
     () =>
-      `Pricetag\n${emojiGrid}\n${avgAccuracy}% accurate · ${streak}-game streak\npricetag.app`,
+      `Pricetag\n${emojiGrid}\n${avgAccuracy}% accurate · ${streak}-game streak\nguesstheprice.ai`,
     [emojiGrid, avgAccuracy, streak]
   );
 
