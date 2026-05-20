@@ -4,68 +4,72 @@ import type { MirroredListing } from "../types";
 export async function persistOne(listing: MirroredListing, prisma: PrismaClient): Promise<boolean> {
   if (listing.photos.length < 3) return false;
 
-  await prisma.$transaction(async (tx) => {
-    // Delete existing photos for this external ID (so we can recreate fresh)
-    const existing = await tx.listing.findUnique({
-      where: { externalId: listing.externalId },
-      select: { id: true },
-    });
+  // 30s upper bound; listings with many photos take longer than the 5s default.
+  await prisma.$transaction(
+    async (tx) => {
+      // Delete existing photos for this external ID (so we can recreate fresh)
+      const existing = await tx.listing.findUnique({
+        where: { externalId: listing.externalId },
+        select: { id: true },
+      });
 
-    if (existing) {
-      await tx.photo.deleteMany({ where: { listingId: existing.id } });
-    }
+      if (existing) {
+        await tx.photo.deleteMany({ where: { listingId: existing.id } });
+      }
 
-    await tx.listing.upsert({
-      where: { externalId: listing.externalId },
-      update: {
-        soldPrice: listing.soldPrice,
-        qualityScore: listing.qualityScore,
-        updatedAt: new Date(),
-        photos: {
-          create: listing.photos.map((p) => ({
-            url: p.url,
-            thumbnailUrl: p.thumbnailUrl,
-            sourceUrl: p.sourceUrl,
-            width: p.mirroredWidth ?? p.width,
-            height: p.mirroredHeight ?? p.height,
-            ordering: p.ordering,
-          })),
+      await tx.listing.upsert({
+        where: { externalId: listing.externalId },
+        update: {
+          soldPrice: listing.soldPrice,
+          qualityScore: listing.qualityScore,
+          updatedAt: new Date(),
+          photos: {
+            create: listing.photos.map((p) => ({
+              url: p.url,
+              thumbnailUrl: p.thumbnailUrl,
+              sourceUrl: p.sourceUrl,
+              width: p.mirroredWidth ?? p.width,
+              height: p.mirroredHeight ?? p.height,
+              ordering: p.ordering,
+            })),
+          },
         },
-      },
-      create: {
-        externalId: listing.externalId,
-        source: listing.source,
-        streetAddress: listing.streetAddress,
-        neighborhood: listing.neighborhood,
-        city: listing.city,
-        state: listing.state,
-        zipCode: listing.zipCode,
-        latitude: listing.latitude,
-        longitude: listing.longitude,
-        beds: listing.beds,
-        baths: listing.baths,
-        sqft: listing.sqft,
-        lotSqft: listing.lotSqft,
-        yearBuilt: listing.yearBuilt,
-        homeType: listing.homeType,
-        soldPrice: listing.soldPrice,
-        soldDate: listing.soldDate,
-        isSold: true,
-        isActive: true,
-        qualityScore: listing.qualityScore,
-        photos: {
-          create: listing.photos.map((p) => ({
-            url: p.url,
-            thumbnailUrl: p.thumbnailUrl,
-            sourceUrl: p.sourceUrl,
-            width: p.mirroredWidth ?? p.width,
-            height: p.mirroredHeight ?? p.height,
-            ordering: p.ordering,
-          })),
+        create: {
+          externalId: listing.externalId,
+          source: listing.source,
+          streetAddress: listing.streetAddress,
+          neighborhood: listing.neighborhood,
+          city: listing.city,
+          state: listing.state,
+          zipCode: listing.zipCode,
+          latitude: listing.latitude,
+          longitude: listing.longitude,
+          beds: listing.beds,
+          baths: listing.baths,
+          sqft: listing.sqft,
+          lotSqft: listing.lotSqft,
+          yearBuilt: listing.yearBuilt,
+          homeType: listing.homeType,
+          soldPrice: listing.soldPrice,
+          soldDate: listing.soldDate,
+          isSold: true,
+          isActive: true,
+          qualityScore: listing.qualityScore,
+          photos: {
+            create: listing.photos.map((p) => ({
+              url: p.url,
+              thumbnailUrl: p.thumbnailUrl,
+              sourceUrl: p.sourceUrl,
+              width: p.mirroredWidth ?? p.width,
+              height: p.mirroredHeight ?? p.height,
+              ordering: p.ordering,
+            })),
+          },
         },
-      },
-    });
-  });
+      });
+    },
+    { timeout: 30_000 },
+  );
 
   return true;
 }
