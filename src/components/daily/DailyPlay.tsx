@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wordmark } from "@/components/Wordmark";
 import { PriceSlider } from "@/components/PriceSlider";
@@ -10,7 +10,11 @@ import { YearSoldPill } from "@/components/YearSoldPill";
 import { Icon } from "@/components/Icons";
 import { DailyBadge } from "./DailyShared";
 import { MapPreviewCard } from "./map/MapPreviewCard";
-import type { ListingPublic } from "@/lib/game";
+import type { ListingPublic, SavedHome } from "@/lib/game";
+
+function safeSetItem(key: string, value: string) {
+  try { localStorage.setItem(key, value); } catch { /* quota or disabled */ }
+}
 
 interface Props {
   listing: ListingPublic;
@@ -49,6 +53,42 @@ export function DailyPlay({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForfeit, setShowForfeit] = useState(false);
+  const [savedHomes, setSavedHomes] = useState<SavedHome[]>([]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("pricetag_saved");
+      if (raw) setSavedHomes(JSON.parse(raw));
+    } catch {
+      localStorage.removeItem("pricetag_saved");
+    }
+  }, []);
+
+  const isAlreadySaved = savedHomes.some((s) => s.listingId === listing.id);
+
+  function handleSaveToggle() {
+    if (isAlreadySaved) {
+      const updated = savedHomes.filter((s) => s.listingId !== listing.id);
+      setSavedHomes(updated);
+      safeSetItem("pricetag_saved", JSON.stringify(updated));
+      return;
+    }
+    const entry: SavedHome = {
+      listingId: listing.id,
+      neighborhood: listing.neighborhood,
+      city: listing.city,
+      state: listing.state,
+      photoUrl: listing.photos[0]?.url ?? "",
+      guess: null,
+      actualPrice: null,
+      tier: null,
+      accuracy: null,
+      savedAt: Date.now(),
+    };
+    const updated = [entry, ...savedHomes];
+    setSavedHomes(updated);
+    safeSetItem("pricetag_saved", JSON.stringify(updated));
+  }
 
   const handleSlider = useCallback((v: number) => {
     setGuess(v);
@@ -93,6 +133,13 @@ export function DailyPlay({
               <span className="tnum">{currentStreak} day streak</span>
             </span>
           )}
+          <button
+            className="btn btn-icon cursor-pointer"
+            onClick={handleSaveToggle}
+            aria-label={isAlreadySaved ? "Remove saved home" : "Save home"}
+          >
+            <Icon.Heart size={16} filled={isAlreadySaved} />
+          </button>
           <button
             className="btn btn-icon"
             onClick={() => setShowForfeit(true)}

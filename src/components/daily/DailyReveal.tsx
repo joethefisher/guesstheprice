@@ -11,7 +11,20 @@ import {
   GhostButton,
 } from "./DailyShared";
 import type { DailyResult } from "@/lib/daily/service";
-import type { ListingPublic } from "@/lib/game";
+import type { ListingPublic, SavedHome, AccuracyTier } from "@/lib/game";
+
+function safeSetItem(key: string, value: string) {
+  try { localStorage.setItem(key, value); } catch { /* quota or disabled */ }
+}
+
+function tierFromAccuracy(accuracy: number): AccuracyTier {
+  if (accuracy >= 95) return "expert";
+  if (accuracy >= 90) return "nailed";
+  if (accuracy >= 80) return "solid";
+  if (accuracy >= 70) return "ballpark";
+  if (accuracy >= 60) return "off";
+  return "yikes";
+}
 
 interface Props {
   result: DailyResult;
@@ -97,6 +110,59 @@ export function DailyReveal({
   const [stampVisible, setStampVisible] = useState(false);
   const [actualVisible, setActualVisible] = useState(false);
   const [shake, setShake] = useState(false);
+  const [savedHomes, setSavedHomes] = useState<SavedHome[]>([]);
+
+  // On mount: load saved homes, and upgrade this listing's record if it was
+  // saved pre-reveal (score fields null) so the saved page renders properly.
+  useEffect(() => {
+    let homes: SavedHome[] = [];
+    try {
+      const raw = localStorage.getItem("pricetag_saved");
+      if (raw) homes = JSON.parse(raw);
+    } catch {
+      localStorage.removeItem("pricetag_saved");
+    }
+    const idx = homes.findIndex((s) => s.listingId === listing.id);
+    if (idx !== -1 && homes[idx].actualPrice === null) {
+      const upgraded: SavedHome = {
+        ...homes[idx],
+        guess: result.guess,
+        actualPrice: result.actual,
+        tier: tierFromAccuracy(result.accuracy),
+        accuracy: result.accuracy,
+      };
+      homes = [...homes];
+      homes[idx] = upgraded;
+      safeSetItem("pricetag_saved", JSON.stringify(homes));
+    }
+    setSavedHomes(homes);
+  }, [listing.id, result.guess, result.actual, result.accuracy]);
+
+  const isAlreadySaved = savedHomes.some((s) => s.listingId === listing.id);
+
+  function handleSaveToggle() {
+    if (isAlreadySaved) {
+      const updated = savedHomes.filter((s) => s.listingId !== listing.id);
+      setSavedHomes(updated);
+      safeSetItem("pricetag_saved", JSON.stringify(updated));
+      return;
+    }
+    const entry: SavedHome = {
+      listingId: listing.id,
+      neighborhood: listing.neighborhood,
+      city: listing.city,
+      state: listing.state,
+      photoUrl: listing.photos[0]?.url ?? "",
+      guess: result.guess,
+      actualPrice: result.actual,
+      tier: tierFromAccuracy(result.accuracy),
+      accuracy: result.accuracy,
+      savedAt: Date.now(),
+    };
+    const updated = [entry, ...savedHomes];
+    setSavedHomes(updated);
+    safeSetItem("pricetag_saved", JSON.stringify(updated));
+  }
 
   const tickedActual = useNumberTicker(result.actual, actualVisible ? 0 : 99999, 1200);
 
@@ -257,6 +323,14 @@ export function DailyReveal({
           <GhostButton onClick={onContinue} style={{ padding: "18px 24px" }}>
             See full stats
           </GhostButton>
+          <button
+            onClick={handleSaveToggle}
+            className="bg-transparent text-paper-80 py-[18px] px-[18px] text-sm rounded-3 border-none cursor-pointer flex items-center gap-2"
+            aria-label={isAlreadySaved ? "Remove saved home" : "Save this home"}
+          >
+            <Icon.Heart size={14} filled={isAlreadySaved} />
+            {isAlreadySaved ? "Saved" : "Save this home"}
+          </button>
           <button
             onClick={onExit}
             className="bg-transparent text-paper-80 py-[18px] px-[18px] text-sm rounded-3 border-none cursor-pointer"
