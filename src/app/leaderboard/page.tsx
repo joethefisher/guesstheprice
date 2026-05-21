@@ -42,11 +42,8 @@ export default function LeaderboardPage() {
   }, []);
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--paper)" }}>
-      <header
-        className="flex items-center justify-between px-10 py-6"
-        style={{ borderBottom: "1px solid var(--rule)" }}
-      >
+    <div className="min-h-screen bg-paper">
+      <header className="flex items-center justify-between px-10 py-6 border-b border-rule">
         <button onClick={() => router.push("/")} aria-label="Home">
           <Wordmark size={20} />
         </button>
@@ -56,18 +53,15 @@ export default function LeaderboardPage() {
         </button>
       </header>
 
-      <div style={{ maxWidth: "var(--w-default)", margin: "0 auto", padding: "48px 32px" }}>
+      <div className="max-w-default mx-auto py-12 px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
         >
-          <h1
-            className="display m-0 mb-8"
-            style={{ fontSize: "clamp(40px, 6vw, 72px)", lineHeight: 0.95 }}
-          >
+          <h1 className="display m-0 mb-8 leading-[0.95]" style={{ fontSize: "clamp(40px, 6vw, 72px)" }}>
             Who's the best<br />
-            <span style={{ color: "var(--accent)" }}>price guesser?</span>
+            <span className="text-accent">price guesser?</span>
           </h1>
         </motion.div>
 
@@ -77,18 +71,9 @@ export default function LeaderboardPage() {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className="caption"
-              style={{
-                padding: "8px 18px",
-                borderRadius: 999,
-                fontSize: "var(--text-sm)",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                background: tab === key ? "var(--ink)" : "rgba(26,26,26,0.06)",
-                color: tab === key ? "var(--paper)" : "var(--ink-mute)",
-                transition: "all 180ms cubic-bezier(0.32,0.72,0,1)",
-                cursor: "pointer",
-              }}
+              className={`caption py-2 px-[18px] rounded-pill text-sm font-semibold tracking-[0.08em] cursor-pointer transition-all duration-200 ${
+                tab === key ? "bg-ink text-paper" : "bg-ink-06 text-ink-mute"
+              }`}
             >
               {label}
             </button>
@@ -100,12 +85,8 @@ export default function LeaderboardPage() {
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                style={{
-                  height: 64,
-                  borderRadius: 14,
-                  background: "var(--cream)",
-                  opacity: 1 - i * 0.15,
-                }}
+                className="h-16 rounded-3 bg-cream"
+                style={{ opacity: 1 - i * 0.15 }}
               />
             ))}
           </div>
@@ -138,40 +119,28 @@ function ScoresTable({ entries }: { entries: LeaderboardResponse["highScores"] }
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: i * 0.04, ease: [0.32, 0.72, 0, 1] }}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "44px 1fr auto",
-            alignItems: "center",
-            gap: 16,
-            padding: "16px 20px",
-            borderRadius: 14,
-            background: i === 0 ? "rgba(212, 165, 116, 0.1)" : "var(--cream)",
-            border: i === 0 ? "1px solid rgba(212, 165, 116, 0.25)" : "1px solid transparent",
-          }}
+          className={`grid items-center gap-4 py-4 px-5 rounded-3 border ${
+            i === 0
+              ? "bg-[rgba(212,165,116,0.1)] border-[rgba(212,165,116,0.25)]"
+              : "bg-cream border-transparent"
+          }`}
+          style={{ gridTemplateColumns: "44px 1fr auto" }}
         >
           <div
-            className="tnum display"
-            style={{
-              fontSize: "var(--text-lg)",
-              fontWeight: 700,
-              color: RANK_COLORS[e.rank] ?? "var(--ink-mute)",
-              textAlign: "center",
-            }}
+            className="tnum display text-lg font-bold text-center"
+            style={{ color: RANK_COLORS[e.rank] ?? "var(--ink-mute)" }}
           >
             {e.rank <= 3 ? ["🥇", "🥈", "🥉"][e.rank - 1] : `#${e.rank}`}
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "var(--text-base)", color: "var(--ink)" }}>
+            <div className="font-semibold text-base text-ink">
               @{e.username}
             </div>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)", marginTop: 2 }}>
+            <div className="text-sm text-ink-mute mt-0.5">
               {formatDate(e.completedAt)}
             </div>
           </div>
-          <div
-            className="tnum"
-            style={{ fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--accent)" }}
-          >
+          <div className="tnum text-lg font-bold text-accent">
             {e.score.toLocaleString()}
           </div>
         </motion.div>
@@ -189,42 +158,30 @@ function StreaksTable({ entries }: { entries: LeaderboardResponse["streaks"] }) 
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: i * 0.04, ease: [0.32, 0.72, 0, 1] }}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "44px 1fr auto",
-            alignItems: "center",
-            gap: 16,
-            padding: "16px 20px",
-            borderRadius: 14,
-            background: i === 0 ? "rgba(212, 165, 116, 0.1)" : "var(--cream)",
-            border: i === 0 ? "1px solid rgba(212, 165, 116, 0.25)" : "1px solid transparent",
-          }}
+          className={`grid items-center gap-4 py-4 px-5 rounded-3 border ${
+            i === 0
+              ? "bg-[rgba(212,165,116,0.1)] border-[rgba(212,165,116,0.25)]"
+              : "bg-cream border-transparent"
+          }`}
+          style={{ gridTemplateColumns: "44px 1fr auto" }}
         >
           <div
-            className="tnum display"
-            style={{
-              fontSize: "var(--text-lg)",
-              fontWeight: 700,
-              color: RANK_COLORS[e.rank] ?? "var(--ink-mute)",
-              textAlign: "center",
-            }}
+            className="tnum display text-lg font-bold text-center"
+            style={{ color: RANK_COLORS[e.rank] ?? "var(--ink-mute)" }}
           >
             {e.rank <= 3 ? ["🥇", "🥈", "🥉"][e.rank - 1] : `#${e.rank}`}
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "var(--text-base)", color: "var(--ink)" }}>
+            <div className="font-semibold text-base text-ink">
               @{e.username}
             </div>
-            <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)", marginTop: 2 }}>
+            <div className="text-sm text-ink-mute mt-0.5">
               {e.played.toLocaleString()} days played
             </div>
           </div>
-          <div
-            className="tnum"
-            style={{ fontSize: "var(--text-lg)", fontWeight: 700, color: "var(--accent)", display: "flex", alignItems: "center", gap: 6 }}
-          >
+          <div className="tnum text-lg font-bold text-accent flex items-center gap-1.5">
             {e.bestStreak}
-            <span style={{ fontSize: "var(--text-md)" }}>🔥</span>
+            <span className="text-md">🔥</span>
           </div>
         </motion.div>
       ))}
@@ -234,16 +191,7 @@ function StreaksTable({ entries }: { entries: LeaderboardResponse["streaks"] }) 
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div
-      style={{
-        padding: "48px 24px",
-        textAlign: "center",
-        color: "var(--ink-mute)",
-        fontSize: "var(--text-base)",
-        background: "var(--cream)",
-        borderRadius: 16,
-      }}
-    >
+    <div className="py-12 px-6 text-center text-ink-mute text-base bg-cream rounded-4">
       {message}
     </div>
   );
