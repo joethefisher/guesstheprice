@@ -252,15 +252,12 @@ export default function PlayClient({ initialListing }: Props) {
   if (loading) return <DailyMapsProvider><PlaySkeleton /></DailyMapsProvider>;
   if (listingError) {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center gap-5"
-        style={{ background: "var(--paper)" }}
-      >
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5 bg-paper">
         <div className="eyebrow">Connection issue</div>
-        <h2 className="h2" style={{ color: "var(--ink)" }}>
+        <h2 className="h2 text-ink">
           Couldn't load a listing.
         </h2>
-        <p className="body" style={{ color: "var(--ink-mute)", margin: 0 }}>
+        <p className="body text-ink-mute m-0">
           Check your connection and try again.
         </p>
         <button
@@ -270,8 +267,7 @@ export default function PlayClient({ initialListing }: Props) {
           Try another home
         </button>
         <button
-          className="btn btn-secondary"
-          style={{ fontSize: "var(--text-sm)" }}
+          className="btn btn-secondary text-sm"
           onClick={() => router.push("/")}
         >
           Back to home
@@ -283,17 +279,11 @@ export default function PlayClient({ initialListing }: Props) {
 
   return (
     <DailyMapsProvider>
-    <div
-      className="min-h-screen flex flex-col"
-      style={{ background: "var(--paper)" }}
-    >
+    <div className="min-h-screen flex flex-col bg-paper">
       {/* Top bar */}
-      <header
-        className="flex items-center justify-between px-7 py-4 shrink-0"
-        style={{ borderBottom: "1px solid var(--rule)" }}
-      >
+      <header className="flex items-center justify-between px-7 py-4 shrink-0 border-b border-rule">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.push("/")} style={{ cursor: "pointer" }} aria-label="Go to home">
+          <button onClick={() => router.push("/")} className="cursor-pointer" aria-label="Go to home">
             <Wordmark size={18} />
           </button>
           <RoundPill current={roundIdx + 1} total={TOTAL_ROUNDS} />
@@ -301,28 +291,17 @@ export default function PlayClient({ initialListing }: Props) {
           {streak > 0 && <StreakFlame count={streak} />}
         </div>
         {history.length > 0 && (
-          <div
-            className="tnum"
-            style={{
-              fontSize: "var(--text-sm)",
-              fontWeight: 700,
-              color: "var(--ink)",
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
-          >
+          <div className="tnum text-sm font-bold text-ink absolute left-1/2 -translate-x-1/2">
             {history.reduce((s, r) => s + r.score, 0)}
-            <span style={{ fontWeight: 400, color: "var(--ink-mute)", marginLeft: 4 }}>pts</span>
+            <span className="font-normal text-ink-mute ml-1">pts</span>
           </div>
         )}
         <div className="flex items-center gap-2">
           <button
-            className="btn-icon"
+            className={`btn-icon ${reveal ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-40"}`}
             aria-label="Save home"
             onClick={reveal ? handleHeaderSave : undefined}
             disabled={!reveal}
-            style={{ cursor: reveal ? "pointer" : "not-allowed", opacity: reveal ? 1 : 0.4 }}
           >
             <Icon.Heart size={18} filled={isAlreadySaved} />
           </button>
@@ -337,35 +316,18 @@ export default function PlayClient({ initialListing }: Props) {
       </header>
 
       {/* Two-column game layout */}
-      <main
-        className="flex-1 grid"
-        style={{ gridTemplateColumns: "1.55fr 1fr" }}
-      >
+      <main className="flex-1 grid" style={{ gridTemplateColumns: "1.55fr 1fr" }}>
         {/* Photo column */}
-        <div className="relative" style={{ padding: 28 }}>
-          <div style={{ height: "100%", borderRadius: 18, overflow: "hidden" }}>
+        <div className="relative p-7">
+          <div className="h-full rounded-5 overflow-hidden">
             <PhotoCarousel photos={listing.photos} />
           </div>
         </div>
 
         {/* Guess panel */}
-        <div
-          className="flex flex-col"
-          style={{
-            padding: "28px 32px 28px 0",
-            borderLeft: "1px solid var(--rule)",
-          }}
-        >
+        <div className="flex flex-col pt-7 pr-8 pb-7 border-l border-rule">
           <div className="flex-1 overflow-y-auto pl-7">
-            <div
-              className="mb-2"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-              }}
-            >
+            <div className="flex items-center justify-between gap-3 mb-2">
               <div className="eyebrow">Listed in {listing.city}</div>
               <YearSoldPill year={listing.yearSold} />
             </div>
@@ -406,13 +368,9 @@ export default function PlayClient({ initialListing }: Props) {
             {/* Guess display */}
             <div className="eyebrow mb-2">Your guess</div>
             <div
-              className="display tnum mb-4"
-              style={{
-                fontSize: "var(--text-display-l)",
-                color: hasInteracted ? "var(--ink)" : "var(--ink-quiet)",
-                lineHeight: 1,
-                transition: "color 200ms ease",
-              }}
+              className={`display tnum mb-4 text-display-l leading-none transition-colors duration-200 ${
+                hasInteracted ? "text-ink" : "text-ink-quiet"
+              }`}
             >
               {hasInteracted ? formatPrice(displayGuess) : "$———"}
             </div>
@@ -423,22 +381,9 @@ export default function PlayClient({ initialListing }: Props) {
                 <button
                   key={tab}
                   onClick={() => setGuessTab(tab)}
-                  className="caption"
-                  style={{
-                    padding: "6px 14px",
-                    borderRadius: 999,
-                    fontSize: "var(--text-xs)",
-                    fontWeight: 600,
-                    letterSpacing: "0.1em",
-                    background:
-                      guessTab === tab
-                        ? "var(--ink)"
-                        : "rgba(26,26,26,0.06)",
-                    color:
-                      guessTab === tab ? "var(--paper)" : "var(--ink-mute)",
-                    transition: "all 200ms cubic-bezier(0.32,0.72,0,1)",
-                    cursor: "pointer",
-                  }}
+                  className={`caption rounded-pill px-3.5 py-1.5 text-xs font-semibold tracking-[0.1em] cursor-pointer transition-all duration-200 ${
+                    guessTab === tab ? "bg-ink text-paper" : "bg-ink-06 text-ink-mute"
+                  }`}
                 >
                   {tab === "slider" ? "Slider" : "Type a number"}
                 </button>
@@ -465,24 +410,13 @@ export default function PlayClient({ initialListing }: Props) {
                 }}
                 placeholder="Enter price (e.g. 1250000)"
                 aria-label="Enter your price guess"
-                className="tnum"
-                style={{
-                  width: "100%",
-                  padding: "14px 16px",
-                  borderRadius: 12,
-                  border: "1.5px solid var(--rule)",
-                  background: "var(--paper)",
-                  fontSize: "var(--text-md)",
-                  fontWeight: 600,
-                  outline: "none",
-                  marginTop: 8,
-                }}
+                className="tnum w-full px-4 py-3.5 rounded-2 border-[1.5px] border-rule bg-paper text-md font-semibold outline-none mt-2"
               />
             )}
 
             {/* Neighborhood map preview */}
             {listing.map && (
- <div className="mt-[18px]">
+              <div className="mt-[18px]">
                 <MapPreviewCard
                   listingId={listing.id}
                   city={listing.city}
@@ -498,23 +432,21 @@ export default function PlayClient({ initialListing }: Props) {
           {/* CTA row */}
           <div className="flex flex-col gap-3 mt-6 pl-7">
             {scoreError && (
-              <div style={{ fontSize: "var(--text-sm)", color: "var(--flag)", fontWeight: 500 }}>
+              <div className="text-sm text-flag font-medium">
                 {scoreError}
               </div>
             )}
             <button
               onClick={handleSubmit}
               disabled={!hasInteracted || submitting || (guessTab === "type" && !parsePrice(typeInput))}
-              className="btn btn-primary"
-              style={{ fontSize: "var(--text-md)", justifyContent: "space-between" }}
+              className="btn btn-primary text-md justify-between"
             >
               <span>{submitting ? "Scoring…" : "Lock it in"}</span>
               <span>→</span>
             </button>
             <button
               onClick={handleSkip}
-              className="btn btn-secondary"
-              style={{ fontSize: "var(--text-sm)" }}
+              className="btn btn-secondary text-sm"
             >
               Skip
             </button>
@@ -553,49 +485,14 @@ function parsePrice(s: string): number | null {
 
 function PlaySkeleton() {
   return (
-    <div
-      className="min-h-screen grid"
-      style={{
-        gridTemplateColumns: "1.55fr 1fr",
-        background: "var(--paper)",
-      }}
-    >
-      <div style={{ padding: 28 }}>
-        <div
-          style={{
-            height: "100%",
-            background: "var(--cream)",
-            borderRadius: 18,
-          }}
-        />
+    <div className="min-h-screen grid bg-paper" style={{ gridTemplateColumns: "1.55fr 1fr" }}>
+      <div className="p-7">
+        <div className="h-full bg-cream rounded-5" />
       </div>
-      <div style={{ padding: "28px 32px 28px 28px" }}>
-        <div
-          style={{
-            height: 12,
-            width: "40%",
-            background: "var(--cream)",
-            borderRadius: 6,
-            marginBottom: 16,
-          }}
-        />
-        <div
-          style={{
-            height: 32,
-            width: "80%",
-            background: "var(--cream)",
-            borderRadius: 8,
-            marginBottom: 24,
-          }}
-        />
-        <div
-          style={{
-            height: 64,
-            width: "70%",
-            background: "var(--cream)",
-            borderRadius: 8,
-          }}
-        />
+      <div className="p-7">
+        <div className="h-3 w-[40%] bg-cream rounded-md mb-4" />
+        <div className="h-8 w-[80%] bg-cream rounded-lg mb-6" />
+        <div className="h-16 w-[70%] bg-cream rounded-lg" />
       </div>
     </div>
   );
