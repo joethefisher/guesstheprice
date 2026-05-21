@@ -46,8 +46,26 @@ export const config = {
   ],
 };
 
+/**
+ * Extract the client IP for rate-limit bucketing.
+ *
+ * SECURITY NOTE: `x-forwarded-for` is set by upstream proxies. On Vercel the
+ * edge layer overwrites this header with the verified client IP before the
+ * function runs, so we can trust the first entry. On any other host (bare
+ * metal, custom proxy, local dev), `x-forwarded-for` can be spoofed by the
+ * client — set `RATE_LIMIT_TRUST_FORWARDED=0` to fall back to a single
+ * "anonymous" bucket (which trades per-IP fidelity for safety).
+ */
+function clientIp(req: NextRequest): string {
+  const trustForwarded = process.env.RATE_LIMIT_TRUST_FORWARDED !== "0";
+  if (!trustForwarded) return "anonymous";
+  const fwd = req.headers.get("x-forwarded-for");
+  if (fwd) return fwd.split(",")[0].trim();
+  return req.headers.get("x-real-ip") ?? "anonymous";
+}
+
 export async function middleware(req: NextRequest) {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "anonymous";
+  const ip = clientIp(req);
   const path = req.nextUrl.pathname;
 
   // Auth routes always rate-limited when Redis is available

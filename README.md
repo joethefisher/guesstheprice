@@ -25,14 +25,23 @@ Think GeoGuessr, but for the housing market.
 |---|---|
 | Framework | Next.js 14 (App Router, Server Components) |
 | Language | TypeScript |
-| Database | PostgreSQL (Supabase) via Prisma — SQLite for local dev |
+| Database | PostgreSQL (Supabase) via Prisma |
+| Auth | NextAuth v5 (beta — see note below) with credentials + JWT sessions |
 | Styling | Tailwind CSS with a custom token system |
 | Animation | Framer Motion |
+| Maps | `@vis.gl/react-google-maps` + Google Maps Static API |
 | Photo storage | Cloudflare R2 |
 | Rate limiting | Upstash Redis |
 | Observability | Sentry |
 | Testing | Vitest |
 | Validation | Zod |
+
+> **NextAuth v5 is currently in beta** (`5.0.0-beta.31` at time of writing).
+> The API is stable enough for production but breaking changes can still
+> land in subsequent betas. The version in `package.json` is pinned to an
+> exact tag for that reason; consult the
+> [v5 migration notes](https://authjs.dev/getting-started/migrating-to-v5)
+> before upgrading.
 
 ## Getting Started
 
