@@ -3,11 +3,10 @@ node_modules/
 out/
 dist/
 .env
-.env.local
+.env.*
+!.env.example
 *.log
 .DS_Store
-prisma/*.db
-prisma/*.db-journal
 prisma/*.db
 prisma/*.db-journal
 .vscode/
