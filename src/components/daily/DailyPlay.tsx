@@ -75,32 +75,20 @@ export function DailyPlay({
   }, [listing.id, guess, submitting, onSubmit]);
 
   return (
-    <div style={{
-      position: "relative", width: "100%", height: "100%",
-      background: "var(--paper)", overflow: "hidden", display: "flex", flexDirection: "column",
-    }}>
+    <div className="relative w-full h-full bg-paper overflow-hidden flex flex-col">
       {/* Header */}
-      <header style={{
-        flex: "0 0 auto", display: "flex", alignItems: "center",
-        justifyContent: "space-between", padding: "18px 28px", zIndex: 5,
-        borderBottom: "1px solid var(--rule)",
-      }}>
- <div className="flex items-center gap-3.5">
+      <header className="flex-none flex items-center justify-between px-7 py-[18px] z-[5] border-b border-rule">
+        <div className="flex items-center gap-3.5">
           <Wordmark size={17} />
-          <div style={{ width: 1, height: 18, background: "var(--rule)" }} />
+          <div className="w-px h-[18px] bg-rule" />
           <DailyBadge dailyNumber={dailyNumber} />
-          <span className="tnum" style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
+          <span className="tnum text-sm text-ink-mute">
             {formatDateLabel(dateET)}
           </span>
         </div>
- <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3">
           {currentStreak > 0 && (
-            <span style={{
-              display: "flex", alignItems: "center", gap: 6,
-              padding: "6px 12px", borderRadius: 999,
-              background: "rgba(255,92,57,0.1)", color: "var(--accent)",
-              fontSize: "var(--text-sm)", fontWeight: 700,
-            }}>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-pill bg-[rgba(255,92,57,0.1)] text-accent text-sm font-bold">
               <Icon.Flame size={13} />
               <span className="tnum">{currentStreak} day streak</span>
             </span>
@@ -116,71 +104,52 @@ export function DailyPlay({
       </header>
 
       {/* Main grid */}
-      <div style={{
-        flex: "1 1 auto", display: "grid",
-        gridTemplateColumns: "minmax(0, 1.55fr) minmax(380px, 1fr)",
-        padding: "0 28px 28px", minHeight: 0, gap: 28, overflow: "hidden",
-      }}>
+      <div
+        className="flex-1 grid px-7 pb-7 min-h-0 gap-7 overflow-hidden"
+        style={{ gridTemplateColumns: "minmax(0, 1.55fr) minmax(380px, 1fr)" }}
+      >
         {/* Photo */}
-        <div style={{
-          position: "relative", borderRadius: 18, overflow: "hidden",
-          boxShadow: "0 10px 36px -16px rgba(0,0,0,0.35)",
-          marginTop: 28,
-        }}>
+        <div className="relative rounded-5 overflow-hidden shadow-photo mt-7">
           <PhotoCarousel photos={listing.photos} />
 
           {/* ONE GUESS badge overlay */}
-          <div style={{
-            position: "absolute", top: 16, left: 16, zIndex: 3,
-            display: "flex", alignItems: "center", gap: 8,
-            padding: "8px 14px", borderRadius: 999,
-            background: "rgba(15,17,13,0.78)", color: "var(--paper)",
-            backdropFilter: "blur(10px)",
-            boxShadow: "inset 0 0 0 1px rgba(255,214,107,0.4)",
-          }}>
+          <div
+            className="absolute top-4 left-4 z-[3] flex items-center gap-2 px-3.5 py-2 rounded-pill text-paper"
+            style={{
+              background: "rgba(15,17,13,0.78)",
+              backdropFilter: "blur(10px)",
+              boxShadow: "inset 0 0 0 1px rgba(255,214,107,0.4)",
+            }}
+          >
             <svg aria-hidden="true" width={12} height={12} viewBox="0 0 16 16" fill="var(--spot)">
               <path d="M8 0l2 5.5h6L11 9l2 6-5-3.5L3 15l2-6-5-3.5h6z" />
             </svg>
-            <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.1em" }}>
+            <span className="text-xs font-bold tracking-[0.1em]">
               ONE GUESS · NO DO-OVERS
             </span>
           </div>
 
           {/* Bottom info */}
-          <div style={{
-            position: "absolute", bottom: 18, left: 18, right: 18, zIndex: 3,
-            color: "var(--paper)",
-          }}>
-            <div className="eyebrow" style={{ color: "var(--paper-mute)", marginBottom: 4 }}>
+          <div className="absolute bottom-[18px] left-[18px] right-[18px] z-[3] text-paper">
+            <div className="eyebrow text-paper-60 mb-1">
               {listing.city}, {listing.state}
             </div>
           </div>
         </div>
 
         {/* Right column */}
-        <div style={{
-          paddingTop: 28, display: "flex", flexDirection: "column",
-          overflowY: "auto",
-        }}>
+        <div className="pt-7 flex flex-col overflow-y-auto">
           {/* Property info */}
-          <div style={{ paddingBottom: 18, marginBottom: 18, borderBottom: "1px solid var(--rule)" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 12,
-                marginBottom: 10,
-              }}
-            >
+          <div className="pb-[18px] mb-[18px] border-b border-rule">
+            <div className="flex items-center justify-between gap-3 mb-2.5">
               <div className="eyebrow">Listed in {listing.city}</div>
               <YearSoldPill year={listing.yearSold} />
             </div>
-            <h2 className="h3" style={{ marginBottom: 8, color: "var(--ink)" }}>
+            <h2 className="h3 mb-2 text-ink">
               {listing.neighborhood ? `${listing.neighborhood}, ` : ""}
-              <span style={{ color: "var(--ink-mute)" }}>{listing.city}, {listing.state}</span>
+              <span className="text-ink-mute">{listing.city}, {listing.state}</span>
             </h2>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 18px", marginTop: 12 }}>
+            <div className="flex flex-wrap gap-x-[18px] gap-y-2.5 mt-3">
               {listing.beds && <Stat icon={Icon.Bed} label="bd" value={listing.beds} />}
               {listing.baths && <Stat icon={Icon.Bath} label="ba" value={listing.baths} />}
               {listing.sqft && <Stat icon={Icon.Sqft} label="sqft" value={listing.sqft.toLocaleString()} />}
@@ -189,28 +158,27 @@ export function DailyPlay({
           </div>
 
           {/* Guess display */}
- <div className="eyebrow mb-1.5">
-            Your <span style={{ color: "var(--accent)", fontWeight: 700 }}>only</span> guess
+          <div className="eyebrow mb-1.5">
+            Your <span className="text-accent font-bold">only</span> guess
           </div>
-          <div className="display tnum" style={{
-            fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--ink)",
-            letterSpacing: "-0.03em",
-          }}>
+          <div className="display tnum text-display-l leading-none text-ink tracking-[-0.03em]">
             ${guess.toLocaleString()}
           </div>
 
           {/* Slider */}
- <div className="mt-[18px]">
+          <div className="mt-[18px]">
             <PriceSlider value={guess} onChange={handleSlider} />
           </div>
 
           {/* Warning banner */}
-          <div style={{
-            marginTop: 20, padding: "12px 14px", borderRadius: 10,
-            background: "rgba(200,163,72,0.12)", color: "#7a6020",
-            fontSize: "var(--text-sm)", display: "flex", alignItems: "center", gap: 10,
-            boxShadow: "inset 0 0 0 1px rgba(200,163,72,0.3)",
-          }}>
+          <div
+            className="mt-5 px-3.5 py-3 rounded-[10px] text-sm flex items-center gap-2.5"
+            style={{
+              background: "rgba(200,163,72,0.12)",
+              color: "#7a6020",
+              boxShadow: "inset 0 0 0 1px rgba(200,163,72,0.3)",
+            }}
+          >
             <svg aria-hidden="true" width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2l11 19H1L12 2zm0 5l-7 12h14L12 7zm-1 4h2v4h-2zm0 5h2v2h-2z" />
             </svg>
@@ -219,7 +187,7 @@ export function DailyPlay({
 
           {/* Neighborhood map preview — sits between warning + CTA per spec */}
           {listing.map && (
- <div className="mt-3.5">
+            <div className="mt-3.5">
               <MapPreviewCard
                 listingId={listing.id}
                 city={listing.city}
@@ -232,20 +200,16 @@ export function DailyPlay({
           )}
 
           {error && (
-            <div style={{ marginTop: 8, color: "var(--accent)", fontSize: "var(--text-sm)" }}>{error}</div>
+            <div className="mt-2 text-accent text-sm">{error}</div>
           )}
 
           {/* Submit CTA */}
-          <div style={{ marginTop: "auto", paddingTop: 22 }}>
+          <div className="mt-auto pt-[22px]">
             <button
-              className="btn btn-primary"
+              className="btn btn-primary w-full p-[22px] text-md rounded-3 flex items-center justify-between"
               onClick={handleSubmit}
               disabled={submitting}
-              style={{
-                width: "100%", padding: "22px", fontSize: "var(--text-md)", borderRadius: 14,
-                boxShadow: "0 1px 0 rgba(255,255,255,0.25) inset, 0 14px 32px -10px rgba(255,92,57,0.6)",
-                display: "flex", alignItems: "center", justifyContent: "space-between",
-              }}
+              style={{ boxShadow: "0 1px 0 rgba(255,255,255,0.25) inset, 0 14px 32px -10px rgba(255,92,57,0.6)" }}
             >
               <span>{submitting ? "Locking in…" : "Lock in my final answer"}</span>
               {!submitting && <Icon.Arrow size={18} />}
@@ -279,45 +243,32 @@ function ForfeitModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      style={{
-        position: "absolute", inset: 0, zIndex: 50,
-        background: "rgba(26,26,26,0.7)",
-        backdropFilter: "blur(12px)",
-        display: "grid", placeItems: "center",
-      }}
+      className="absolute inset-0 z-50 grid place-items-center bg-ink-70"
+      style={{ backdropFilter: "blur(12px)" }}
     >
       <motion.div
         initial={{ scale: 0.94, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.94, opacity: 0 }}
         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        style={{
-          background: "var(--paper)", borderRadius: 20, padding: "32px 36px",
-          width: 440, boxShadow: "0 30px 80px -20px rgba(0,0,0,0.5)",
-          textAlign: "center",
-        }}
+        className="bg-paper rounded-6 px-9 py-8 w-[440px] shadow-modal text-center"
       >
- <h2 className="h2 mb-3">
+        <h2 className="h2 mb-3">
           Forfeit today's house?
         </h2>
-        <p className="body" style={{ color: "var(--ink-mute)", marginBottom: 28 }}>
+        <p className="body text-ink-mute mb-7">
           Your streak will reset to zero. You won't be able to play today's house again.
         </p>
- <div className="flex gap-2.5">
+        <div className="flex gap-2.5">
           <button
-            className="btn btn-secondary"
+            className="btn btn-secondary flex-1"
             onClick={onCancel}
-            style={{ flex: 1 }}
           >
             Keep playing
           </button>
           <button
-            className="btn"
+            className="btn flex-1 bg-flag text-white shadow-none"
             onClick={onConfirm}
-            style={{
-              flex: 1, background: "#C8472D", color: "#fff",
-              boxShadow: "none",
-            }}
           >
             Yes, forfeit
           </button>
