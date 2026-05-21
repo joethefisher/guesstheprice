@@ -115,7 +115,7 @@ export function DailyReveal({
   const fireConfetti = result.accuracy >= 90;
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
+    <div className="relative w-full h-full overflow-hidden">
       <StageBackground />
       <SpotlightCones />
       <GrainOverlay opacity={0.3} />
@@ -127,42 +127,30 @@ export function DailyReveal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        style={{
-          position: "absolute", top: 40, left: 0, right: 0, zIndex: 4,
-          textAlign: "center",
-        }}
+        className="absolute top-10 left-0 right-0 z-[4] text-center"
       >
-        <div className="eyebrow" style={{ color: "var(--spot)", letterSpacing: "0.3em", fontSize: "var(--text-xs)" }}>
+        <div className="eyebrow text-spot tracking-[0.3em] text-xs">
           THE REVEAL · DAILY #{dailyNumber}
         </div>
       </motion.div>
 
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 5,
-        display: "flex", flexDirection: "column", justifyContent: "center",
-        padding: "100px 56px 36px", color: "var(--paper)",
-      }}>
+      <div className="absolute inset-0 z-[5] flex flex-col justify-center pt-[100px] px-14 pb-9 text-paper">
         {/* Three-column: YOUR GUESS | SOLD | ACTUAL */}
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 40,
-          alignItems: "center", marginBottom: 32,
-        }}>
+        <div
+          className="grid gap-10 items-center mb-8"
+          style={{ gridTemplateColumns: "1fr auto 1fr" }}
+        >
           {/* YOUR GUESS */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            style={{ textAlign: "right" }}
+            className="text-right"
           >
-            <div className="eyebrow" style={{
-              marginBottom: 12, color: "var(--paper-mute)", letterSpacing: "0.22em",
-            }}>
+            <div className="eyebrow mb-3 text-paper-60 tracking-[0.22em]">
               YOUR GUESS
             </div>
-            <div className="display tnum" style={{
-              fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--paper-mute)",
-              letterSpacing: "-0.025em",
-            }}>
+            <div className="display tnum text-display-l leading-none text-paper-60 tracking-[-0.025em]">
               {formatPrice(result.guess)}
             </div>
           </motion.div>
@@ -175,11 +163,9 @@ export function DailyReveal({
               : { scale: 0, rotate: -30, opacity: 0 }
             }
             transition={{ type: "spring", stiffness: 500, damping: 12 }}
-            style={{
-              animation: shake ? "cameraShake 0.4s ease-in-out" : undefined,
-            }}
+            style={{ animation: shake ? "cameraShake 0.4s ease-in-out" : undefined }}
           >
-            <div className="sold-stamp" style={{ fontSize: "var(--text-xl)", color: "var(--accent)" }}>
+            <div className="sold-stamp text-xl text-accent">
               Sold
             </div>
           </motion.div>
@@ -190,9 +176,7 @@ export function DailyReveal({
             animate={actualVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="eyebrow" style={{
-              marginBottom: 12, color: "var(--spot)", letterSpacing: "0.22em",
-            }}>
+            <div className="eyebrow mb-3 text-spot tracking-[0.22em]">
               ACTUAL PRICE
             </div>
             <motion.div
@@ -200,12 +184,8 @@ export function DailyReveal({
                 ? { scale: [1, 1.05, 1] }
                 : {}}
               transition={{ duration: 0.3, delay: 1.3 }}
-              className="display tnum"
-              style={{
-                fontSize: "var(--text-display-xl)", lineHeight: 1, color: "var(--spot)",
-                letterSpacing: "-0.03em",
-                textShadow: "0 0 60px rgba(255,214,107,0.4)",
-              }}
+              className="display tnum text-display-xl leading-none text-spot tracking-[-0.03em]"
+              style={{ textShadow: "0 0 60px rgba(255,214,107,0.4)" }}
             >
               {formatPrice(tickedActual)}
             </motion.div>
@@ -217,19 +197,12 @@ export function DailyReveal({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 1.6 }}
-          style={{ textAlign: "center", marginBottom: 28 }}
+          className="text-center mb-7"
         >
-          <div style={{
-            display: "inline-block",
-            padding: "6px 14px", borderRadius: 999,
-            background: "var(--accent)", color: "#fff",
-            fontSize: "var(--text-xs)", fontWeight: 800, letterSpacing: "0.18em", marginBottom: 14,
-          }}>
+          <div className="inline-block px-3.5 py-1.5 rounded-pill bg-accent text-white text-xs font-extrabold tracking-[0.18em] mb-3.5">
             {reactionLabel(result.accuracy)}
           </div>
-          <div className="display" style={{
-            fontSize: "var(--text-3xl)", lineHeight: 1, color: "var(--paper)",
-          }}>
+          <div className="display text-3xl leading-none text-paper">
             {reactionHeadline(result.guess, result.actual, result.accuracy)}
           </div>
         </motion.div>
@@ -239,11 +212,7 @@ export function DailyReveal({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 1.8 }}
-          style={{
-            display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 1,
-            background: "rgba(247,244,238,0.1)", borderRadius: 14,
-            overflow: "hidden", maxWidth: "var(--w-wide)", margin: "0 auto", width: "100%",
-          }}
+          className="grid grid-cols-4 gap-px bg-[rgba(247,244,238,0.1)] rounded-3 overflow-hidden max-w-wide mx-auto w-full"
         >
           {[
             { label: "Accuracy", value: `${result.accuracy}%`, tone: "var(--spot)" },
@@ -257,22 +226,15 @@ export function DailyReveal({
                 : "var(--paper)",
             },
           ].map((m, i) => (
-            <div key={i} style={{
-              background: "rgba(15,17,13,0.7)",
-              padding: "20px 18px", textAlign: "center",
-            }}>
-              <div className="eyebrow" style={{
-                color: "var(--paper-quiet)", marginBottom: 8, fontSize: "var(--text-xs)",
-              }}>
+            <div key={i} className="py-5 px-[18px] text-center" style={{ background: "rgba(15,17,13,0.7)" }}>
+              <div className="eyebrow text-paper-40 mb-2 text-xs">
                 {m.label}
               </div>
-              <div className="display tnum" style={{
-                fontSize: "var(--text-2xl)", lineHeight: 1, color: m.tone, letterSpacing: "-0.025em",
-              }}>
+              <div className="display tnum text-2xl leading-none tracking-[-0.025em]" style={{ color: m.tone }}>
                 {m.value}
               </div>
               {m.sub && (
-                <div style={{ color: "var(--paper-quiet)", fontSize: "var(--text-xs)", marginTop: 4 }}>
+                <div className="text-paper-40 text-xs mt-1">
                   {m.sub}
                 </div>
               )}
@@ -285,12 +247,10 @@ export function DailyReveal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 2.0 }}
- 
         >
           <button
-            className="btn btn-primary"
+            className="btn btn-primary py-[18px] px-8 text-base rounded-3"
             onClick={onShare}
-            style={{ padding: "18px 32px", fontSize: "var(--text-base)", borderRadius: 14 }}
           >
             <Icon.Share size={16} /> Share my result
           </button>
@@ -299,11 +259,7 @@ export function DailyReveal({
           </GhostButton>
           <button
             onClick={onExit}
-            style={{
-              background: "transparent", color: "var(--paper-default)",
-              padding: "18px 18px", fontSize: "var(--text-sm)", borderRadius: 14,
-              border: "none", cursor: "pointer",
-            }}
+            className="bg-transparent text-paper-80 py-[18px] px-[18px] text-sm rounded-3 border-none cursor-pointer"
           >
             Practice rounds →
           </button>
