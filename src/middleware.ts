@@ -14,27 +14,37 @@ const redis = RL_ENABLED
     })
   : null;
 
-const limiterScore = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, "60 s"), prefix: "rl:score" })
-  : null;
+/**
+ * Per-route sliding-window quotas. Tune these here — anything else is downstream.
+ *
+ * - score / listings / batch: tight enough to block scrapers, loose enough
+ *   for a real game session (≤5 rounds in flight + photo prefetch).
+ * - login / signup: very tight because bcrypt is CPU-heavy on Vercel
+ *   Functions; a handful of parallel attempts can pin a Lambda.
+ */
+const RATE_LIMITS = {
+  score:    { count: 20, window: "60 s" as const },
+  listings: { count: 60, window: "60 s" as const },
+  batch:    { count: 20, window: "60 s" as const },
+  login:    { count: 5,  window: "10 m" as const },
+  signup:   { count: 3,  window: "60 m" as const },
+};
 
-const limiterListings = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(60, "60 s"), prefix: "rl:listings" })
-  : null;
+function makeLimiter(name: keyof typeof RATE_LIMITS) {
+  if (!redis) return null;
+  const cfg = RATE_LIMITS[name];
+  return new Ratelimit({
+    redis,
+    limiter: Ratelimit.slidingWindow(cfg.count, cfg.window),
+    prefix: `rl:${name}`,
+  });
+}
 
-// Batch counts as 5 listings — same quota as /api/score (20 req/60s)
-const limiterBatch = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(20, "60 s"), prefix: "rl:batch" })
-  : null;
-
-// Auth: tight limits — bcrypt is CPU-heavy, so even a few parallel calls can pin a Lambda
-const limiterLogin = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, "10 m"), prefix: "rl:login" })
-  : null;
-
-const limiterSignup = redis
-  ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(3, "60 m"), prefix: "rl:signup" })
-  : null;
+const limiterScore = makeLimiter("score");
+const limiterListings = makeLimiter("listings");
+const limiterBatch = makeLimiter("batch");
+const limiterLogin = makeLimiter("login");
+const limiterSignup = makeLimiter("signup");
 
 export const config = {
   matcher: [

@@ -50,12 +50,27 @@ export function scoreGuess(guess: number, actual: number): ScoreResult {
   return { score, errorPct, errorDollars, tier };
 }
 
+/**
+ * Tier ceilings as percent-error. Order matters: each tier owns the band
+ * between the previous one's ceiling and its own. Tweak these to retune
+ * difficulty — every tier badge, share-card emoji, and combo-streak rule
+ * downstream reads from this single source.
+ */
+export const TIER_THRESHOLDS = {
+  expert: 0.02,   // within 2%
+  nailed: 0.05,   // within 5%
+  solid: 0.15,    // within 15%
+  ballpark: 0.30, // within 30%
+  off: 0.50,      // within 50%
+  // yikes: anything beyond `off`
+} as const;
+
 export function tierFromErrorPct(errorPct: number): AccuracyTier {
-  if (errorPct <= 0.02) return "expert";
-  if (errorPct <= 0.05) return "nailed";
-  if (errorPct <= 0.15) return "solid";
-  if (errorPct <= 0.30) return "ballpark";
-  if (errorPct <= 0.50) return "off";
+  if (errorPct <= TIER_THRESHOLDS.expert) return "expert";
+  if (errorPct <= TIER_THRESHOLDS.nailed) return "nailed";
+  if (errorPct <= TIER_THRESHOLDS.solid) return "solid";
+  if (errorPct <= TIER_THRESHOLDS.ballpark) return "ballpark";
+  if (errorPct <= TIER_THRESHOLDS.off) return "off";
   return "yikes";
 }
 
