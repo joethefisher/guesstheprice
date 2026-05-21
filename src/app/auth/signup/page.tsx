@@ -110,6 +110,9 @@ export default function SignUpPage() {
             <span className="text-sm text-ink-quiet">
               8 or more characters
             </span>
+            <span className="text-sm font-medium text-flag">
+              Heads up: we don't have password recovery yet — write yours down.
+            </span>
           </div>
 
           <div className="flex flex-col gap-1.5">

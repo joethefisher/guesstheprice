@@ -23,7 +23,7 @@ Think GeoGuessr, but for the housing market.
 
 | Layer | Choice |
 |---|---|
-| Framework | Next.js 14 (App Router, Server Components) |
+| Framework | Next.js 16 (App Router, Server Components, Turbopack) |
 | Language | TypeScript |
 | Database | PostgreSQL (Supabase) via Prisma |
 | Auth | NextAuth v5 (beta — see note below) with credentials + JWT sessions |
@@ -196,6 +196,30 @@ Guesstheprice is built for Vercel + Supabase + Cloudflare R2.
 3. Configure R2, Upstash, and Sentry env vars in the Vercel project.
 4. Run an ingestion job once to seed real listings: `npm run ingest:full`.
 5. Deploy.
+
+## Known limitations
+
+Things that are **intentionally** not done yet, documented here so contributors
+and curious onlookers know we know.
+
+- **No password recovery.** Signup doesn't collect an email address, and there's
+  no password-reset flow. If you forget your password, the account is effectively
+  dead. The signup page warns about this; we'll add an optional-email +
+  recovery-token flow in a follow-up.
+- **Streak leaderboard trusts client-submitted values.** `POST /api/user/daily`
+  accepts `currentStreak`, `bestStreak`, and `played` from the browser. An
+  anti-rollback check blocks *decreases* but a determined signed-in user can
+  inflate their own values. This is a casual game, not an esport — recomputing
+  these server-side from the user's `Round` history is tracked as a follow-up.
+- **Usernames are public-by-design.** Signup returns "Username taken" with a
+  409 specifically when a username collides. That allows enumeration, but the
+  same set is already published via `/api/leaderboard`. The UX win is worth it.
+- **CORS is not configured.** The API is intended for same-origin use; the
+  Next.js default of "no `Access-Control-Allow-Origin`" applies. If someone
+  needs to embed the API cross-origin, that's a separate decision.
+- **No CSP.** `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-
+  Options`, `Referrer-Policy`, and `Permissions-Policy` are set, but Content
+  Security Policy isn't — it needs nonce wiring through the React tree.
 
 ## License
 
