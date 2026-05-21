@@ -218,8 +218,8 @@ export default function DailyPage() {
   // Loading / error states
   if (route === "loading") {
     return (
-      <div className="stage-bg" style={{ position: "fixed", inset: 0, display: "grid", placeItems: "center" }}>
-        <div style={{ color: "var(--paper-quiet)", fontSize: "var(--text-sm)", fontFamily: "var(--mono)" }}>
+      <div className="stage-bg fixed inset-0 grid place-items-center">
+        <div className="text-paper-40 text-sm font-mono">
           Loading today's house…
         </div>
       </div>
@@ -228,9 +228,9 @@ export default function DailyPage() {
 
   if (fetchError && route !== "locked" && route !== "stats") {
     return (
-      <div style={{ position: "fixed", inset: 0, display: "grid", placeItems: "center", background: "#15110d" }}>
-        <div style={{ textAlign: "center", color: "var(--paper)" }}>
-          <div className="display" style={{ fontSize: "var(--text-3xl)", marginBottom: 16 }}>Couldn't load today's house.</div>
+      <div className="fixed inset-0 grid place-items-center" style={{ background: "#15110d" }}>
+        <div className="text-center text-paper">
+          <div className="display text-3xl mb-4">Couldn't load today's house.</div>
           <button className="btn btn-primary" onClick={onExit}>Go back</button>
         </div>
       </div>
@@ -239,7 +239,7 @@ export default function DailyPage() {
 
   return (
     <DailyMapsProvider>
-    <div style={{ position: "fixed", inset: 0, overflow: "hidden" }}>
+    <div className="fixed inset-0 overflow-hidden">
       <AnimatePresence mode="wait">
         {route === "intro" && (
           <Slide key="intro">
@@ -340,7 +340,7 @@ function Slide({ children }: { children: React.ReactNode }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      style={{ position: "absolute", inset: 0 }}
+      className="absolute inset-0"
     >
       {children}
     </motion.div>
