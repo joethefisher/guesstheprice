@@ -53,12 +53,19 @@ export default async function ProfilePage() {
       where: { userId, completedAt: { not: null }, gameType: "freeplay" },
       orderBy: { completedAt: "desc" },
       take: 10,
-      select: { id: true, totalScore: true, completedAt: true, totalRounds: true },
+      select: {
+        id: true,
+        totalScore: true,
+        completedAt: true,
+        totalRounds: true,
+        avgAccuracy: true,
+        bestRoundAcc: true,
+      },
     }),
     prisma.game.findFirst({
       where: { userId, completedAt: { not: null }, totalScore: { not: null }, gameType: "freeplay" },
       orderBy: { totalScore: "desc" },
-      select: { totalScore: true, completedAt: true },
+      select: { totalScore: true, completedAt: true, avgAccuracy: true },
     }),
   ]);
 
@@ -266,8 +273,15 @@ export default async function ProfilePage() {
                       </span>
                     )}
                   </div>
-                  <div className="tnum" style={{ fontSize: "var(--text-md)", fontWeight: 700, color: "var(--accent)" }}>
-                    {g.totalScore?.toLocaleString() ?? "—"}
+                  <div style={{ textAlign: "right" }}>
+                    <div className="tnum" style={{ fontSize: "var(--text-md)", fontWeight: 700, color: "var(--accent)" }}>
+                      {g.totalScore?.toLocaleString() ?? "—"}
+                    </div>
+                    {g.avgAccuracy != null && (
+                      <div className="tnum" style={{ fontSize: "var(--text-xs)", color: "var(--ink-quiet)", fontWeight: 500 }}>
+                        {Math.round(g.avgAccuracy * 100)}% avg
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { scoreGuess } from "@/lib/scoring";
+import { scoreGuess, accuracyFromGuess } from "@/lib/scoring";
 import { getReaction, getSubReaction } from "@/lib/reactions";
 
 export const dynamic = "force-dynamic";
@@ -48,9 +48,7 @@ export async function POST(req: NextRequest) {
   // Materialised 0..1 accuracy stored on the Round so aggregates don't have
   // to recompute + join Listing on every read. Clamped so wild guesses can't
   // make AVG() go negative.
-  const accuracy = listing.soldPrice > 0
-    ? Math.max(0, 1 - Math.abs(guess - listing.soldPrice) / listing.soldPrice)
-    : 0;
+  const accuracy = accuracyFromGuess(guess, listing.soldPrice);
 
   // Persist round for any active game — anonymous or signed-in.
   // Anonymous rounds power the landing "around the world" aggregate; signed-in
@@ -68,8 +66,25 @@ export async function POST(req: NextRequest) {
       if (authorized) {
         await prisma.round.upsert({
           where: { gameId_roundNumber: { gameId, roundNumber } },
-          create: { gameId, listingId, roundNumber, guess, score: result.score, accuracy, guessedAt: new Date() },
-          update: { guess, score: result.score, accuracy, guessedAt: new Date() },
+          create: {
+            gameId,
+            listingId,
+            roundNumber,
+            guess,
+            score: result.score,
+            accuracy,
+            listingCity: listing.city,
+            listingState: listing.state,
+            guessedAt: new Date(),
+          },
+          update: {
+            guess,
+            score: result.score,
+            accuracy,
+            listingCity: listing.city,
+            listingState: listing.state,
+            guessedAt: new Date(),
+          },
         });
       }
     }

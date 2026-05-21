@@ -32,6 +32,61 @@ export interface ScoreResult {
   tier: AccuracyTier;
 }
 
+/**
+ * 0..1 accuracy snapshot stored on Round and aggregated into Game.avgAccuracy /
+ * bestRoundAcc. Symmetric to {@link scoreGuess} but kept as a separate helper
+ * so writes don't have to round-trip through ScoreResult.
+ */
+export function accuracyFromGuess(guess: number, actual: number): number {
+  if (actual <= 0) return 0;
+  return Math.max(0, 1 - Math.abs(guess - actual) / actual);
+}
+
+/**
+ * Per-round inputs needed to compute the denormalized Game aggregates. Mirrors
+ * the prisma.round.findMany select used in the games/[id] PATCH handler.
+ */
+export interface RoundForAggregate {
+  score: number | null;
+  accuracy: number | null;
+  guess: number | null;
+  soldPrice: number;
+}
+
+export interface GameAggregates {
+  avgAccuracy: number | null;
+  avgErrorPct: number | null;
+  bestRoundScore: number | null;
+  worstRoundScore: number | null;
+  bestRoundAcc: number | null;
+}
+
+/**
+ * Reduce a game's rounds into the six denormalized values written to Game on
+ * completion. Returns nulls when there are no finished rounds (e.g. a game
+ * was abandoned mid-way) so the DB schema's nullable contract is preserved.
+ */
+export function computeGameAggregates(rounds: RoundForAggregate[]): GameAggregates {
+  const finished = rounds.filter((r) => r.score != null && r.accuracy != null);
+  const accuracies = finished.map((r) => r.accuracy as number);
+  const scores = finished.map((r) => r.score as number);
+  const errors = finished
+    .filter((r) => r.guess != null && r.soldPrice > 0)
+    .map((r) => Math.abs((r.guess as number) - r.soldPrice) / r.soldPrice);
+
+  return {
+    avgAccuracy: accuracies.length
+      ? accuracies.reduce((a, b) => a + b, 0) / accuracies.length
+      : null,
+    avgErrorPct: errors.length
+      ? errors.reduce((a, b) => a + b, 0) / errors.length
+      : null,
+    bestRoundScore: scores.length ? Math.max(...scores) : null,
+    worstRoundScore: scores.length ? Math.min(...scores) : null,
+    bestRoundAcc: accuracies.length ? Math.max(...accuracies) : null,
+  };
+}
+
 export function scoreGuess(guess: number, actual: number): ScoreResult {
   if (actual <= 0) {
     throw new Error("actual price must be positive");
