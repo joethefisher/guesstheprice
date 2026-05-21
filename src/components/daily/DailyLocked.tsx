@@ -53,17 +53,13 @@ export function DailyLocked({
   const canShowMap = !!(listing?.map && result);
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden", color: "var(--paper)" }}>
+    <div className="relative w-full h-full overflow-hidden text-paper">
       <StageBackground soft />
       <SpotlightCones />
       <GrainOverlay opacity={0.3} />
 
       {/* Header */}
-      <header style={{
-        position: "absolute", top: 0, left: 0, right: 0, zIndex: 10,
-        display: "flex", justifyContent: "space-between", alignItems: "center",
-        padding: "26px 36px",
-      }}>
+      <header className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center px-9 py-[26px]">
         <div style={{ filter: "invert(1) hue-rotate(180deg)" }}>
           <Wordmark size={18} />
         </div>
@@ -71,26 +67,16 @@ export function DailyLocked({
       </header>
 
       {/* Two-column grid */}
-      <div style={{
-        position: "absolute", inset: 0,
-        padding: "100px 80px 60px",
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 70,
-        alignItems: "center",
-        zIndex: 3,
-      }}>
+      <div className="absolute inset-0 z-[3] grid grid-cols-2 gap-[70px] items-center pt-[100px] px-20 pb-[60px]">
         {/* LEFT — message */}
         <div>
           {/* Done pill */}
           <motion.div
             custom={0} variants={fadeUpVariant} initial="hidden" animate="show"
+            className="inline-flex items-center gap-2.5 mb-[22px] px-3 py-1.5 rounded-pill text-sm font-bold tracking-[0.08em] text-emerald"
             style={{
-              display: "inline-flex", alignItems: "center", gap: 10, marginBottom: 22,
-              padding: "6px 12px", borderRadius: 999,
-              background: "rgba(46,111,74,0.22)", color: "var(--emerald)",
+              background: "rgba(46,111,74,0.22)",
               boxShadow: "inset 0 0 0 1px rgba(46,111,74,0.4)",
-              fontSize: "var(--text-sm)", fontWeight: 700, letterSpacing: "0.08em",
             }}
           >
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
@@ -102,20 +88,16 @@ export function DailyLocked({
           {/* Headline */}
           <motion.h1
             custom={1} variants={fadeUpVariant} initial="hidden" animate="show"
-            className="display"
-            style={{ margin: 0, fontSize: "var(--text-display-xl)", lineHeight: 0.95, letterSpacing: "-0.03em" }}
+            className="display m-0 text-display-xl leading-[0.95] tracking-[-0.03em]"
           >
             See you<br />
-            <span style={{ color: "var(--spot)", fontStyle: "italic" }}>tomorrow.</span>
+            <span className="text-spot italic">tomorrow.</span>
           </motion.h1>
 
           {/* Body copy */}
           <motion.p
             custom={2} variants={fadeUpVariant} initial="hidden" animate="show"
-            style={{
-              fontSize: "var(--text-md)", lineHeight: 1.55, color: "var(--paper-default)",
-              maxWidth: "40ch", margin: "22px 0 28px",
-            }}
+            className="text-md leading-[1.55] text-paper-80 max-w-[40ch] mt-[22px] mb-7"
           >
             You played today's house. The next one drops at midnight Eastern — same time as the rest of the world.
           </motion.p>
@@ -123,27 +105,18 @@ export function DailyLocked({
           {/* Countdown card */}
           <motion.div
             custom={3} variants={fadeUpVariant} initial="hidden" animate="show"
-            style={{
-              padding: "22px 24px", borderRadius: 16,
-              background: "rgba(247,244,238,0.06)",
-              boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.15)",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              marginBottom: 22,
-            }}
+            className="py-[22px] px-6 rounded-4 bg-paper-08 flex items-center justify-between mb-[22px]"
+            style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.15)" }}
           >
             <div>
-              <div className="eyebrow" style={{ color: "var(--paper-mute)", marginBottom: 6 }}>
+              <div className="eyebrow text-paper-60 mb-1.5">
                 NEXT HOUSE IN
               </div>
               <NextDailyCountdown size={40} color="var(--spot)" />
             </div>
             <button
-              className="btn"
-              style={{
-                background: "rgba(247,244,238,0.1)", color: "var(--paper)",
-                padding: "12px 16px", fontSize: "var(--text-sm)", borderRadius: 10,
-                boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.25)",
-              }}
+              className="btn px-4 py-3 text-sm rounded-[10px] bg-[rgba(247,244,238,0.1)] text-paper"
+              style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.25)" }}
             >
               Notify me
             </button>
@@ -152,23 +125,17 @@ export function DailyLocked({
           {/* Buttons */}
           <motion.div className="flex gap-3"
             custom={4} variants={fadeUpVariant} initial="hidden" animate="show"
- 
           >
             <button
-              className="btn btn-primary"
+              className="btn btn-primary py-4 px-[22px] text-sm rounded-2"
               onClick={onPractice}
-              style={{ padding: "16px 22px", fontSize: "var(--text-sm)", borderRadius: 12 }}
             >
               Play practice rounds
             </button>
             <button
-              className="btn"
+              className="btn py-4 px-[22px] text-sm rounded-2 bg-[rgba(247,244,238,0.08)] text-paper"
               onClick={onStats}
-              style={{
-                padding: "16px 22px", fontSize: "var(--text-sm)", borderRadius: 12,
-                background: "rgba(247,244,238,0.08)", color: "var(--paper)",
-                boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)",
-              }}
+              style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)" }}
             >
               See your stats
             </button>
@@ -179,40 +146,28 @@ export function DailyLocked({
         <motion.div
           custom={1} variants={fadeUpVariant} initial="hidden" animate="show"
         >
-          <div className="eyebrow" style={{ marginBottom: 14, color: "var(--paper-mute)" }}>
+          <div className="eyebrow mb-3.5 text-paper-60">
             Today's result · #{dailyNumber}
           </div>
 
           {/* Photo card */}
-          <div style={{
-            position: "relative", aspectRatio: "4/3", borderRadius: 16, overflow: "hidden",
-            background: "rgba(247,244,238,0.06)",
-            boxShadow: "0 24px 60px -20px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(247,244,238,0.1)",
-            marginBottom: 16,
-          }}>
+          <div
+            className="relative aspect-[4/3] rounded-4 overflow-hidden bg-paper-08 mb-4"
+            style={{ boxShadow: "0 24px 60px -20px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(247,244,238,0.1)" }}
+          >
             {photoUrl && (
               <img
                 src={photoUrl}
                 alt=""
-                style={{
-                  position: "absolute", inset: 0,
-                  width: "100%", height: "100%",
-                  objectFit: "cover", objectPosition: "center",
-                }}
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
             )}
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.75) 100%)",
-            }} />
+            <div
+              className="absolute inset-0"
+              style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.75) 100%)" }}
+            />
             {/* PLAYED badge */}
-            <div style={{
-              position: "absolute", top: 18, right: 18,
-              padding: "6px 12px", borderRadius: 999,
-              background: "var(--paper)", color: "var(--ink)",
-              fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.1em",
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
+            <div className="absolute top-[18px] right-[18px] px-3 py-1.5 rounded-pill bg-paper text-ink text-xs font-bold tracking-[0.1em] flex items-center gap-1.5">
               <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
                 <rect x="5" y="11" width="14" height="10" rx="2" />
                 <path d="M8 11V7a4 4 0 0 1 8 0v4" />
@@ -220,13 +175,11 @@ export function DailyLocked({
               PLAYED
             </div>
             {result && (
-              <div style={{
-                position: "absolute", bottom: 18, left: 20, right: 20, color: "var(--paper)",
-              }}>
-                <div className="display" style={{ fontSize: "var(--text-lg)", fontStyle: "italic", marginBottom: 4 }}>
+              <div className="absolute bottom-[18px] left-5 right-5 text-paper">
+                <div className="display text-lg italic mb-1">
                   {result.streetAddress}
                 </div>
-                <div style={{ fontSize: "var(--text-sm)", opacity: 0.85 }}>
+                <div className="text-sm opacity-85">
                   {result.city}, {result.state}
                 </div>
               </div>
@@ -235,51 +188,41 @@ export function DailyLocked({
 
           {/* Quick stat tiles */}
           {result ? (
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+            <div className="grid grid-cols-3 gap-2.5">
               {[
                 { l: "YOUR GUESS", v: formatPrice(result.guess) },
                 { l: "ACTUAL", v: formatPrice(result.actual), accent: true },
                 { l: "ACCURACY", v: `${result.accuracy}%` },
               ].map((s, i) => (
-                <div key={i} style={{
-                  padding: 14, borderRadius: 12,
-                  background: "rgba(247,244,238,0.06)",
-                  boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
-                }}>
-                  <div className="eyebrow" style={{ fontSize: "var(--text-xs)", marginBottom: 4, color: "var(--paper-mute)" }}>
+                <div
+                  key={i}
+                  className="p-3.5 rounded-2 bg-paper-08"
+                  style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)" }}
+                >
+                  <div className="eyebrow text-xs mb-1 text-paper-60">
                     {s.l}
                   </div>
-                  <div className="display tnum" style={{
-                    fontSize: "var(--text-lg)", fontStyle: "italic",
-                    color: s.accent ? "var(--spot)" : "var(--paper)",
-                  }}>
+                  <div className={`display tnum text-lg italic ${s.accent ? "text-spot" : "text-paper"}`}>
                     {s.v}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div style={{
-              padding: 14, borderRadius: 12,
-              background: "rgba(247,244,238,0.06)",
-              boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)",
-              color: "var(--paper-quiet)", fontSize: "var(--text-sm)",
-            }}>
+            <div
+              className="p-3.5 rounded-2 bg-paper-08 text-paper-40 text-sm"
+              style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1)" }}
+            >
               Result details unavailable
             </div>
           )}
 
           {/* Streak summary */}
           {storage.currentStreak > 0 && (
-            <div style={{
-              marginTop: 14, padding: "10px 14px", borderRadius: 10,
-              background: "rgba(255,92,57,0.12)",
-              display: "flex", alignItems: "center", gap: 8,
-              color: "var(--accent)", fontSize: "var(--text-sm)", fontWeight: 700,
-            }}>
+            <div className="mt-3.5 py-2.5 px-3.5 rounded-[10px] bg-[rgba(255,92,57,0.12)] flex items-center gap-2 text-accent text-sm font-bold">
               🔥 {storage.currentStreak} day streak
               {storage.bestStreak > storage.currentStreak && (
-                <span style={{ color: "var(--paper-quiet)", fontWeight: 400, fontSize: "var(--text-sm)" }}>
+                <span className="text-paper-40 font-normal text-sm">
                   · best: {storage.bestStreak}
                 </span>
               )}
@@ -290,31 +233,17 @@ export function DailyLocked({
           {canShowMap && (
             <button
               onClick={() => setMapOpen(true)}
-              className="btn"
-              style={{
-                marginTop: 14,
-                width: "100%",
-                padding: "12px 14px",
-                fontSize: "var(--text-sm)",
-                borderRadius: 10,
-                background: "rgba(247,244,238,0.06)",
-                color: "var(--paper)",
-                boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.18)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: 8,
-                cursor: "pointer",
-              }}
+              className="btn mt-3.5 w-full py-3 px-3.5 text-sm rounded-[10px] bg-paper-08 text-paper flex items-center justify-between gap-2 cursor-pointer"
+              style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.18)" }}
             >
- <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2">
                 <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
                 View map of today's house
               </span>
-              <span style={{ opacity: 0.55, fontSize: "var(--text-sm)" }}>↗</span>
+              <span className="opacity-[0.55] text-sm">↗</span>
             </button>
           )}
         </motion.div>
