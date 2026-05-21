@@ -138,7 +138,7 @@ export function DailyPlay({
             backdropFilter: "blur(10px)",
             boxShadow: "inset 0 0 0 1px rgba(255,214,107,0.4)",
           }}>
-            <svg width={12} height={12} viewBox="0 0 16 16" fill="var(--spot)">
+            <svg aria-hidden="true" width={12} height={12} viewBox="0 0 16 16" fill="var(--spot)">
               <path d="M8 0l2 5.5h6L11 9l2 6-5-3.5L3 15l2-6-5-3.5h6z" />
             </svg>
             <span style={{ fontSize: "var(--text-xs)", fontWeight: 700, letterSpacing: "0.1em" }}>
@@ -211,7 +211,7 @@ export function DailyPlay({
             fontSize: "var(--text-sm)", display: "flex", alignItems: "center", gap: 10,
             boxShadow: "inset 0 0 0 1px rgba(200,163,72,0.3)",
           }}>
-            <svg width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
+            <svg aria-hidden="true" width={14} height={14} viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 2l11 19H1L12 2zm0 5l-7 12h14L12 7zm-1 4h2v4h-2zm0 5h2v2h-2z" />
             </svg>
             <span>Lock it in carefully — there's no second try until tomorrow.</span>

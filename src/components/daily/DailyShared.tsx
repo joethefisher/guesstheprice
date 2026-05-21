@@ -34,7 +34,7 @@ export function DailyBadge({ dailyNumber, size = "md", subtle = false }: DailyBa
         flexShrink: 0,
       }}
     >
-      <svg width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor">
+      <svg aria-hidden="true" width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor">
         <path d="M8 0l2 5.5h6L11 9l2 6-5-3.5L3 15l2-6-5-3.5h6z" />
       </svg>
       <span
@@ -172,18 +172,19 @@ export function GhostButton({
 
 // ─── Dark close/icon button ───────────────────────────────────────────────────
 
-export function DarkIconButton({ onClick }: { onClick?: () => void }) {
+export function DarkIconButton({ onClick, label = "Close" }: { onClick?: () => void; label?: string }) {
   return (
     <button
       className="btn btn-icon"
       onClick={onClick}
+      aria-label={label}
       style={{
         background: "rgba(247,244,238,0.08)",
         color: "var(--paper)",
         boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)",
       }}
     >
-      <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+      <svg aria-hidden="true" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
         <path d="M5 5l14 14M19 5L5 19" />
       </svg>
     </button>

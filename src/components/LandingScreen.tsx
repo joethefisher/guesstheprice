@@ -219,7 +219,7 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
               </span>
             )}
             {spark ? (
-              <svg width={SPARK_W} height={SPARK_H} viewBox={`0 0 ${SPARK_W} ${SPARK_H}`} fill="none">
+              <svg aria-hidden="true" width={SPARK_W} height={SPARK_H} viewBox={`0 0 ${SPARK_W} ${SPARK_H}`} fill="none">
                 <polyline
                   points={spark.line}
                   stroke="var(--paper-quiet)"

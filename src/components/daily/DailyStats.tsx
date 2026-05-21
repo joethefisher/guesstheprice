@@ -296,7 +296,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
  <div className="flex justify-between mb-2.5">
                 <div className="eyebrow" style={{ color: "var(--paper-mute)" }}>Accuracy trend</div>
               </div>
-              <svg viewBox="0 0 400 80" width="100%" height="60">
+              <svg aria-hidden="true" viewBox="0 0 400 80" width="100%" height="60">
                 <defs>
                   <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="var(--spot)" stopOpacity="0.35" />
