@@ -41,8 +41,10 @@ export default function SavedPage() {
   const filtered = useMemo(() => {
     let out = [...homes];
 
-    // Price filter
+    // Price filter — homes saved before the user guessed have no actualPrice;
+    // they only show on "all" since we don't know which bucket they belong to.
     out = out.filter((h) => {
+      if (h.actualPrice === null) return priceFilter === "all";
       switch (priceFilter) {
         case "under500": return h.actualPrice < 500_000;
         case "500to1m": return h.actualPrice >= 500_000 && h.actualPrice < 1_000_000;
@@ -52,15 +54,23 @@ export default function SavedPage() {
       }
     });
 
-    // Sort
+    // Sort — null-accuracy entries sort to the bottom for closest/worst.
     switch (sort) {
       case "closest":
-        out.sort((a, b) => a.accuracy - b.accuracy);
-        out.reverse();
+        out.sort((a, b) => {
+          if (a.accuracy === null && b.accuracy === null) return 0;
+          if (a.accuracy === null) return 1;
+          if (b.accuracy === null) return -1;
+          return b.accuracy - a.accuracy;
+        });
         break;
       case "worst":
-        out.sort((a, b) => b.accuracy - a.accuracy);
-        out.reverse();
+        out.sort((a, b) => {
+          if (a.accuracy === null && b.accuracy === null) return 0;
+          if (a.accuracy === null) return 1;
+          if (b.accuracy === null) return -1;
+          return a.accuracy - b.accuracy;
+        });
         break;
       default:
         out.sort((a, b) => b.savedAt - a.savedAt);
@@ -160,10 +170,12 @@ export default function SavedPage() {
                     backgroundImage: `url(${home.photoUrl})`,
                   }}
                 >
-                  {/* Accuracy badge */}
-                  <div className="absolute top-3 left-3">
-                    <TierBadge tier={home.tier} />
-                  </div>
+                  {/* Accuracy badge — only present once the round revealed */}
+                  {home.tier !== null && (
+                    <div className="absolute top-3 left-3">
+                      <TierBadge tier={home.tier} />
+                    </div>
+                  )}
                   {/* Heart */}
                   <button
                     onClick={() => handleRemove(home.listingId)}
@@ -178,7 +190,9 @@ export default function SavedPage() {
                 {/* Card content */}
                 <div className="px-4 pt-3.5 pb-4">
                   <div className="display tnum text-lg text-ink mb-1">
-                    {formatPrice(home.actualPrice)}
+                    {home.actualPrice !== null
+                      ? formatPrice(home.actualPrice)
+                      : <span className="text-ink-mute">Saved before guess</span>}
                   </div>
                   <div className="font-semibold text-sm mb-0.5">
                     {home.neighborhood ?? home.city}
@@ -190,10 +204,16 @@ export default function SavedPage() {
                   <hr className="hairline my-3" />
 
                   <div className="tnum text-sm text-ink-mute">
-                    You guessed{" "}
-                    <span className="font-semibold text-ink">
-                      {formatPrice(home.guess)}
-                    </span>
+                    {home.guess !== null ? (
+                      <>
+                        You guessed{" "}
+                        <span className="font-semibold text-ink">
+                          {formatPrice(home.guess)}
+                        </span>
+                      </>
+                    ) : (
+                      "Not yet guessed"
+                    )}
                   </div>
                 </div>
               </motion.div>
