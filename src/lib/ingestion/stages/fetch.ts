@@ -69,6 +69,23 @@ async function fetchPage(
   }
 
   const json = await res.json();
+
+  // Don't cache responses that look like errors masquerading as 200s — the
+  // Realty US API returns `{status: false, message: "...quota..."}` with HTTP
+  // 200 when you hit your monthly cap, and historically we cached those as
+  // empty pages that then poisoned future runs for 30 days. Throwing here
+  // bubbles up to the per-page try/catch in fetchMarket() and breaks the
+  // loop without contaminating disk.
+  const apiOk =
+    json && typeof json === "object" &&
+    (json as { status?: unknown }).status !== false &&
+    (json as { data?: unknown }).data !== null &&
+    (json as { data?: unknown }).data !== undefined;
+  if (!apiOk) {
+    const msg = (json as { message?: string })?.message ?? "no data";
+    throw new Error(`API soft-failure: ${msg}`);
+  }
+
   const { listings, totalPages } = parseSearchBuyResponse(json);
 
   const withPrice = listings

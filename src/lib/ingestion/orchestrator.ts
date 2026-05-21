@@ -6,7 +6,13 @@ import { runMirror } from "./stages/mirror";
 import { runPersist } from "./stages/persist";
 import type { IngestionStats } from "./types";
 
-const prisma = new PrismaClient();
+// Long-running batch jobs use the direct DB connection — the pgbouncer
+// pooler drops connections during multi-minute persist loops, manifesting
+// as "Server has closed the connection" mid-run with no further progress.
+// Falls back to DATABASE_URL when DIRECT_URL isn't set (e.g. local SQLite).
+const prisma = new PrismaClient({
+  datasources: { db: { url: process.env.DIRECT_URL || process.env.DATABASE_URL } },
+});
 
 export interface OrchestratorOptions {
   markets?: string;    // "all" or comma-separated "City,ST"
