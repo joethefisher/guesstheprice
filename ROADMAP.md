@@ -1,4 +1,4 @@
-# BLOCKERS — open items from the overnight map build
+# ROADMAP — open items from the overnight map build
 
 Tracked as of 2026-05-18 overnight build (commit `feat(map): …`).
 
@@ -25,7 +25,7 @@ exact hover treatment, mobile spacing) against the canvas.
 ## 2. Illustrated city presets — "needs illustrated map" list
 
 The brief asked: "For each new city in the listings catalog that doesn't
-have an illustrated map preset yet, register it in BLOCKERS.md and fall
+have an illustrated map preset yet, register it in ROADMAP.md and fall
 back to the Google variant for that listing."
 
 **Status:** every city in the listings catalog is currently rendered

@@ -32,7 +32,7 @@ renders instead. Failures are logged to Sentry if Sentry is wired.
 
 The current illustrated renderer is procedural — seeded by listing ID.
 That gives every city in the catalog a usable map without per-city
-work. Hand-drawn presets aren't shipped yet (see BLOCKERS.md #2).
+work. Hand-drawn presets aren't shipped yet (see ROADMAP.md #2).
 
 When the design team produces a hand-drawn preset for a city:
 
