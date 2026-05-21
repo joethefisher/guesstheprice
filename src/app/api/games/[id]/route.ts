@@ -10,7 +10,7 @@ const Body = z.object({
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -22,7 +22,9 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
-  const game = await prisma.game.findUnique({ where: { id: params.id } });
+  const { id } = await params;
+
+  const game = await prisma.game.findUnique({ where: { id } });
   if (!game || game.userId !== session.user.id) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -31,7 +33,7 @@ export async function PATCH(
   // profile/leaderboard render. Computed once at completion using whatever
   // rounds the player actually finished.
   const rounds = await prisma.round.findMany({
-    where: { gameId: params.id },
+    where: { gameId: id },
     select: {
       score: true,
       accuracy: true,
@@ -50,7 +52,7 @@ export async function PATCH(
   const durationMs = Date.now() - game.startedAt.getTime();
 
   const updated = await prisma.game.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       completedAt: new Date(),
       totalScore: parsed.data.totalScore,

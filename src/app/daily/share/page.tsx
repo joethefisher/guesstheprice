@@ -3,11 +3,12 @@ import Link from "next/link";
 import { parseSharePayloadServer, bucketEmoji, accuracyToBucket } from "@/lib/daily/service";
 
 interface Props {
-  searchParams: { v?: string };
+  searchParams: Promise<{ v?: string }>;
 }
 
-export function generateMetadata({ searchParams }: Props): Metadata {
-  const payload = searchParams.v ? parseSharePayloadServer(searchParams.v) : null;
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const { v } = await searchParams;
+  const payload = v ? parseSharePayloadServer(v) : null;
   if (!payload) {
     return { title: "Daily Result · Pricetag" };
   }
@@ -28,8 +29,9 @@ export function generateMetadata({ searchParams }: Props): Metadata {
   };
 }
 
-export default function DailySharePage({ searchParams }: Props) {
-  const payload = searchParams.v ? parseSharePayloadServer(searchParams.v) : null;
+export default async function DailySharePage({ searchParams }: Props) {
+  const { v } = await searchParams;
+  const payload = v ? parseSharePayloadServer(v) : null;
 
   if (!payload) {
     return (

@@ -104,7 +104,22 @@ To unblock: at ingestion time, store a real neighborhood centroid as
 its own column on the listing, and have `buildMapBlock` prefer it over
 the snapped fallback. Out of scope for this overnight build.
 
-## 6. Locked-screen visual treatment
+## 6. middleware.ts → proxy.ts migration (Next 16)
+
+Next 16 renamed the `middleware` file convention to `proxy`. The current
+`src/middleware.ts` still works but emits a deprecation warning on every
+`next build` and `next dev`. The runtime semantics also changed slightly
+(proxy is conceptually a layer above middleware, with cleaner ordering
+around rewrites).
+
+To unblock: rename `src/middleware.ts` → `src/proxy.ts`, swap the export
+signature per the codemod (`npx @next/codemod@latest middleware-to-proxy`),
+re-verify the existing rate-limit matcher still fires.
+
+Deferred because the security-pass session needs to ship without scope
+creep. The deprecation warning is non-fatal in Next 16.x.
+
+## 7. Locked-screen visual treatment
 
 The brief said: "the preview card on subsequent views (e.g. the
 locked-state screen) should re-render in revealed mode."
