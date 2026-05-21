@@ -20,26 +20,23 @@ export function DailyBadge({ dailyNumber, size = "md", subtle = false }: DailyBa
 
   return (
     <div
+      className={`inline-flex items-center gap-2 rounded-pill flex-shrink-0 ${
+        subtle ? "bg-[rgba(255,214,107,0.18)] text-gold" : "bg-gold"
+      }`}
       style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 8,
         padding,
-        borderRadius: 999,
-        background: subtle ? "rgba(255,214,107,0.18)" : "var(--gold)",
-        color: subtle ? "var(--gold)" : "#15110d",
+        color: subtle ? undefined : "#15110d",
         boxShadow: subtle
           ? "inset 0 0 0 1px rgba(200,163,72,0.45)"
           : "0 4px 14px -6px rgba(200,163,72,0.7)",
-        flexShrink: 0,
       }}
     >
       <svg aria-hidden="true" width={iconSize} height={iconSize} viewBox="0 0 16 16" fill="currentColor">
         <path d="M8 0l2 5.5h6L11 9l2 6-5-3.5L3 15l2-6-5-3.5h6z" />
       </svg>
       <span
-        className="caption"
-        style={{ fontSize, letterSpacing: "0.16em", fontWeight: 700 }}
+        className="caption font-bold tracking-[0.16em]"
+        style={{ fontSize }}
       >
         DAILY · #{dailyNumber}
       </span>
@@ -95,9 +92,9 @@ export function NextDailyCountdown({
   return (
     <span className="countdown" style={{ fontSize: size, color }}>
       <span>{h}</span>
-      <span style={{ opacity: 0.4, fontSize: colonSize }}>:</span>
+      <span className="opacity-40" style={{ fontSize: colonSize }}>:</span>
       <span>{m}</span>
-      <span style={{ opacity: 0.4, fontSize: colonSize }}>:</span>
+      <span className="opacity-40" style={{ fontSize: colonSize }}>:</span>
       <span>{s}</span>
     </span>
   );
@@ -122,8 +119,8 @@ export function SpotlightCones() {
 export function GrainOverlay({ opacity = 0.3 }: { opacity?: number }) {
   return (
     <div
-      className="grain"
-      style={{ position: "absolute", inset: 0, opacity, pointerEvents: "none", zIndex: 2 }}
+      className="grain absolute inset-0 pointer-events-none z-[2]"
+      style={{ opacity }}
     />
   );
 }
@@ -153,15 +150,10 @@ export function GhostButton({
 }) {
   return (
     <button
-      className="btn"
+      className="btn bg-paper-08 text-paper px-[22px] py-4 text-sm rounded-2"
       onClick={onClick}
       style={{
-        background: "rgba(247,244,238,0.08)",
-        color: "var(--paper)",
         boxShadow: "inset 0 0 0 1.5px rgba(247,244,238,0.4)",
-        padding: "16px 22px",
-        fontSize: "var(--text-sm)",
-        borderRadius: 12,
         ...style,
       }}
     >
@@ -175,14 +167,10 @@ export function GhostButton({
 export function DarkIconButton({ onClick, label = "Close" }: { onClick?: () => void; label?: string }) {
   return (
     <button
-      className="btn btn-icon"
+      className="btn btn-icon bg-paper-08 text-paper"
       onClick={onClick}
       aria-label={label}
-      style={{
-        background: "rgba(247,244,238,0.08)",
-        color: "var(--paper)",
-        boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)",
-      }}
+      style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)" }}
     >
       <svg aria-hidden="true" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
         <path d="M5 5l14 14M19 5L5 19" />
