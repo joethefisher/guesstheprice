@@ -146,3 +146,25 @@ The exact coords are returned from `src/app/api/score/route.ts`.
   - `GoogleMapView.tsx` — variant B
   - `DailyMapsProvider.tsx` — wraps `/daily` with `APIProvider`
   - `map.css` — responsive overrides + focus rings
+
+## Production data scrubs
+
+One-off DB cleanups that aren't worth scripting but should leave a paper trail.
+
+### 2026-05-21 — pre-public hardening
+
+Done before flipping the GitHub repo public:
+
+- Deleted user `testtest` (`cmpd3vawm0000ll1gbgk1m6j6`). No games, no
+  daily progress — clean cascade.
+- Deleted anonymous test game `cmpdmxd0z0001obu4hmml0gsr` (sessionId
+  `test-anon-sess-12345`) created during an earlier Claude turn for
+  manual API testing, plus its 0 associated rounds.
+
+Post-state: 1 user (`joethefisher`), 0 anon test games.
+
+Re-run the check with:
+```bash
+URL=$(grep "^DIRECT_URL=" .env | cut -d= -f2- | tr -d '"')
+psql "$URL" -c 'SELECT COUNT(*), string_agg(username, '\'','\'') FROM "User";'
+```
