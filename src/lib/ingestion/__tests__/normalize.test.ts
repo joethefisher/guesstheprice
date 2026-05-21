@@ -1,6 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { normalizeOne } from "../stages/normalize";
 import type { RawListing } from "../types";
+
+// Pin "now" so recency-based quality rejections are deterministic. Tests use
+// sold dates within the last 24 months relative to this anchor.
+beforeAll(() => {
+  vi.setSystemTime(new Date("2026-05-21T12:00:00Z"));
+});
+afterAll(() => {
+  vi.useRealTimers();
+});
 
 function makeRaw(overrides: Partial<RawListing> = {}): RawListing {
   return {
@@ -70,9 +79,9 @@ describe("normalizeOne", () => {
   });
 
   it("parses soldDate correctly", () => {
-    const result = normalizeOne(makeRaw({ last_sold_date: "2023-03-20" }));
+    const result = normalizeOne(makeRaw({ last_sold_date: "2025-03-20" }));
     expect(result!.soldDate).toBeInstanceOf(Date);
-    expect(result!.soldDate!.getFullYear()).toBe(2023);
+    expect(result!.soldDate!.getFullYear()).toBe(2025);
   });
 
   it("handles missing baths_consolidated gracefully", () => {
