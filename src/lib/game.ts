@@ -72,10 +72,13 @@ export interface SavedHome {
   city: string;
   state: string;
   photoUrl: string;
-  guess: number;
-  actualPrice: number;
-  tier: AccuracyTier;
-  accuracy: number;
+  // Score fields are null when the user saves a listing before revealing the
+  // answer. They get filled in by the reveal-upgrade effect once the round
+  // resolves. Pre-existing localStorage records have non-null values.
+  guess: number | null;
+  actualPrice: number | null;
+  tier: AccuracyTier | null;
+  accuracy: number | null;
   savedAt: number;
 }
 

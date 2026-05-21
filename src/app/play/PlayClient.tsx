@@ -209,17 +209,25 @@ export default function PlayClient({ initialListing }: Props) {
   }
 
   function handleHeaderSave() {
-    if (!reveal || !listing) return;
-    const accuracy = Math.max(0, Math.round((1 - reveal.errorPct) * 100));
+    if (!listing) return;
+    // Toggle: clicking on an already-saved listing removes it.
+    if (isAlreadySaved) {
+      const updated = savedHomes.filter((s) => s.listingId !== listing.id);
+      setSavedHomes(updated);
+      safeSetItem("pricetag_saved", JSON.stringify(updated));
+      return;
+    }
+    const accuracy =
+      reveal ? Math.max(0, Math.round((1 - reveal.errorPct) * 100)) : null;
     handleSave({
       listingId: listing.id,
       neighborhood: listing.neighborhood,
       city: listing.city,
       state: listing.state,
       photoUrl: listing.photos[0]?.url ?? "",
-      guess: reveal.guess,
-      actualPrice: reveal.actualPrice,
-      tier: reveal.tier,
+      guess: reveal?.guess ?? null,
+      actualPrice: reveal?.actualPrice ?? null,
+      tier: reveal?.tier ?? null,
       accuracy,
       savedAt: Date.now(),
     });
@@ -233,6 +241,29 @@ export default function PlayClient({ initialListing }: Props) {
     setSavedHomes(updated);
     safeSetItem("pricetag_saved", JSON.stringify(updated));
   }
+
+  // When the round reveals, upgrade any pre-reveal save with the score data
+  // so the saved page renders the guess/accuracy/tier without a second click.
+  useEffect(() => {
+    if (!reveal || !listing) return;
+    const idx = savedHomes.findIndex((s) => s.listingId === listing.id);
+    if (idx === -1) return;
+    const existing = savedHomes[idx];
+    if (existing.actualPrice !== null) return;
+    const accuracy = Math.max(0, Math.round((1 - reveal.errorPct) * 100));
+    const upgraded: SavedHome = {
+      ...existing,
+      guess: reveal.guess,
+      actualPrice: reveal.actualPrice,
+      tier: reveal.tier,
+      accuracy,
+    };
+    const updated = [...savedHomes];
+    updated[idx] = upgraded;
+    setSavedHomes(updated);
+    safeSetItem("pricetag_saved", JSON.stringify(updated));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reveal, listing]);
 
   function handleSkip() {
     if (roundIdx + 1 >= TOTAL_ROUNDS) {
@@ -298,10 +329,9 @@ export default function PlayClient({ initialListing }: Props) {
         )}
         <div className="flex items-center gap-2">
           <button
-            className={`btn-icon ${reveal ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-40"}`}
-            aria-label="Save home"
-            onClick={reveal ? handleHeaderSave : undefined}
-            disabled={!reveal}
+            className="btn-icon cursor-pointer"
+            aria-label={isAlreadySaved ? "Remove saved home" : "Save home"}
+            onClick={handleHeaderSave}
           >
             <Icon.Heart size={18} filled={isAlreadySaved} />
           </button>
