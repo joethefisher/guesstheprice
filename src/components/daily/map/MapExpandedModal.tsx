@@ -59,16 +59,10 @@ export function MapExpandedModal({
         exit={{ opacity: 0 }}
         transition={{ duration: 0.18 }}
         onClick={onClose}
-        className="map-modal-backdrop"
+        className="map-modal-backdrop fixed inset-0 z-[60] grid place-items-center p-6"
         style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 60,
           background: "rgba(15, 13, 10, 0.55)",
           backdropFilter: "blur(8px)",
-          display: "grid",
-          placeItems: "center",
-          padding: 24,
         }}
       >
         <motion.div
@@ -81,55 +75,18 @@ export function MapExpandedModal({
           exit={{ opacity: 0, scale: 0.96 }}
           transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
           onClick={(e) => e.stopPropagation()}
-          className="map-modal-card"
-          style={{
-            width: "100%",
-            maxWidth: "var(--w-wide)",
-            maxHeight: 660,
-            background: "var(--paper)",
-            borderRadius: 22,
-            overflow: "hidden",
-            boxShadow: "0 30px 80px -20px rgba(0,0,0,0.5)",
-            display: "grid",
-            gridTemplateRows: "auto 1fr auto",
-          }}
+          className="map-modal-card w-full max-w-wide max-h-[660px] bg-paper rounded-6 overflow-hidden shadow-modal grid"
+          style={{ gridTemplateRows: "auto 1fr auto" }}
         >
           {/* Header */}
-          <div
-            style={{
-              padding: "20px 24px",
-              borderBottom: "1px solid var(--rule)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 16,
-            }}
-          >
-            <div style={{ minWidth: 0 }}>
-              <div
-                className="eyebrow"
-                style={{
-                  color: revealed ? "var(--accent)" : "var(--ink-mute)",
-                  marginBottom: 4,
-                }}
-              >
+          <div className="px-6 py-5 border-b border-rule flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <div className={`eyebrow mb-1 ${revealed ? "text-accent" : "text-ink-mute"}`}>
                 {revealed ? "Exact location" : "Neighborhood"}
               </div>
-              <div
-                style={{
-                  fontFamily: "var(--display)",
-                  fontStyle: "italic",
-                  fontWeight: 500,
-                  fontSize: "var(--text-2xl)",
-                  lineHeight: 1,
-                  color: "var(--ink)",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
+              <div className="font-display italic font-medium text-2xl leading-none text-ink whitespace-nowrap overflow-hidden text-ellipsis">
                 {neighborhood ? `${neighborhood}, ` : ""}
-                <span style={{ color: "var(--ink-mute)" }}>
+                <span className="text-ink-mute">
                   {city}, {state}
                 </span>
               </div>
@@ -140,28 +97,7 @@ export function MapExpandedModal({
               type="button"
               onClick={onClose}
               aria-label="Close map"
-              className="map-modal-close"
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                border: "none",
-                background: "var(--accent)",
-                color: "#fff",
-                cursor: "pointer",
-                display: "grid",
-                placeItems: "center",
-                transition: "background 160ms var(--ease)",
-                flexShrink: 0,
-              }}
-              onMouseEnter={(e) =>
-                ((e.currentTarget as HTMLButtonElement).style.background =
-                  "var(--accent-deep)")
-              }
-              onMouseLeave={(e) =>
-                ((e.currentTarget as HTMLButtonElement).style.background =
-                  "var(--accent)")
-              }
+              className="map-modal-close w-10 h-10 rounded-2 border-none bg-accent text-white cursor-pointer grid place-items-center transition-colors flex-shrink-0 hover:bg-accent-deep"
             >
               <svg
                 width={16}
@@ -179,13 +115,8 @@ export function MapExpandedModal({
 
           {/* Body */}
           <div
-            className="map-modal-body"
-            style={{
-              position: "relative",
-              background: "#f0e9d8",
-              overflow: "hidden",
-              minHeight: 320,
-            }}
+            className="map-modal-body relative overflow-hidden min-h-[320px]"
+            style={{ background: "#f0e9d8" }}
           >
             <MapRenderer
               listingId={listingId}
@@ -201,20 +132,10 @@ export function MapExpandedModal({
             {/* Pre-submit callout pill */}
             {!revealed && (
               <div
+                className="absolute left-1/2 bottom-[22px] -translate-x-1/2 py-2.5 px-4 rounded-pill text-paper text-sm font-semibold tracking-[0.06em] whitespace-nowrap"
                 style={{
-                  position: "absolute",
-                  left: "50%",
-                  bottom: 22,
-                  transform: "translateX(-50%)",
-                  padding: "10px 16px",
-                  borderRadius: 999,
                   background: "rgba(15, 13, 10, 0.78)",
-                  color: "var(--paper)",
-                  fontSize: "var(--text-sm)",
-                  fontWeight: 600,
-                  letterSpacing: "0.06em",
                   backdropFilter: "blur(8px)",
-                  whiteSpace: "nowrap",
                 }}
               >
                 Exact location reveals after you lock in
@@ -224,45 +145,16 @@ export function MapExpandedModal({
             {/* Post-reveal address card */}
             {revealed && streetAddress && (
               <div
-                style={{
-                  position: "absolute",
-                  left: 22,
-                  bottom: 22,
-                  right: 22,
-                  maxWidth: 420,
-                  padding: "14px 16px",
-                  background: "rgba(247, 244, 238, 0.96)",
-                  border: "1px solid var(--rule)",
-                  borderRadius: 14,
-                  boxShadow: "0 14px 36px -16px rgba(0,0,0,0.4)",
-                }}
+                className="absolute left-[22px] bottom-[22px] right-[22px] max-w-[420px] py-3.5 px-4 bg-paper-95 border border-rule rounded-3"
+                style={{ boxShadow: "0 14px 36px -16px rgba(0,0,0,0.4)" }}
               >
-                <div
-                  className="eyebrow"
-                  style={{
-                    color: "var(--accent)",
-                    marginBottom: 4,
-                  }}
-                >
+                <div className="eyebrow text-accent mb-1">
                   Address
                 </div>
-                <div
-                  style={{
-                    fontSize: "var(--text-base)",
-                    fontWeight: 600,
-                    color: "var(--ink)",
-                    lineHeight: 1.3,
-                  }}
-                >
+                <div className="text-base font-semibold text-ink leading-[1.3]">
                   {streetAddress}
                 </div>
-                <div
-                  style={{
-                    fontSize: "var(--text-sm)",
-                    color: "var(--ink-mute)",
-                    marginTop: 2,
-                  }}
-                >
+                <div className="text-sm text-ink-mute mt-0.5">
                   {city}, {state}
                 </div>
               </div>
@@ -270,33 +162,14 @@ export function MapExpandedModal({
           </div>
 
           {/* Footer legend */}
-          <div
-            style={{
-              padding: "14px 24px",
-              borderTop: "1px solid var(--rule)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              flexWrap: "wrap",
-              background: "var(--cream)",
-            }}
-          >
-            <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
+          <div className="py-3.5 px-6 border-t border-rule flex items-center justify-between gap-3 flex-wrap bg-cream">
+            <div className="flex gap-[18px] flex-wrap">
               <LegendSwatch color="#c8d8b8" label="Park" />
               <LegendSwatch color="#cfe1ec" label="Water" />
               <LegendSwatch color="#f5e1a0" label="Arterial" />
               <LegendSwatch color="#FF5C39" label={revealed ? "Pin" : "Area"} />
             </div>
-            <div
-              style={{
-                fontSize: "var(--text-xs)",
-                color: "var(--ink-quiet)",
-                letterSpacing: "0.06em",
-                textTransform: "uppercase",
-                fontFamily: "var(--mono)",
-              }}
-            >
+            <div className="text-xs text-ink-quiet tracking-[0.06em] uppercase font-mono">
               Stylized · Not to scale
             </div>
           </div>
@@ -308,24 +181,13 @@ export function MapExpandedModal({
 
 function LegendSwatch({ color, label }: { color: string; label: string }) {
   return (
- <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2">
       <span
         aria-hidden
-        style={{
-          width: 14,
-          height: 14,
-          borderRadius: 4,
-          background: color,
-          border: "1px solid rgba(26,26,26,0.1)",
-        }}
+        className="w-3.5 h-3.5 rounded-[4px] border border-ink-08"
+        style={{ background: color }}
       />
-      <span
-        style={{
-          fontSize: "var(--text-sm)",
-          color: "var(--ink-mute)",
-          fontWeight: 500,
-        }}
-      >
+      <span className="text-sm text-ink-mute font-medium">
         {label}
       </span>
     </div>
