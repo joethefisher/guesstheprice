@@ -47,37 +47,21 @@ export function MapPreviewCard({
         onClick={() => setOpen(true)}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="map-preview-card"
+        className={`map-preview-card grid items-center gap-4 w-full p-0 bg-paper rounded-3 overflow-hidden cursor-pointer text-left transition-[border-color,box-shadow,transform] duration-200 ${
+          hovered ? "border border-ink -translate-y-px" : "border border-rule translate-y-0"
+        }`}
         aria-label={`Open map of ${headline}`}
         style={{
-          display: "grid",
           gridTemplateColumns: "120px 1fr auto",
-          alignItems: "center",
-          gap: 16,
-          width: "100%",
-          padding: 0,
-          background: "var(--paper)",
-          border: `1px solid ${hovered ? "var(--ink)" : "var(--rule)"}`,
-          borderRadius: 14,
-          overflow: "hidden",
-          cursor: "pointer",
-          textAlign: "left",
           boxShadow: hovered
             ? "0 10px 24px -14px rgba(26,26,26,0.35)"
             : "0 1px 0 var(--rule)",
-          transition: "border-color 180ms var(--ease), box-shadow 180ms var(--ease), transform 180ms var(--ease)",
-          transform: hovered ? "translateY(-1px)" : "translateY(0)",
         }}
       >
         {/* Thumbnail */}
         <div
-          style={{
-            width: 120,
-            height: 84,
-            position: "relative",
-            background: "#f0e9d8",
-            borderRight: "1px solid var(--rule)",
-          }}
+          className="w-[120px] h-[84px] relative border-r border-rule"
+          style={{ background: "#f0e9d8" }}
         >
           <MapRenderer
             listingId={listingId}
@@ -92,66 +76,23 @@ export function MapPreviewCard({
         </div>
 
         {/* Middle */}
-        <div style={{ minWidth: 0, padding: "10px 0" }}>
-          <div
-            className="eyebrow"
-            style={{
-              fontSize: "var(--text-xs)",
-              color: revealed ? "var(--accent)" : "var(--ink-mute)",
-              marginBottom: 4,
-              letterSpacing: "0.12em",
-            }}
-          >
+        <div className="min-w-0 py-2.5">
+          <div className={`eyebrow text-xs mb-1 tracking-[0.12em] ${revealed ? "text-accent" : "text-ink-mute"}`}>
             {eyebrow}
           </div>
-          <div
-            style={{
-              fontFamily: "var(--display)",
-              fontStyle: "italic",
-              fontWeight: 500,
-              fontSize: "var(--text-md)",
-              lineHeight: 1.15,
-              color: "var(--ink)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
+          <div className="font-display italic font-medium text-md leading-[1.15] text-ink whitespace-nowrap overflow-hidden text-ellipsis">
             {headline}
           </div>
-          <div
-            style={{
-              fontSize: "var(--text-sm)",
-              color: "var(--ink-mute)",
-              marginTop: 2,
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
+          <div className="text-sm text-ink-mute mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
             {sub}
           </div>
         </div>
 
         {/* Expand chip */}
         <div
-          className="map-preview-chip"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "8px 14px",
-            marginRight: 14,
-            borderRadius: 999,
-            background: hovered ? "var(--ink)" : "transparent",
-            color: hovered ? "var(--paper)" : "var(--ink)",
-            border: "1px solid var(--rule)",
-            fontSize: "var(--text-sm)",
-            fontWeight: 600,
-            letterSpacing: "0.04em",
-            transition: "background 180ms var(--ease), color 180ms var(--ease)",
-            whiteSpace: "nowrap",
-          }}
+          className={`map-preview-chip flex items-center gap-1.5 py-2 px-3.5 mr-3.5 rounded-pill border border-rule text-sm font-semibold tracking-[0.04em] whitespace-nowrap transition-colors duration-200 ${
+            hovered ? "bg-ink text-paper" : "bg-transparent text-ink"
+          }`}
         >
           <span className="map-preview-chip-label">View map</span>
           <svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
