@@ -33,17 +33,14 @@ export default function DailySharePage({ searchParams }: Props) {
 
   if (!payload) {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center gap-5"
-        style={{ background: "var(--paper)" }}
-      >
-        <h2 className="display m-0" style={{ fontSize: "var(--text-2xl)", color: "var(--ink)" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5 bg-paper">
+        <h2 className="display m-0 text-2xl text-ink">
           This link has expired.
         </h2>
-        <p style={{ color: "var(--ink-mute)", fontSize: "var(--text-base)", margin: 0 }}>
+        <p className="text-ink-mute text-base m-0">
           Daily results are only shareable for a limited time.
         </p>
-        <Link href="/daily" className="btn btn-primary" style={{ fontSize: "var(--text-base)" }}>
+        <Link href="/daily" className="btn btn-primary text-base">
           Play today's house →
         </Link>
       </div>
@@ -66,59 +63,33 @@ export default function DailySharePage({ searchParams }: Props) {
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center"
-      style={{ background: "var(--ink)", padding: "40px 20px" }}
-    >
+    <div className="min-h-screen flex flex-col items-center justify-center bg-ink py-10 px-5">
       <div
-        style={{
-          width: "100%",
-          maxWidth: "var(--w-narrow)",
-          borderRadius: 28,
-          background: "rgba(247,244,238,0.04)",
-          boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1), 0 40px 80px -20px rgba(0,0,0,0.6)",
-          overflow: "hidden",
-        }}
+        className="w-full max-w-narrow rounded-7 bg-[rgba(247,244,238,0.04)] overflow-hidden"
+        style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.1), 0 40px 80px -20px rgba(0,0,0,0.6)" }}
       >
         {/* Header strip */}
-        <div
-          style={{
-            padding: "20px 24px 16px",
-            borderBottom: "1px solid rgba(247,244,238,0.08)",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <div className="px-6 pt-5 pb-4 border-b border-[rgba(247,244,238,0.08)] flex justify-between items-center">
           <div>
-            <div
-              className="eyebrow"
-              style={{ color: "var(--paper-quiet)", fontSize: "var(--text-xs)", marginBottom: 4 }}
-            >
+            <div className="eyebrow text-paper-40 text-xs mb-1">
               DAILY #{payload.n} · {date}
             </div>
-            <div style={{ color: "var(--paper)", fontWeight: 600, fontSize: "var(--text-sm)" }}>
+            <div className="text-paper font-semibold text-sm">
               {payload.c}, {payload.t}
             </div>
           </div>
-          <div
-            className="display tnum"
-            style={{ fontSize: "var(--text-display-l)", lineHeight: 1, color: "var(--accent)", letterSpacing: "-0.03em" }}
-          >
+          <div className="display tnum text-display-l leading-none text-accent tracking-[-0.03em]">
             {payload.a}
-            <span style={{ fontSize: "var(--text-lg)", color: "var(--paper-quiet)" }}>%</span>
+            <span className="text-lg text-paper-40">%</span>
           </div>
         </div>
 
         {/* Emoji history grid */}
-        <div style={{ padding: "20px 24px 16px" }}>
-          <div
-            className="eyebrow"
-            style={{ color: "var(--paper-quiet)", fontSize: "var(--text-xs)", marginBottom: 12 }}
-          >
+        <div className="px-6 pt-5 pb-4">
+          <div className="eyebrow text-paper-40 text-xs mb-3">
             LAST 7 DAYS
           </div>
-          <div style={{ display: "flex", gap: 5 }}>
+          <div className="flex gap-[5px]">
             {recent.map((v, i) => {
               const isToday = i === recent.length - 1;
               const bg = v == null ? "rgba(247,244,238,0.06)" : accuracyColor(v) + "40";
@@ -126,58 +97,33 @@ export default function DailySharePage({ searchParams }: Props) {
               return (
                 <div
                   key={i}
-                  style={{
-                    flex: 1,
-                    height: 36,
-                    borderRadius: 6,
-                    background: bg,
-                    border,
-                    display: "grid",
-                    placeItems: "center",
-                    fontSize: "var(--text-md)",
-                  }}
+                  className="flex-1 h-9 rounded-md grid place-items-center text-md"
+                  style={{ background: bg, border }}
                 >
                   {v == null ? "·" : bucketEmoji(accuracyToBucket(v))}
                 </div>
               );
             })}
           </div>
-          <div
-            style={{
-              marginTop: 10,
-              fontSize: "var(--text-sm)",
-              color: "var(--paper-quiet)",
-              textAlign: "right",
-            }}
-          >
+          <div className="mt-2.5 text-sm text-paper-40 text-right">
             🔥 {payload.s} day streak
           </div>
         </div>
 
         {/* CTA */}
-        <div style={{ padding: "0 24px 24px", display: "flex", flexDirection: "column", gap: 10 }}>
-          <Link
-            href="/daily"
-            className="btn btn-primary"
-            style={{ fontSize: "var(--text-base)", justifyContent: "space-between" }}
-          >
+        <div className="px-6 pb-6 flex flex-col gap-2.5">
+          <Link href="/daily" className="btn btn-primary text-base justify-between">
             <span>Play today's house</span>
             <span>→</span>
           </Link>
-          <div
-            style={{
-              textAlign: "center",
-              fontSize: "var(--text-sm)",
-              color: "var(--paper-quiet)",
-            }}
-          >
+          <div className="text-center text-sm text-paper-40">
             Can you get closer to the actual price?
           </div>
         </div>
       </div>
 
       {/* Wordmark below card */}
-      <div style={{ marginTop: 28, color: "var(--paper-quiet)", fontSize: "var(--text-sm)", fontWeight: 600, letterSpacing: "0.12em" }}>
+      <div className="mt-7 text-paper-40 text-sm font-semibold tracking-[0.12em]">
         PRICETAG
       </div>
     </div>
