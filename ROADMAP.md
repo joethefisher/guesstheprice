@@ -119,7 +119,23 @@ re-verify the existing rate-limit matcher still fires.
 Deferred because the security-pass session needs to ship without scope
 creep. The deprecation warning is non-fatal in Next 16.x.
 
-## 7. Locked-screen visual treatment
+## 7. Migrate off next-auth beta when 5.x stable lands
+
+`package.json` pins `next-auth: 5.0.0-beta.31` (exact, no caret). The beta
+already bit us once — production hit `UnsupportedStrategy` because the
+`session: { strategy: "jwt" }` line wasn't committed. Public users will
+hit similar paper cuts.
+
+The latest published version on npm is still `5.0.0-beta.31` as of this
+writing. Stay pinned until Auth.js v5 ships stable, then upgrade in a
+focused session: the migration touches the `auth()` helper signature
++ session callbacks + JWT/session strategy config and warrants its own
+sign-in/sign-up smoke test.
+
+JSON has no comment syntax, so this note lives here instead of in
+`package.json`.
+
+## 8. Locked-screen visual treatment
 
 The brief said: "the preview card on subsequent views (e.g. the
 locked-state screen) should re-render in revealed mode."
