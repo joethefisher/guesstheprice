@@ -74,21 +74,32 @@ model Photo {
 }
 
 model Game {
-  id          String    @id @default(cuid())
-  sessionId   String
-  userId      String?
-  gameType    String    @default("freeplay")
-  totalRounds Int       @default(5)
-  startedAt   DateTime  @default(now())
-  completedAt DateTime?
-  totalScore  Int?
+  id              String    @id @default(cuid())
+  sessionId       String
+  userId          String?
+  gameType        String    @default("freeplay")
+  totalRounds     Int       @default(5)
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  totalScore      Int?
 
-  user        User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
-  rounds      Round[]
+  // Denormalized aggregates populated at completion. Cheaper than re-joining
+  // Round + Listing for profile/leaderboard reads. Nullable so the column
+  // can land before the write path ships and for in-progress games.
+  avgAccuracy     Float?
+  avgErrorPct     Float?
+  bestRoundScore  Int?
+  worstRoundScore Int?
+  bestRoundAcc    Float?
+  durationMs      Int?
+
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  rounds          Round[]
 
   @@index([sessionId])
   @@index([userId, completedAt])
   @@index([totalScore])
+  @@index([userId, avgAccuracy])
 }
 
 model Round {
@@ -106,10 +117,16 @@ model Round {
   accuracy    Float?
   guessedAt   DateTime?
 
+  // Denormalized from Listing at score time. Lets analytics group by market
+  // without joining Listing — useful for "which markets are your best?" reports.
+  listingCity  String?
+  listingState String?
+
   @@unique([gameId, roundNumber])
   @@index([gameId, roundNumber])
   // Covering index for the landing "last 24h" aggregate.
   @@index([guessedAt])
+  @@index([listingState, listingCity])
 }
 
 model User {
