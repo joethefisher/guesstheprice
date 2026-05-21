@@ -11,7 +11,6 @@ interface Props {
 export function UserNavPill({ handle }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [hover, setHover] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,45 +31,20 @@ export function UserNavPill({ handle }: Props) {
   }, []);
 
   return (
-    <div ref={wrapRef} style={{ position: "relative" }}>
+    <div ref={wrapRef} className="relative">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
         aria-label={`Signed in as ${handle}. Open menu.`}
         aria-haspopup="menu"
         aria-expanded={open}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "6px 14px 6px 6px",
-          borderRadius: 999,
-          background: hover ? "#000" : "var(--ink)",
-          color: "var(--paper)",
-          fontSize: 13.5,
-          fontWeight: 600,
-          boxShadow: "0 6px 18px -10px rgba(0,0,0,0.45)",
-          border: "none",
-          cursor: "pointer",
-          transition: "background 200ms var(--ease)",
-        }}
+        className="inline-flex items-center gap-2.5 pr-3.5 pl-1.5 py-1.5 rounded-pill bg-ink text-paper text-[13.5px] font-semibold border-none cursor-pointer transition-colors duration-200 hover:bg-black"
+        style={{ boxShadow: "0 6px 18px -10px rgba(0,0,0,0.45)" }}
       >
         <span
           aria-hidden="true"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 28,
-            height: 28,
-            borderRadius: 999,
-            background: "var(--accent)",
-            overflow: "hidden",
-            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.18)",
-            flexShrink: 0,
-          }}
+          className="inline-flex items-center justify-center w-7 h-7 rounded-pill bg-accent overflow-hidden flex-shrink-0"
+          style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.18)" }}
         >
           <svg width={18} height={18} viewBox="0 0 100 100" aria-hidden="true">
             <g transform="rotate(-7 50 50)">
@@ -105,10 +79,7 @@ export function UserNavPill({ handle }: Props) {
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
-          style={{
-            transform: open ? "rotate(180deg)" : "none",
-            transition: "transform 180ms var(--ease)",
-          }}
+          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         >
           <path d="M6 9l6 6 6-6" />
         </svg>
@@ -117,24 +88,14 @@ export function UserNavPill({ handle }: Props) {
       {open && (
         <div
           role="menu"
-          style={{
-            position: "absolute",
-            top: "calc(100% + 8px)",
-            right: 0,
-            minWidth: 180,
-            background: "var(--paper)",
-            border: "1px solid rgba(26,26,26,0.1)",
-            borderRadius: 14,
-            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-            overflow: "hidden",
-            zIndex: 100,
-          }}
+          className="absolute top-[calc(100%+8px)] right-0 min-w-[180px] bg-paper border border-ink-08 rounded-3 overflow-hidden z-[100]"
+          style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}
         >
-          <div style={{ padding: "10px 14px", borderBottom: "1px solid rgba(26,26,26,0.06)" }}>
-            <p style={{ margin: 0, fontSize: "var(--text-sm)", color: "rgba(26,26,26,0.4)", fontWeight: 500 }}>
+          <div className="px-3.5 py-2.5 border-b border-[rgba(26,26,26,0.06)]">
+            <p className="m-0 text-sm text-ink-quiet font-medium">
               Signed in as
             </p>
-            <p style={{ margin: "2px 0 0", fontSize: "var(--text-sm)", fontWeight: 700, color: "var(--ink)" }}>
+            <p className="mt-0.5 mb-0 text-sm font-bold text-ink">
               @{handle}
             </p>
           </div>
@@ -144,39 +105,14 @@ export function UserNavPill({ handle }: Props) {
               setOpen(false);
               router.push("/profile");
             }}
-            style={{
-              width: "100%",
-              padding: "11px 14px",
-              background: "none",
-              border: "none",
-              textAlign: "left",
-              fontSize: "var(--text-sm)",
-              color: "var(--ink)",
-              cursor: "pointer",
-              fontWeight: 500,
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(26,26,26,0.04)")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "none")}
+            className="w-full px-3.5 py-2.5 bg-transparent hover:bg-[rgba(26,26,26,0.04)] border-none text-left text-sm text-ink cursor-pointer font-medium"
           >
             My profile
           </button>
           <button
             role="menuitem"
             onClick={() => signOut({ callbackUrl: "/" })}
-            style={{
-              width: "100%",
-              padding: "11px 14px",
-              background: "none",
-              border: "none",
-              textAlign: "left",
-              fontSize: "var(--text-sm)",
-              color: "var(--ink)",
-              cursor: "pointer",
-              fontWeight: 500,
-              borderTop: "1px solid rgba(26,26,26,0.06)",
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "rgba(26,26,26,0.04)")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "none")}
+            className="w-full px-3.5 py-2.5 bg-transparent hover:bg-[rgba(26,26,26,0.04)] border-none text-left text-sm text-ink cursor-pointer font-medium border-t border-[rgba(26,26,26,0.06)]"
           >
             Sign out
           </button>
