@@ -47,7 +47,7 @@ export function DailyIntro({
   onExit,
 }: Props) {
   return (
-    <div style={{ position: "relative", width: "100%", height: "100%", overflow: "hidden" }}>
+    <div className="relative w-full h-full overflow-hidden">
       <StageBackground />
       <SpotlightCones />
       <GrainOverlay opacity={0.35} />
@@ -57,19 +57,13 @@ export function DailyIntro({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
-        style={{
-          position: "absolute", top: 26, left: 36, right: 36, zIndex: 10,
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-        }}
+        className="absolute top-[26px] left-9 right-9 z-10 flex justify-between items-center"
       >
         <div style={{ filter: "invert(1) hue-rotate(180deg)" }}>
           <Wordmark size={18} />
         </div>
- <div className="flex items-center gap-[18px]">
-          <span style={{
-            display: "flex", alignItems: "center", gap: 8,
-            fontSize: "var(--text-sm)", color: "var(--paper-default)",
-          }}>
+        <div className="flex items-center gap-[18px]">
+          <span className="flex items-center gap-2 text-sm text-paper-80">
             <span className="pulse-dot" />
             playing now
           </span>
@@ -78,23 +72,16 @@ export function DailyIntro({
       </motion.header>
 
       {/* Center stage */}
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 5,
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        padding: "0 60px", textAlign: "center",
-      }}>
+      <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-[60px] text-center">
         {/* Plaque + bulbs */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-          style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 26, gap: 16 }}
+          className="flex flex-col items-center mb-[26px] gap-4"
         >
-          <div className="plaque" style={{ fontSize: "var(--text-sm)" }}>
-            <span style={{
-              fontStyle: "normal", fontFamily: "var(--body)",
-              fontSize: "var(--text-xs)", letterSpacing: "0.22em", fontWeight: 700,
-            }}>
+          <div className="plaque text-sm">
+            <span className="not-italic font-sans text-xs tracking-[0.22em] font-bold">
               NOW OPEN
             </span>
           </div>
@@ -106,8 +93,8 @@ export function DailyIntro({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.3 }}
-          className="eyebrow"
-          style={{ color: "rgba(255,214,107,0.85)", marginBottom: 14, letterSpacing: "0.22em" }}
+          className="eyebrow mb-3.5 tracking-[0.22em]"
+          style={{ color: "rgba(255,214,107,0.85)" }}
         >
           DAILY #{dailyNumber}{dateET ? ` · ${formatDateLabel(dateET)}` : ""}
         </motion.div>
@@ -117,24 +104,22 @@ export function DailyIntro({
           variants={staggerContainer}
           initial="hidden"
           animate="show"
-          className="display"
+          className="display m-0 text-paper leading-[0.95] max-w-[16ch] tracking-[-0.03em] flex flex-wrap justify-center"
           style={{
-            margin: 0, fontSize: "clamp(72px, 9vw, 120px)",
-            color: "var(--paper)", lineHeight: 0.95,
-            maxWidth: "16ch", letterSpacing: "-0.03em",
+            fontSize: "clamp(72px, 9vw, 120px)",
             textShadow: "0 4px 40px rgba(255,214,107,0.25)",
-            display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0 0.25em",
+            gap: "0 0.25em",
           }}
         >
           {["One", "house."].map((w, i) => (
             <motion.span key={i} variants={wordVariant}>{w}</motion.span>
           ))}
-          <br style={{ width: "100%", content: '""' }} />
+          <br className="w-full" />
           {["One", "guess."].map((w, i) => (
             <motion.span
               key={`b${i}`}
               variants={wordVariant}
-              style={{ color: i === 1 ? "var(--spot)" : "var(--paper)" }}
+              className={i === 1 ? "text-spot" : "text-paper"}
             >
               {w}
             </motion.span>
@@ -146,11 +131,7 @@ export function DailyIntro({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.8 }}
-          style={{
-            fontSize: "var(--text-md)", lineHeight: 1.5,
-            color: "var(--paper-default)",
-            maxWidth: "44ch", margin: "28px 0 36px",
-          }}
+          className="text-md leading-[1.5] text-paper-80 max-w-[44ch] mt-7 mb-9"
         >
           Everyone gets the same house today. No do-overs.
           See how close you land and where you rank.
@@ -161,14 +142,9 @@ export function DailyIntro({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.9 }}
-          className="btn"
+          className="btn bg-accent text-white py-6 px-10 text-md rounded-4 inline-flex items-center gap-3"
           onClick={onBegin}
-          style={{
-            background: "var(--accent)", color: "#fff",
-            padding: "24px 40px", fontSize: "var(--text-md)", borderRadius: 16,
-            boxShadow: "0 1px 0 rgba(255,255,255,0.3) inset, 0 20px 50px -10px rgba(255,92,57,0.6)",
-            display: "inline-flex", alignItems: "center", gap: 12,
-          }}
+          style={{ boxShadow: "0 1px 0 rgba(255,255,255,0.3) inset, 0 20px 50px -10px rgba(255,92,57,0.6)" }}
         >
           Open today's listing
           <Icon.Arrow size={20} />
@@ -179,21 +155,18 @@ export function DailyIntro({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 1.0 }}
-          style={{
-            display: "flex", alignItems: "center", gap: 28,
-            marginTop: 38, color: "var(--paper-default)", fontSize: "var(--text-sm)",
-          }}
+          className="flex items-center gap-7 mt-[38px] text-paper-80 text-sm"
         >
           {currentStreak > 0 && (
             <>
- <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2">
                 <Icon.Flame size={14} />
-                <span style={{ color: "var(--paper)", fontWeight: 700 }} className="tnum">
+                <span className="text-paper font-bold tnum">
                   {currentStreak}
                 </span>
                 <span>day streak</span>
               </span>
-              <span style={{ width: 1, height: 14, background: "rgba(247,244,238,0.2)" }} />
+              <span className="w-px h-3.5 bg-paper-20" />
             </>
           )}
           {streakBroken && (
@@ -203,7 +176,7 @@ export function DailyIntro({
           )}
           <span>
             Next house in{" "}
-            <span style={{ color: "var(--paper)", fontFamily: "var(--mono)", fontWeight: 700 }}>
+            <span className="text-paper font-mono font-bold">
               <NextDailyCountdown size={13} color="var(--paper)" />
             </span>
           </span>
@@ -215,17 +188,14 @@ export function DailyIntro({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 1.1 }}
+        className="absolute bottom-6 left-9 right-9 z-10 flex justify-between items-center px-[22px] py-3.5 rounded-2 bg-paper-08 text-paper-95 text-sm"
         style={{
-          position: "absolute", bottom: 24, left: 36, right: 36, zIndex: 10,
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          padding: "14px 22px", borderRadius: 12,
-          background: "rgba(247,244,238,0.06)", backdropFilter: "blur(12px)",
-          color: "var(--paper-strong)", fontSize: "var(--text-sm)",
+          backdropFilter: "blur(12px)",
           boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.08)",
         }}
       >
         <span>One guess. No do-overs. Resets at midnight Eastern.</span>
-        <span style={{ color: "var(--paper-quiet)" }}>·</span>
+        <span className="text-paper-40">·</span>
         <span>Same house for everyone, everywhere.</span>
       </motion.div>
     </div>
