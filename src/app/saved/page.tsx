@@ -4,7 +4,6 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Wordmark } from "@/components/Wordmark";
-import { TierBadge } from "@/components/GameChips";
 import { Icon } from "@/components/Icons";
 import { formatPrice, type SavedHome } from "@/lib/game";
 
@@ -170,12 +169,6 @@ export default function SavedPage() {
                     backgroundImage: `url(${home.photoUrl})`,
                   }}
                 >
-                  {/* Accuracy badge — only present once the round revealed */}
-                  {home.tier !== null && (
-                    <div className="absolute top-3 left-3">
-                      <TierBadge tier={home.tier} />
-                    </div>
-                  )}
                   {/* Heart */}
                   <button
                     onClick={() => handleRemove(home.listingId)}
@@ -191,7 +184,7 @@ export default function SavedPage() {
                 <div className="px-4 pt-3.5 pb-4">
                   <div className="display tnum text-lg text-ink mb-1">
                     {home.actualPrice !== null
-                      ? formatPrice(home.actualPrice)
+                      ? `Sold for ${formatPrice(home.actualPrice)}`
                       : <span className="text-ink-mute">Saved before guess</span>}
                   </div>
                   <div className="font-semibold text-sm mb-0.5">
