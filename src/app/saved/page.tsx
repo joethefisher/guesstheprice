@@ -83,56 +83,37 @@ export default function SavedPage() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--paper)" }}>
+    <div className="min-h-screen bg-paper">
       {/* Header */}
-      <header
-        className="flex items-center justify-between px-10 py-6"
-        style={{ borderBottom: "1px solid var(--rule)" }}
-      >
+      <header className="flex items-center justify-between px-10 py-6 border-b border-rule">
         <Wordmark size={20} />
-        <button className="btn btn-secondary" style={{ fontSize: "var(--text-sm)" }} onClick={() => router.push("/play")}>
+        <button className="btn btn-secondary text-sm" onClick={() => router.push("/play")}>
           Play again →
         </button>
       </header>
 
       {/* Display headline */}
-      <div style={{ padding: "48px 40px 32px" }}>
-        <h1
-          className="display m-0"
-          style={{ fontSize: "clamp(40px,5vw,72px)", color: "var(--ink)" }}
-        >
+      <div className="px-10 pt-12 pb-8">
+        <h1 className="display m-0 text-ink" style={{ fontSize: "clamp(40px,5vw,72px)" }}>
           Homes you'd actually live in.
         </h1>
       </div>
 
       {/* Sticky filter rail */}
       <div
-        className="sticky top-0 z-10 flex items-center justify-between px-10 py-3 gap-6"
-        style={{
-          background: "rgba(247,244,238,0.92)",
-          backdropFilter: "blur(12px)",
-          borderTop: "1px solid var(--rule)",
-          borderBottom: "1px solid var(--rule)",
-        }}
+        className="sticky top-0 z-10 flex items-center justify-between px-10 py-3 gap-6 bg-paper-95 border-y border-rule"
+        style={{ backdropFilter: "blur(12px)" }}
       >
         <div className="flex gap-2">
           {PRICE_FILTERS.map((f) => (
             <button
               key={f.key}
               onClick={() => setPriceFilter(f.key)}
-              className="caption"
-              style={{
-                padding: "7px 14px",
-                borderRadius: 999,
-                fontSize: "var(--text-xs)",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                background: priceFilter === f.key ? "var(--ink)" : "transparent",
-                color: priceFilter === f.key ? "var(--paper)" : "var(--ink-mute)",
-                border: priceFilter === f.key ? "none" : "1.5px solid var(--rule)",
-                transition: "all 200ms cubic-bezier(0.32,0.72,0,1)",
-                cursor: "pointer",
-              }}
+              className={`caption px-3.5 py-[7px] rounded-pill text-xs font-semibold tracking-[0.08em] cursor-pointer transition-all duration-200 ${
+                priceFilter === f.key
+                  ? "bg-ink text-paper border-none"
+                  : "bg-transparent text-ink-mute border-[1.5px] border-rule"
+              }`}
             >
               {f.label}
             </button>
@@ -144,19 +125,9 @@ export default function SavedPage() {
             <button
               key={s.key}
               onClick={() => setSort(s.key)}
-              className="caption"
-              style={{
-                padding: "7px 14px",
-                borderRadius: 999,
-                fontSize: "var(--text-xs)",
-                fontWeight: 600,
-                letterSpacing: "0.08em",
-                background: sort === s.key ? "rgba(26,26,26,0.08)" : "transparent",
-                color: sort === s.key ? "var(--ink)" : "var(--ink-mute)",
-                border: "none",
-                transition: "all 200ms cubic-bezier(0.32,0.72,0,1)",
-                cursor: "pointer",
-              }}
+              className={`caption px-3.5 py-[7px] rounded-pill text-xs font-semibold tracking-[0.08em] border-none cursor-pointer transition-all duration-200 ${
+                sort === s.key ? "bg-ink-08 text-ink" : "bg-transparent text-ink-mute"
+              }`}
             >
               {s.label}
             </button>
@@ -165,17 +136,12 @@ export default function SavedPage() {
       </div>
 
       {/* Content */}
-      <div style={{ padding: "28px 40px" }}>
+      <div className="px-10 py-7">
         {filtered.length === 0 ? (
           <EmptyState onPlay={() => router.push("/play")} />
         ) : (
           /* 3-column CSS masonry */
-          <div
-            style={{
-              columnCount: 3,
-              columnGap: 20,
-            }}
-          >
+          <div style={{ columnCount: 3, columnGap: 20 }}>
             {filtered.map((home, i) => (
               <motion.div
                 key={home.listingId}
@@ -183,26 +149,15 @@ export default function SavedPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: i * 0.04, ease: [0.32, 0.72, 0, 1] }}
                 whileHover={{ y: -3 }}
-                style={{
-                  breakInside: "avoid",
-                  marginBottom: 20,
-                  background: "var(--paper)",
-                  border: "1px solid var(--rule)",
-                  borderRadius: 18,
-                  overflow: "hidden",
-                  boxShadow: "0 1px 0 var(--rule), 0 8px 24px -16px rgba(0,0,0,0.18)",
-                  cursor: "pointer",
-                  transition: "transform 280ms cubic-bezier(0.32,0.72,0,1), box-shadow 280ms cubic-bezier(0.32,0.72,0,1)",
-                }}
+                className="mb-5 bg-paper border border-rule rounded-5 overflow-hidden shadow-card cursor-pointer transition-[transform,box-shadow] duration-[280ms]"
+                style={{ breakInside: "avoid" }}
               >
                 {/* Photo */}
                 <div
+                  className="relative bg-cover bg-center"
                   style={{
-                    position: "relative",
                     height: CARD_HEIGHTS[i % CARD_HEIGHTS.length],
                     backgroundImage: `url(${home.photoUrl})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
                   }}
                 >
                   {/* Accuracy badge */}
@@ -212,19 +167,8 @@ export default function SavedPage() {
                   {/* Heart */}
                   <button
                     onClick={() => handleRemove(home.listingId)}
-                    className="absolute top-3 right-3"
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 999,
-                      background: "rgba(26,26,26,0.55)",
-                      backdropFilter: "blur(8px)",
-                      border: "none",
-                      cursor: "pointer",
-                      display: "grid",
-                      placeItems: "center",
-                      color: "var(--accent)",
-                    }}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-pill bg-ink-55 border-none cursor-pointer grid place-items-center text-accent"
+                    style={{ backdropFilter: "blur(8px)" }}
                     aria-label="Remove from saved"
                   >
                     <Icon.Heart filled size={14} />
@@ -232,25 +176,22 @@ export default function SavedPage() {
                 </div>
 
                 {/* Card content */}
-                <div style={{ padding: "14px 16px 16px" }}>
-                  <div
-                    className="display tnum"
-                    style={{ fontSize: "var(--text-lg)", color: "var(--ink)", marginBottom: 4 }}
-                  >
+                <div className="px-4 pt-3.5 pb-4">
+                  <div className="display tnum text-lg text-ink mb-1">
                     {formatPrice(home.actualPrice)}
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: "var(--text-sm)", marginBottom: 2 }}>
+                  <div className="font-semibold text-sm mb-0.5">
                     {home.neighborhood ?? home.city}
                   </div>
-                  <div className="tnum" style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
+                  <div className="tnum text-sm text-ink-mute">
                     {home.city}, {home.state}
                   </div>
 
                   <hr className="hairline my-3" />
 
-                  <div className="tnum" style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
+                  <div className="tnum text-sm text-ink-mute">
                     You guessed{" "}
-                    <span style={{ fontWeight: 600, color: "var(--ink)" }}>
+                    <span className="font-semibold text-ink">
                       {formatPrice(home.guess)}
                     </span>
                   </div>
@@ -277,18 +218,15 @@ function EmptyState({ onPlay }: { onPlay: () => void }) {
       </svg>
 
       <div className="text-center">
-        <h2
-          className="display m-0 mb-2"
-          style={{ fontSize: "var(--text-2xl)", color: "var(--ink)" }}
-        >
+        <h2 className="display m-0 mb-2 text-2xl text-ink">
           No saved homes yet.
         </h2>
-        <p style={{ color: "var(--ink-mute)", fontSize: "var(--text-md)", margin: 0 }}>
+        <p className="text-ink-mute text-md m-0">
           Save homes during a game with the heart button.
         </p>
       </div>
 
-      <button onClick={onPlay} className="btn btn-primary" style={{ fontSize: "var(--text-base)" }}>
+      <button onClick={onPlay} className="btn btn-primary text-base">
         Start playing →
       </button>
     </div>
