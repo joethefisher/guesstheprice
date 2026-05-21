@@ -1,13 +1,11 @@
 import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "@/lib/db";
 
+// No PrismaAdapter — Credentials + JWT does not use the OAuth Session/Account
+// tables. Users live in our own User table, looked up directly by username.
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  // NextAuth v5 requires JWT strategy when the Credentials provider is used —
-  // database sessions are not supported with credentials login.
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   providers: [
     Credentials({
