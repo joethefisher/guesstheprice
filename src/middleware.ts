@@ -52,7 +52,12 @@ export const config = {
     "/api/listings",
     "/api/listings/batch",
     "/api/auth/signup",
-    "/api/auth/[...nextauth]",
+    // Use the path-to-regexp `:path*` syntax so all NextAuth subpaths
+    // (callback/credentials, session, csrf, signout, etc.) fire the
+    // login limiter. The previous `[...nextauth]` syntax is file-system
+    // routing, not path-to-regexp — it matched no URLs and the
+    // bcrypt-heavy login rate limit was silently a no-op.
+    "/api/auth/:path*",
   ],
 };
 
