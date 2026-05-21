@@ -14,7 +14,7 @@ Think GeoGuessr, but for the housing market.
 - **Streaks** across sessions
 - **Shareable score cards** with Wordle-style emoji grids
 - **Ingestion pipeline** that fetches, normalizes, and caches real listings from the Realtor.com API
-- **Photo mirroring** to Cloudflare R2 (resized variants with immutable cache headers)
+- **Photo mirroring pipeline** ready for Cloudflare R2 (currently serves photos directly from the source CDN — see "Known limitations")
 - **Rate limiting** via Upstash Redis on public API routes
 - **Error tracking** via Sentry (server, edge, and browser)
 - **Open Graph share images** generated on-demand with `next/og`
@@ -30,7 +30,7 @@ Think GeoGuessr, but for the housing market.
 | Styling | Tailwind CSS with a custom token system |
 | Animation | Framer Motion |
 | Maps | `@vis.gl/react-google-maps` + Google Maps Static API |
-| Photo storage | Cloudflare R2 |
+| Photo storage | Cloudflare R2 (pipeline ready; not wired in production yet) |
 | Rate limiting | Upstash Redis |
 | Observability | Sentry |
 | Testing | Vitest |
@@ -220,6 +220,12 @@ and curious onlookers know we know.
 - **No CSP.** `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-
   Options`, `Referrer-Policy`, and `Permissions-Policy` are set, but Content
   Security Policy isn't — it needs nonce wiring through the React tree.
+- **R2 photo mirror isn't wired up yet.** The ingestion pipeline has a
+  mirror stage (`src/lib/ingestion/stages/mirror.ts`) that resizes photos
+  with Sharp and uploads to Cloudflare R2 if R2 env vars are set. They
+  aren't — so the game currently serves photos straight from Realtor.com's
+  `*.rdcpix.com` CDN. That works but depends on Realtor keeping those URLs
+  live. Wiring R2 up is tracked as a focused follow-up in `ROADMAP.md`.
 
 ## License
 

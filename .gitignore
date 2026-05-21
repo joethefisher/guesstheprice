@@ -19,3 +19,4 @@ tsconfig.tsbuildinfo
 supabase-backup-*.sql
 *.dump
 
+design_handoff_pricetag/

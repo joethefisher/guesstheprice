@@ -5,7 +5,8 @@ Tracked as of 2026-05-18 overnight build (commit `feat(map): …`).
 ## 1. Missing design artifacts referenced in the brief
 
 The integration brief referenced files that aren't in the repo. The build
-proceeded with the integration spec (`design_handoff_pricetag/GOOGLE_MAPS_INTEGRATION.md`)
+proceeded with the integration spec (kept locally outside the repo at
+`design_handoff_pricetag/GOOGLE_MAPS_INTEGRATION.md`)
 plus a generic illustrated renderer. Specific gaps:
 
 - `src/daily/map.jsx` — referenced as the design-reference source for
@@ -135,7 +136,75 @@ sign-in/sign-up smoke test.
 JSON has no comment syntax, so this note lives here instead of in
 `package.json`.
 
-## 8. Locked-screen visual treatment
+## 8. Wire Cloudflare R2 for self-hosted photo serving (focus session)
+
+The ingestion pipeline already has a mirror stage
+(`src/lib/ingestion/stages/mirror.ts`) that resizes photos with Sharp
+into 1600w + 400w variants and uploads to R2 — but the bucket and
+public hostname don't exist yet. Result: photos served from `*.rdcpix.com`
+(Realtor.com's CDN) on every page load. Brittle if Realtor rotates URLs.
+
+Estimated effort: 1–2 hours in a focused session.
+
+**Step-by-step plan:**
+
+1. **Create the R2 bucket** in the Cloudflare dashboard.
+   - Name: `pricetag-photos` (matches the `R2_BUCKET_NAME` default in `.env.example`).
+   - Region: Automatic.
+   - **Public access**: enable read-only public via `r2.dev` first, switch
+     to custom domain in step 3.
+
+2. **Create an API token** scoped to that one bucket.
+   - Permissions: Object Read & Write.
+   - Save the Access Key ID + Secret Access Key.
+   - Put both into Vercel env (and a local `.env` for ingestion runs):
+     `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
+     `R2_BUCKET_NAME`.
+
+3. **Set up the public hostname** `photos.pricetag.app`.
+   - In Cloudflare Dashboard → R2 → bucket → Settings → Custom Domains,
+     add `photos.pricetag.app`.
+   - Cloudflare auto-creates the DNS record on `pricetag.app` (assumes
+     the apex is already in Cloudflare — confirm).
+   - Verify resolution: `dig photos.pricetag.app` should return a
+     Cloudflare IP.
+   - **Verify public-read-only ACL** (the security audit's item 15):
+     `curl -X PUT -d test https://photos.pricetag.app/probe.txt` must
+     return 403/405, not 200.
+   - Set `R2_PUBLIC_URL=https://photos.pricetag.app` in env.
+
+4. **Backfill existing photos.**
+   - Each row in `Photo` currently has `url` and `sourceUrl` pointing
+     at `*.rdcpix.com`. Re-run the mirror + persist stages:
+     `npm run ingest:mirror && npm run ingest:persist`.
+   - Mirror reads `.cache/normalized/`, so this only mirrors photos
+     already ingested; new ingestion runs will mirror automatically.
+   - Sanity check: `SELECT COUNT(*), COUNT(CASE WHEN url LIKE
+     'https://photos.pricetag.app/%' THEN 1 END) FROM "Photo";` — both
+     should match.
+
+5. **Confirm `next.config.js` allow-list still works.**
+   - `photos.pricetag.app` is already in `images.remotePatterns`.
+   - Hit `/_next/image?url=https%3A%2F%2Fphotos.pricetag.app%2F…&w=640`
+     and confirm 200.
+
+6. **Remove the rdcpix fallback if R2 has full coverage.**
+   - Once 100% of `Photo.url` rows are R2-hosted, the
+     `**.rdcpix.com` entry in `next.config.js.images.remotePatterns`
+     can be removed. Keep it for transition period — removing too
+     early breaks any unmirrored photos.
+
+7. **Update README.md** to remove the "R2 not wired" caveat and the
+   matching `ROADMAP.md` entry.
+
+**Risks:**
+- Bandwidth costs on R2 are free up to 10TB/month for "infrequent
+  access" pricing — the game's photo volume is well under that.
+- If R2 goes down, photos break. The error boundary doesn't catch
+  `<Image>` failures; consider a per-photo fallback to the original
+  `sourceUrl` if `url` 404s.
+
+## 9. Locked-screen visual treatment
 
 The brief said: "the preview card on subsequent views (e.g. the
 locked-state screen) should re-render in revealed mode."
