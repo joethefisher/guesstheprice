@@ -7,12 +7,6 @@ import type { AccuracyBucket } from "@/lib/daily/service";
 
 export const dynamic = "force-dynamic";
 
-function formatPrice(n: number): string {
-  if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `$${Math.round(n / 1_000)}K`;
-  return `$${n}`;
-}
-
 const BUCKET_LABELS: Record<AccuracyBucket, string> = {
   "90+": "90%+",
   "80": "80–89%",
@@ -83,13 +77,10 @@ export default async function ProfilePage() {
   const recentHistory = history.slice(-14);
 
   return (
-    <div className="min-h-screen" style={{ background: "var(--paper)" }}>
-      <header
-        className="flex items-center justify-between px-10 py-6"
-        style={{ borderBottom: "1px solid var(--rule)" }}
-      >
-        <Link href="/" style={{ textDecoration: "none" }}>
-          <span className="display" style={{ fontSize: "var(--text-lg)", fontStyle: "italic", color: "var(--ink)" }}>
+    <div className="min-h-screen bg-paper">
+      <header className="flex items-center justify-between px-10 py-6 border-b border-rule">
+        <Link href="/" className="no-underline">
+          <span className="display text-lg italic text-ink">
             Pricetag
           </span>
         </Link>
@@ -101,57 +92,41 @@ export default async function ProfilePage() {
         </Link>
       </header>
 
-      <div style={{ maxWidth: "var(--w-default)", margin: "0 auto", padding: "48px 32px" }}>
+      <div className="max-w-default mx-auto py-12 px-8">
         {/* Hero: username + member since */}
         <div className="mb-12">
-          <div className="eyebrow mb-3" style={{ color: "var(--ink-mute)" }}>Member since {memberSince}</div>
-          <h1 className="display m-0" style={{ fontSize: "clamp(44px, 7vw, 88px)", lineHeight: 0.9 }}>
+          <div className="eyebrow mb-3 text-ink-mute">Member since {memberSince}</div>
+          <h1 className="display m-0 leading-[0.9]" style={{ fontSize: "clamp(44px, 7vw, 88px)" }}>
             @{user.username}
           </h1>
         </div>
 
         {/* Stat cards row */}
-        <div
-          className="grid gap-4 mb-10"
-          style={{ gridTemplateColumns: "repeat(4, 1fr)" }}
-        >
+        <div className="grid grid-cols-4 gap-4 mb-10">
           {[
             { label: "Best score", value: bestGame?.totalScore?.toLocaleString() ?? "—", sub: "freeplay" },
             { label: "Games played", value: recentGames.length > 0 ? `${recentGames.length}+` : "0", sub: "freeplay" },
             { label: "Day streak", value: dailyProgress?.currentStreak?.toString() ?? "0", sub: "current" },
             { label: "Best streak", value: dailyProgress?.bestStreak?.toString() ?? "0", sub: "all-time" },
           ].map((s) => (
-            <div
-              key={s.label}
-              style={{
-                background: "var(--cream)",
-                borderRadius: 16,
-                padding: "20px 22px",
-              }}
-            >
-              <div className="eyebrow mb-2" style={{ color: "var(--ink-mute)" }}>{s.label}</div>
-              <div className="display tnum" style={{ fontSize: "var(--text-2xl)", color: "var(--ink)", lineHeight: 1 }}>
+            <div key={s.label} className="bg-cream rounded-4 py-5 px-[22px]">
+              <div className="eyebrow mb-2 text-ink-mute">{s.label}</div>
+              <div className="display tnum text-2xl text-ink leading-none">
                 {s.value}
               </div>
-              <div style={{ fontSize: "var(--text-xs)", color: "var(--ink-quiet)", marginTop: 4, fontWeight: 500 }}>
+              <div className="text-xs text-ink-quiet mt-1 font-medium">
                 {s.sub}
               </div>
             </div>
           ))}
         </div>
 
-        <div className="grid gap-8" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="grid grid-cols-2 gap-8">
           {/* Daily accuracy distribution */}
-          <div
-            style={{
-              background: "var(--cream)",
-              borderRadius: 20,
-              padding: "24px",
-            }}
-          >
-            <div className="eyebrow mb-4" style={{ color: "var(--ink-mute)" }}>Daily accuracy breakdown</div>
+          <div className="bg-cream rounded-6 p-6">
+            <div className="eyebrow mb-4 text-ink-mute">Daily accuracy breakdown</div>
             {totalDistribution === 0 ? (
-              <div style={{ color: "var(--ink-quiet)", fontSize: "var(--text-sm)", padding: "16px 0" }}>
+              <div className="text-ink-quiet text-sm py-4">
                 No daily games played yet.
               </div>
             ) : (
@@ -162,22 +137,17 @@ export default async function ProfilePage() {
                   return (
                     <div key={b}>
                       <div className="flex items-center justify-between mb-1">
-                        <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)", fontWeight: 500 }}>
+                        <div className="text-sm text-ink-mute font-medium">
                           {bucketEmoji(b)} {BUCKET_LABELS[b]}
                         </div>
-                        <div className="tnum" style={{ fontSize: "var(--text-sm)", fontWeight: 600, color: "var(--ink)" }}>
+                        <div className="tnum text-sm font-semibold text-ink">
                           {count}
                         </div>
                       </div>
-                      <div style={{ height: 6, borderRadius: 999, background: "rgba(26,26,26,0.08)" }}>
+                      <div className="h-1.5 rounded-pill bg-ink-08">
                         <div
-                          style={{
-                            height: "100%",
-                            borderRadius: 999,
-                            width: `${pct}%`,
-                            background: BUCKET_COLOR[b],
-                            transition: "width 0.5s ease",
-                          }}
+                          className="h-full rounded-pill transition-[width] duration-500 ease-out"
+                          style={{ width: `${pct}%`, background: BUCKET_COLOR[b] }}
                         />
                       </div>
                     </div>
@@ -188,20 +158,14 @@ export default async function ProfilePage() {
           </div>
 
           {/* Recent daily history */}
-          <div
-            style={{
-              background: "var(--cream)",
-              borderRadius: 20,
-              padding: "24px",
-            }}
-          >
-            <div className="eyebrow mb-4" style={{ color: "var(--ink-mute)" }}>Last 14 days</div>
+          <div className="bg-cream rounded-6 p-6">
+            <div className="eyebrow mb-4 text-ink-mute">Last 14 days</div>
             {recentHistory.every((v) => v == null) ? (
-              <div style={{ color: "var(--ink-quiet)", fontSize: "var(--text-sm)", padding: "16px 0" }}>
+              <div className="text-ink-quiet text-sm py-4">
                 No daily games played yet.
               </div>
             ) : (
-              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+              <div className="flex gap-1 flex-wrap">
                 {recentHistory.map((v, i) => {
                   const bg = v == null ? "rgba(26,26,26,0.06)" : BUCKET_COLOR[accuracyToBucket(v)] + "33";
                   const border = v == null ? "1px solid rgba(26,26,26,0.08)" : `1px solid ${BUCKET_COLOR[accuracyToBucket(v)]}55`;
@@ -209,17 +173,8 @@ export default async function ProfilePage() {
                     <div
                       key={i}
                       title={v != null ? `${v}% accuracy` : "Missed"}
-                      style={{
-                        width: 36,
-                        height: 36,
-                        borderRadius: 8,
-                        background: bg,
-                        border,
-                        display: "grid",
-                        placeItems: "center",
-                        fontSize: "var(--text-md)",
-                        cursor: "default",
-                      }}
+                      className="w-9 h-9 rounded-lg grid place-items-center text-md cursor-default"
+                      style={{ background: bg, border }}
                     >
                       {v == null ? "·" : bucketEmoji(accuracyToBucket(v))}
                     </div>
@@ -228,7 +183,7 @@ export default async function ProfilePage() {
               </div>
             )}
             {dailyProgress && (
-              <div style={{ marginTop: 16, fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
+              <div className="mt-4 text-sm text-ink-mute">
                 {dailyProgress.played} total days played
               </div>
             )}
@@ -237,80 +192,63 @@ export default async function ProfilePage() {
 
         {/* Recent freeplay games */}
         {recentGames.length > 0 && (
- <div className="mt-8">
-            <div className="eyebrow mb-4" style={{ color: "var(--ink-mute)" }}>Recent freeplay games</div>
+          <div className="mt-8">
+            <div className="eyebrow mb-4 text-ink-mute">Recent freeplay games</div>
             <div className="flex flex-col gap-2">
-              {recentGames.map((g, i) => (
-                <div
-                  key={g.id}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "32px 1fr auto",
-                    alignItems: "center",
-                    gap: 16,
-                    padding: "14px 18px",
-                    borderRadius: 12,
-                    background: i === 0 && bestGame?.totalScore === g.totalScore
-                      ? "rgba(212,165,116,0.08)"
-                      : "var(--cream)",
-                    border: i === 0 && bestGame?.totalScore === g.totalScore
-                      ? "1px solid rgba(212,165,116,0.2)"
-                      : "1px solid transparent",
-                  }}
-                >
-                  <div style={{ fontSize: "var(--text-xs)", color: "var(--ink-quiet)", fontWeight: 600, textAlign: "center" }}>
-                    #{i + 1}
-                  </div>
-                  <div style={{ fontSize: "var(--text-sm)", color: "var(--ink-mute)" }}>
-                    {new Date(g.completedAt!).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                    {i === 0 && bestGame?.totalScore === g.totalScore && (
-                      <span style={{ marginLeft: 8, fontSize: "var(--text-xs)", color: "var(--accent)", fontWeight: 700 }}>
-                        Personal best
-                      </span>
-                    )}
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div className="tnum" style={{ fontSize: "var(--text-md)", fontWeight: 700, color: "var(--accent)" }}>
-                      {g.totalScore?.toLocaleString() ?? "—"}
+              {recentGames.map((g, i) => {
+                const isBest = i === 0 && bestGame?.totalScore === g.totalScore;
+                return (
+                  <div
+                    key={g.id}
+                    className={`grid items-center gap-4 px-[18px] py-3.5 rounded-2 border ${
+                      isBest
+                        ? "bg-[rgba(212,165,116,0.08)] border-[rgba(212,165,116,0.2)]"
+                        : "bg-cream border-transparent"
+                    }`}
+                    style={{ gridTemplateColumns: "32px 1fr auto" }}
+                  >
+                    <div className="text-xs text-ink-quiet font-semibold text-center">
+                      #{i + 1}
                     </div>
-                    {g.avgAccuracy != null && (
-                      <div className="tnum" style={{ fontSize: "var(--text-xs)", color: "var(--ink-quiet)", fontWeight: 500 }}>
-                        {Math.round(g.avgAccuracy * 100)}% avg
+                    <div className="text-sm text-ink-mute">
+                      {new Date(g.completedAt!).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                      {isBest && (
+                        <span className="ml-2 text-xs text-accent font-bold">
+                          Personal best
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-right">
+                      <div className="tnum text-md font-bold text-accent">
+                        {g.totalScore?.toLocaleString() ?? "—"}
                       </div>
-                    )}
+                      {g.avgAccuracy != null && (
+                        <div className="tnum text-xs text-ink-quiet font-medium">
+                          {Math.round(g.avgAccuracy * 100)}% avg
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
 
         {/* Play CTAs */}
         <div className="flex gap-4 mt-10">
-          <Link
-            href="/play"
-            className="btn btn-primary"
-            style={{ fontSize: "var(--text-base)", justifyContent: "space-between", flex: 1 }}
-          >
+          <Link href="/play" className="btn btn-primary text-base justify-between flex-1">
             <span>Play freeplay</span>
             <span>→</span>
           </Link>
-          <Link
-            href="/daily"
-            className="btn btn-secondary"
-            style={{ fontSize: "var(--text-sm)", flex: 1 }}
-          >
+          <Link href="/daily" className="btn btn-secondary text-sm flex-1">
             Today's daily
           </Link>
-          <Link
-            href="/leaderboard"
-            className="btn btn-secondary"
-            style={{ fontSize: "var(--text-sm)" }}
-          >
+          <Link href="/leaderboard" className="btn btn-secondary text-sm">
             Leaderboard
           </Link>
         </div>
