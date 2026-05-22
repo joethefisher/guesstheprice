@@ -20,3 +20,8 @@ supabase-backup-*.sql
 *.dump
 
 design_handoff_pricetag/
+
+# Local working docs (focus-session plans, brainstorms, internal notes).
+# Tracked here so they don't leak into the public repo. Each plans/*.md
+# is a focused brief for an upcoming work session.
+plans/
