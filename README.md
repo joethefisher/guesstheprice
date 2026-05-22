@@ -1,6 +1,6 @@
 # Guesstheprice
 
-A real-estate price-guessing game. You see a real home — photos, beds, baths, square footage — and guess what it sold for. The closer you get, the higher you score. Ten rounds per game.
+A real-estate price-guessing game. You see a real home — photos, beds, baths, square footage — and guess what it sold for. The closer you get, the higher you score. Five rounds per game, plus a Wordle-style daily home.
 
 Think GeoGuessr, but for the housing market.
 
@@ -8,10 +8,11 @@ Think GeoGuessr, but for the housing market.
 
 ## Features
 
-- **10-round game loop** with a logarithmic price slider ($50K–$20M) and manual entry
+- **5-round freeplay loop** with a logarithmic price slider ($50K–$20M) and manual entry
+- **Daily home** — one Wordle-style house per day with streaks, shareable result, and recap modal
 - **Reveal moment** with animated number ticker, accuracy tier, and reaction copy
-- **Saved homes** persisted to localStorage with masonry browsing
-- **Streaks** across sessions
+- **User accounts** (NextAuth credentials + JWT) with a profile page and global leaderboard
+- **Saved homes** with hybrid persistence — localStorage for anonymous play, Postgres-backed for signed-in users with cross-device sync
 - **Shareable score cards** with Wordle-style emoji grids
 - **Ingestion pipeline** that fetches, normalizes, and caches real listings from the Realtor.com API
 - **Photo mirroring pipeline** ready for Cloudflare R2 (currently serves photos directly from the source CDN — see "Known limitations")
@@ -160,14 +161,19 @@ npm run ingest:persist                       # stage 5 only
 ```
 src/
 ├── app/                  # Next.js App Router pages + API routes
-│   ├── api/
-│   ├── play/             # Game round + summary
-│   ├── saved/            # Saved homes
+│   ├── api/              # /score, /listings, /daily, /saved, /auth, /leaderboard, …
+│   ├── play/             # 5-round freeplay + summary
+│   ├── daily/            # Wordle-style daily home
+│   ├── saved/            # Saved homes (masonry browse)
+│   ├── leaderboard/      # Global score leaderboard
+│   ├── profile/          # Per-user stats
+│   ├── auth/             # Sign-in / sign-up
 │   └── opengraph-image.tsx
 ├── components/           # UI primitives (Wordmark, PriceSlider, PhotoCarousel, …)
 ├── lib/
 │   ├── ingestion/        # 5-stage pipeline
 │   ├── scoring.ts        # pure scoring functions
+│   ├── saved-homes-client.ts # auth-aware persistence hook
 │   └── db.ts             # Prisma singleton
 ├── middleware.ts         # Upstash rate limiting
 prisma/
