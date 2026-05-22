@@ -58,6 +58,7 @@ export const config = {
     // routing, not path-to-regexp — it matched no URLs and the
     // bcrypt-heavy login rate limit was silently a no-op.
     "/api/auth/:path*",
+    "/api/saved/:path*",
   ],
 };
 
@@ -94,6 +95,18 @@ export async function middleware(req: NextRequest) {
   if (path.startsWith("/api/auth/")) {
     if (!limiterLogin) return NextResponse.next();
     const { success } = await limiterLogin.limit(ip);
+    if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return NextResponse.next();
+  }
+
+  // Saved-homes routes: GET (read) under the listings tier, mutations under
+  // the batch tier — saves aren't on the hot path so the tighter bucket is
+  // fine, but we don't want a navigating user to trip a 429 on /saved page
+  // loads either.
+  if (path.startsWith("/api/saved")) {
+    if (!limiterListings || !limiterBatch) return NextResponse.next();
+    const limiter = req.method === "GET" ? limiterListings : limiterBatch;
+    const { success } = await limiter.limit(ip);
     if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     return NextResponse.next();
   }
