@@ -15,7 +15,7 @@ Think GeoGuessr, but for the housing market.
 - **Saved homes** with hybrid persistence — localStorage for anonymous play, Postgres-backed for signed-in users with cross-device sync
 - **Shareable score cards** with Wordle-style emoji grids
 - **Ingestion pipeline** that fetches, normalizes, and caches real listings from the Realtor.com API
-- **Photo mirroring pipeline** ready for Cloudflare R2 (currently serves photos directly from the source CDN — see "Known limitations")
+- **Photo mirroring pipeline** ready for Cloudflare R2
 - **Rate limiting** via Upstash Redis on public API routes
 - **Error tracking** via Sentry (server, edge, and browser)
 - **Open Graph share images** generated on-demand with `next/og`
@@ -202,52 +202,6 @@ Guesstheprice is built for Vercel + Supabase + Cloudflare R2.
 3. Configure R2, Upstash, and Sentry env vars in the Vercel project.
 4. Run an ingestion job once to seed real listings: `npm run ingest:full`.
 5. Deploy.
-
-## Known limitations
-
-Things that are **intentionally** not done yet, documented here so contributors
-and curious onlookers know we know.
-
-- **No password recovery.** Signup doesn't collect an email address, and there's
-  no password-reset flow. If you forget your password, the account is effectively
-  dead. The signup page warns about this; we'll add an optional-email +
-  recovery-token flow in a follow-up.
-- **Streak leaderboard trusts client-submitted values.** `POST /api/user/daily`
-  accepts `currentStreak`, `bestStreak`, and `played` from the browser. An
-  anti-rollback check blocks *decreases* but a determined signed-in user can
-  inflate their own values. This is a casual game, not an esport — recomputing
-  these server-side from the user's `Round` history is tracked as a follow-up.
-- **Usernames are public-by-design.** Signup returns "Username taken" with a
-  409 specifically when a username collides. That allows enumeration, but the
-  same set is already published via `/api/leaderboard`. The UX win is worth it.
-- **CORS is not configured.** The API is intended for same-origin use; the
-  Next.js default of "no `Access-Control-Allow-Origin`" applies. If someone
-  needs to embed the API cross-origin, that's a separate decision.
-- **No CSP.** `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-
-  Options`, `Referrer-Policy`, and `Permissions-Policy` are set, but Content
-  Security Policy isn't — it needs nonce wiring through the React tree.
-- **R2 photo mirror isn't wired up yet.** The ingestion pipeline has a
-  mirror stage (`src/lib/ingestion/stages/mirror.ts`) that resizes photos
-  with Sharp and uploads to Cloudflare R2 if R2 env vars are set. They
-  aren't — so the game currently serves photos straight from Realtor.com's
-  `*.rdcpix.com` CDN. That works but depends on Realtor keeping those URLs
-  live. Wiring R2 up is tracked in the Roadmap section below.
-
-## Roadmap
-
-Tracked as GitHub Issues — high-level summary:
-
-- **Wire Cloudflare R2 for self-hosted photo serving.** The ingestion
-  pipeline already supports it; the bucket and `photos.pricetag.app`
-  CNAME aren't provisioned yet.
-- **Migrate `middleware.ts` → `proxy.ts`.** Next 16 renamed the
-  convention; current file still works but emits a deprecation warning.
-- **Upgrade off `next-auth` 5.0.0-beta.31** when Auth.js v5 ships stable.
-- **Server-compute daily streaks from `Round` history.** Today the
-  endpoint trusts client-submitted values (documented under "Known
-  limitations").
-- **Add CSP with nonce wiring.** Other security headers are in place;
-  CSP needs a per-page allow-list.
 
 ## License
 
