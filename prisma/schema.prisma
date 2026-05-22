@@ -52,6 +52,7 @@ model Listing {
 
   // Game references
   rounds          Round[]
+  savedBy         SavedHome[]
 
   @@index([isActive, qualityScore])
   @@index([state, city])
@@ -138,6 +139,7 @@ model User {
 
   games         Game[]
   dailyProgress UserDailyProgress?
+  savedHomes    SavedHome[]
 }
 
 // NOTE: NextAuth v5 + Credentials provider + JWT session strategy does NOT use
@@ -169,4 +171,24 @@ model IngestionRun {
   listingsIngested Int       @default(0)
   listingsSkipped  Int       @default(0)
   errorLog         String?   // truncated error details
+}
+
+model SavedHome {
+  id          String   @id @default(cuid())
+  userId      String
+  listingId   String
+
+  // Score snapshot — populated post-reveal. All null on a pre-reveal save.
+  guess       Int?
+  actualPrice Int?
+  accuracy    Float?
+  tier        String?
+
+  savedAt     DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing     Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId, savedAt])
 }
