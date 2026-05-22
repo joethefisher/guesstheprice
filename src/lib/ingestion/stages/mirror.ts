@@ -6,6 +6,13 @@ import type { NormalizedListing, MirroredListing, MirroredPhoto, NormalizedPhoto
 const BUCKET = process.env.R2_BUCKET_NAME ?? "pricetag-photos";
 const PUBLIC_URL_BASE = process.env.R2_PUBLIC_URL ?? "";
 
+// How many photos to mirror in parallel. 8 is a sweet spot:
+// - 8 × ~100MB Sharp instance memory = ~800MB peak, fine on a laptop
+// - 8 × ~1 photo/sec/worker = ~8 photos/sec to Realtor's CDN, well below
+//   any reasonable abuse threshold
+// Tune up to 16-32 on a beefy machine with good network for faster backfills.
+const DEFAULT_CONCURRENCY = 8;
+
 function getS3Client(): S3Client {
   return new S3Client({
     region: "auto",
@@ -15,6 +22,29 @@ function getS3Client(): S3Client {
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? "",
     },
   });
+}
+
+/**
+ * Process `items` through `fn` with at most `concurrency` in flight.
+ * Order-preserving: results[i] corresponds to items[i].
+ * Keeps memory bounded; doesn't accumulate completed work until all done.
+ */
+export async function runConcurrent<T, R>(
+  items: T[],
+  concurrency: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (true) {
+      const i = next++;
+      if (i >= items.length) return;
+      results[i] = await fn(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.max(1, concurrency) }, () => worker()));
+  return results;
 }
 
 async function objectExists(client: S3Client, key: string): Promise<boolean> {
@@ -72,7 +102,9 @@ async function mirrorPhoto(
   const thumbKey = `${base}_thumb.jpg`;
 
   try {
-    // Check if already mirrored (idempotent) — must verify both sizes exist
+    // Check if already mirrored (idempotent) — must verify both sizes exist.
+    // This makes long backfills resumable: if the job dies at hour 6,
+    // restarting picks up exactly where it left off.
     const alreadyMirrored = await objectExists(client, displayKey) && await objectExists(client, thumbKey);
 
     let displayUrl: string;
@@ -113,32 +145,15 @@ async function mirrorPhoto(
       mirroredHeight,
     };
   } catch (err) {
-    console.warn(`    Photo ${index} failed for ${externalId}: ${(err as Error).message}`);
+    console.warn(`    photo ${index} failed for ${externalId}: ${(err as Error).message}`);
     return null;
   }
 }
 
-export async function mirrorListing(
-  client: S3Client,
-  listing: NormalizedListing
-): Promise<MirroredListing> {
-  const mirrored: MirroredPhoto[] = [];
-  let qualityPenalty = 0;
-
-  for (const photo of listing.photos) {
-    const result = await mirrorPhoto(client, listing.externalId, photo, photo.ordering);
-    if (result) {
-      mirrored.push(result);
-    } else {
-      qualityPenalty += 5;
-    }
-  }
-
-  return {
-    ...listing,
-    qualityScore: Math.max(0, listing.qualityScore - qualityPenalty),
-    photos: mirrored,
-  };
+interface PhotoTask {
+  listingIndex: number;
+  externalId: string;
+  photo: NormalizedPhoto;
 }
 
 export async function runMirror(
@@ -169,25 +184,79 @@ export async function runMirror(
     return passthrough;
   }
 
+  const concurrency = parseInt(process.env.MIRROR_CONCURRENCY ?? "", 10) || DEFAULT_CONCURRENCY;
   const client = getS3Client();
-  const mirrored: MirroredListing[] = [];
-  let ok = 0;
-  let failed = 0;
 
-  for (const listing of normalized) {
-    process.stdout.write(`  ${listing.externalId} (${listing.photos.length} photos)… `);
-    const result = await mirrorListing(client, listing);
-    if (result.photos.length >= 3) {
-      mirrored.push(result);
-      ok++;
-      console.log(`✓ ${result.photos.length} mirrored`);
-    } else {
-      failed++;
-      console.log(`✗ too few photos after mirroring`);
+  // Flatten every (listing, photo) pair into a flat task list so concurrency
+  // is bounded globally rather than per-listing. A listing with 3 photos
+  // doesn't leave 5 worker slots idle while a 20-photo listing finishes.
+  const tasks: PhotoTask[] = [];
+  for (let i = 0; i < normalized.length; i++) {
+    for (const photo of normalized[i].photos) {
+      tasks.push({ listingIndex: i, externalId: normalized[i].externalId, photo });
     }
   }
 
-  console.log(`\n  ${ok} listings mirrored, ${failed} dropped\n`);
+  const total = tasks.length;
+  const startTs = Date.now();
+  let done = 0;
+  let failed = 0;
+  const LOG_EVERY = Math.max(50, Math.floor(total / 200)); // ~200 progress lines total
+
+  console.log(`  ${normalized.length} listings, ${total} photos, concurrency=${concurrency}`);
+
+  const results = await runConcurrent(tasks, concurrency, async (task) => {
+    const result = await mirrorPhoto(client, task.externalId, task.photo, task.photo.ordering);
+    done++;
+    if (result === null) failed++;
+    if (done % LOG_EVERY === 0 || done === total) {
+      const elapsed = (Date.now() - startTs) / 1000;
+      const rate = done / elapsed;
+      const etaSec = (total - done) / Math.max(rate, 0.001);
+      const etaMin = Math.round(etaSec / 60);
+      console.log(
+        `  [${done}/${total}] ${Math.round((done / total) * 100)}% — ` +
+        `${rate.toFixed(1)} photos/sec, ${failed} failed, ETA ${etaMin}min`,
+      );
+    }
+    return { listingIndex: task.listingIndex, result };
+  });
+
+  // Reassemble per-listing photo arrays, preserving original order.
+  const photosByListing: MirroredPhoto[][] = normalized.map(() => []);
+  const failuresByListing: number[] = normalized.map(() => 0);
+  for (const { listingIndex, result } of results) {
+    if (result) {
+      photosByListing[listingIndex].push(result);
+    } else {
+      failuresByListing[listingIndex]++;
+    }
+  }
+
+  // Apply the same per-listing quality penalty + 3-photo drop rule as before.
+  let ok = 0;
+  let dropped = 0;
+  const mirrored: MirroredListing[] = [];
+  for (let i = 0; i < normalized.length; i++) {
+    const listing = normalized[i];
+    const photos = photosByListing[i].sort((a, b) => a.ordering - b.ordering);
+    if (photos.length < 3) {
+      dropped++;
+      continue;
+    }
+    mirrored.push({
+      ...listing,
+      qualityScore: Math.max(0, listing.qualityScore - failuresByListing[i] * 5),
+      photos,
+    });
+    ok++;
+  }
+
+  const totalSec = Math.round((Date.now() - startTs) / 1000);
+  console.log(
+    `\n  ${ok} listings mirrored, ${dropped} dropped, ` +
+    `${total - failed} photos succeeded, ${failed} failed, ${totalSec}s total\n`,
+  );
 
   const filename = `mirrored-${Date.now()}.json`;
   await writeCacheDir(".cache/mirrored", filename, mirrored);
