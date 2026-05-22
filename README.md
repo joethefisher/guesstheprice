@@ -225,7 +225,23 @@ and curious onlookers know we know.
   with Sharp and uploads to Cloudflare R2 if R2 env vars are set. They
   aren't — so the game currently serves photos straight from Realtor.com's
   `*.rdcpix.com` CDN. That works but depends on Realtor keeping those URLs
-  live. Wiring R2 up is tracked as a focused follow-up in `ROADMAP.md`.
+  live. Wiring R2 up is tracked in the Roadmap section below.
+
+## Roadmap
+
+Tracked as GitHub Issues — high-level summary:
+
+- **Wire Cloudflare R2 for self-hosted photo serving.** The ingestion
+  pipeline already supports it; the bucket and `photos.pricetag.app`
+  CNAME aren't provisioned yet.
+- **Migrate `middleware.ts` → `proxy.ts`.** Next 16 renamed the
+  convention; current file still works but emits a deprecation warning.
+- **Upgrade off `next-auth` 5.0.0-beta.31** when Auth.js v5 ships stable.
+- **Server-compute daily streaks from `Round` history.** Today the
+  endpoint trusts client-submitted values (documented under "Known
+  limitations").
+- **Add CSP with nonce wiring.** Other security headers are in place;
+  CSP needs a per-page allow-list.
 
 ## License
 
