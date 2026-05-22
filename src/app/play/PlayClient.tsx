@@ -22,6 +22,7 @@ import {
   type SavedHome,
 } from "@/lib/game";
 import { popFromCache } from "@/lib/prefetch";
+import { useSavedHomes } from "@/lib/saved-homes-client";
 
 const TOTAL_ROUNDS = 5;
 
@@ -46,7 +47,7 @@ export default function PlayClient({ initialListing }: Props) {
   const [usedIds, setUsedIds] = useState<string[]>(initialListing ? [initialListing.id] : []);
   const [streak, setStreak] = useState(0);
   const [combo, setCombo] = useState(0);
-  const [savedHomes, setSavedHomes] = useState<SavedHome[]>([]);
+  const { homes: savedHomes, add: addSavedHome, remove: removeSavedHome } = useSavedHomes();
 
   // Round state — round 1 starts pre-populated when the server provided one.
   const [listing, setListing] = useState<ListingPublic | null>(initialListing);
@@ -60,18 +61,13 @@ export default function PlayClient({ initialListing }: Props) {
   const [guessTab, setGuessTab] = useState<GuessTab>("slider");
   const [typeInput, setTypeInput] = useState("");
 
-  // Load persisted state from localStorage on mount
+  // Load persisted state from localStorage on mount. (Saved-homes is loaded
+  // by the useSavedHomes hook above — auth-aware, server-backed when signed in.)
   useEffect(() => {
     try {
       const s = localStorage.getItem("pricetag_streak");
       if (s) { const n = parseInt(s, 10); if (!isNaN(n)) setStreak(n); }
     } catch { /* storage disabled or corrupted */ }
-    try {
-      const saved = localStorage.getItem("pricetag_saved");
-      if (saved) setSavedHomes(JSON.parse(saved));
-    } catch {
-      localStorage.removeItem("pricetag_saved");
-    }
   }, []);
 
   // Create a Game row up-front for every play session — anonymous or signed-in.
@@ -212,14 +208,12 @@ export default function PlayClient({ initialListing }: Props) {
     if (!listing) return;
     // Toggle: clicking on an already-saved listing removes it.
     if (isAlreadySaved) {
-      const updated = savedHomes.filter((s) => s.listingId !== listing.id);
-      setSavedHomes(updated);
-      safeSetItem("pricetag_saved", JSON.stringify(updated));
+      removeSavedHome(listing.id);
       return;
     }
     const accuracy =
       reveal ? Math.max(0, Math.round((1 - reveal.errorPct) * 100)) : null;
-    handleSave({
+    addSavedHome({
       listingId: listing.id,
       neighborhood: listing.neighborhood,
       city: listing.city,
@@ -233,35 +227,22 @@ export default function PlayClient({ initialListing }: Props) {
     });
   }
 
-  function handleSave(home: SavedHome) {
-    const updated = [
-      home,
-      ...savedHomes.filter((s) => s.listingId !== home.listingId),
-    ];
-    setSavedHomes(updated);
-    safeSetItem("pricetag_saved", JSON.stringify(updated));
-  }
-
   // When the round reveals, upgrade any pre-reveal save with the score data
   // so the saved page renders the guess/accuracy/tier without a second click.
+  // The hook's `add` is idempotent on listingId — re-adding replaces the entry,
+  // and the server upsert preserves score data for signed-in users.
   useEffect(() => {
     if (!reveal || !listing) return;
-    const idx = savedHomes.findIndex((s) => s.listingId === listing.id);
-    if (idx === -1) return;
-    const existing = savedHomes[idx];
-    if (existing.actualPrice !== null) return;
+    const existing = savedHomes.find((s) => s.listingId === listing.id);
+    if (!existing || existing.actualPrice !== null) return;
     const accuracy = Math.max(0, Math.round((1 - reveal.errorPct) * 100));
-    const upgraded: SavedHome = {
+    addSavedHome({
       ...existing,
       guess: reveal.guess,
       actualPrice: reveal.actualPrice,
       tier: reveal.tier,
       accuracy,
-    };
-    const updated = [...savedHomes];
-    updated[idx] = upgraded;
-    setSavedHomes(updated);
-    safeSetItem("pricetag_saved", JSON.stringify(updated));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reveal, listing]);
 
@@ -494,7 +475,7 @@ export default function PlayClient({ initialListing }: Props) {
             roundNumber={roundIdx + 1}
             totalRounds={TOTAL_ROUNDS}
             onNext={handleNext}
-            onSave={handleSave}
+            onSave={addSavedHome}
             alreadySaved={isAlreadySaved}
           />
         )}

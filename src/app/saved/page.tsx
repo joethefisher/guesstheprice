@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Wordmark } from "@/components/Wordmark";
 import { Icon } from "@/components/Icons";
-import { formatPrice, type SavedHome } from "@/lib/game";
+import { formatPrice } from "@/lib/game";
+import { useSavedHomes } from "@/lib/saved-homes-client";
 
 type PriceFilter = "all" | "under500" | "500to1m" | "1mto3m" | "over3m";
 type SortMode = "recent" | "closest" | "worst";
@@ -14,28 +15,9 @@ const CARD_HEIGHTS = [340, 280, 380, 300, 340, 360, 280, 320, 380, 300];
 
 export default function SavedPage() {
   const router = useRouter();
-  const [homes, setHomes] = useState<SavedHome[]>([]);
+  const { homes, remove: handleRemove, ready } = useSavedHomes();
   const [priceFilter, setPriceFilter] = useState<PriceFilter>("all");
   const [sort, setSort] = useState<SortMode>("recent");
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("pricetag_saved");
-      if (raw) setHomes(JSON.parse(raw));
-    } catch {
-      localStorage.removeItem("pricetag_saved");
-    }
-  }, []);
-
-  function safeSetItem(key: string, value: string) {
-    try { localStorage.setItem(key, value); } catch { /* quota or disabled */ }
-  }
-
-  function handleRemove(listingId: string) {
-    const updated = homes.filter((h) => h.listingId !== listingId);
-    setHomes(updated);
-    safeSetItem("pricetag_saved", JSON.stringify(updated));
-  }
 
   const filtered = useMemo(() => {
     let out = [...homes];
@@ -146,7 +128,9 @@ export default function SavedPage() {
 
       {/* Content */}
       <div className="px-10 py-7">
-        {filtered.length === 0 ? (
+        {!ready ? (
+          <LoadingState />
+        ) : filtered.length === 0 ? (
           <EmptyState onPlay={() => router.push("/play")} />
         ) : (
           /* 3-column CSS masonry */
@@ -214,6 +198,20 @@ export default function SavedPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div style={{ columnCount: 3, columnGap: 20 }}>
+      {CARD_HEIGHTS.slice(0, 6).map((h, i) => (
+        <div
+          key={i}
+          className="mb-5 bg-ink-04 rounded-5 animate-pulse"
+          style={{ height: h, breakInside: "avoid" }}
+        />
+      ))}
     </div>
   );
 }

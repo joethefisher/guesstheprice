@@ -10,12 +10,9 @@ import {
   GrainOverlay,
   GhostButton,
 } from "./DailyShared";
+import { useSavedHomes } from "@/lib/saved-homes-client";
 import type { DailyResult } from "@/lib/daily/service";
-import type { ListingPublic, SavedHome, AccuracyTier } from "@/lib/game";
-
-function safeSetItem(key: string, value: string) {
-  try { localStorage.setItem(key, value); } catch { /* quota or disabled */ }
-}
+import type { ListingPublic, AccuracyTier } from "@/lib/game";
 
 function tierFromAccuracy(accuracy: number): AccuracyTier {
   if (accuracy >= 95) return "expert";
@@ -110,44 +107,33 @@ export function DailyReveal({
   const [stampVisible, setStampVisible] = useState(false);
   const [actualVisible, setActualVisible] = useState(false);
   const [shake, setShake] = useState(false);
-  const [savedHomes, setSavedHomes] = useState<SavedHome[]>([]);
 
-  // On mount: load saved homes, and upgrade this listing's record if it was
-  // saved pre-reveal (score fields null) so the saved page renders properly.
-  useEffect(() => {
-    let homes: SavedHome[] = [];
-    try {
-      const raw = localStorage.getItem("pricetag_saved");
-      if (raw) homes = JSON.parse(raw);
-    } catch {
-      localStorage.removeItem("pricetag_saved");
-    }
-    const idx = homes.findIndex((s) => s.listingId === listing.id);
-    if (idx !== -1 && homes[idx].actualPrice === null) {
-      const upgraded: SavedHome = {
-        ...homes[idx],
-        guess: result.guess,
-        actualPrice: result.actual,
-        tier: tierFromAccuracy(result.accuracy),
-        accuracy: result.accuracy,
-      };
-      homes = [...homes];
-      homes[idx] = upgraded;
-      safeSetItem("pricetag_saved", JSON.stringify(homes));
-    }
-    setSavedHomes(homes);
-  }, [listing.id, result.guess, result.actual, result.accuracy]);
-
+  const { homes: savedHomes, add: addSavedHome, remove: removeSavedHome } = useSavedHomes();
   const isAlreadySaved = savedHomes.some((s) => s.listingId === listing.id);
+
+  // On mount: if this listing was saved pre-reveal (score fields null) upgrade
+  // it with the now-known guess/accuracy/tier. The hook's `add` is idempotent
+  // on listingId — re-adding replaces the entry; for signed-in users the
+  // server upsert preserves the row id.
+  useEffect(() => {
+    const existing = savedHomes.find((s) => s.listingId === listing.id);
+    if (!existing || existing.actualPrice !== null) return;
+    addSavedHome({
+      ...existing,
+      guess: result.guess,
+      actualPrice: result.actual,
+      tier: tierFromAccuracy(result.accuracy),
+      accuracy: result.accuracy,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listing.id, result.guess, result.actual, result.accuracy, savedHomes.length]);
 
   function handleSaveToggle() {
     if (isAlreadySaved) {
-      const updated = savedHomes.filter((s) => s.listingId !== listing.id);
-      setSavedHomes(updated);
-      safeSetItem("pricetag_saved", JSON.stringify(updated));
+      removeSavedHome(listing.id);
       return;
     }
-    const entry: SavedHome = {
+    addSavedHome({
       listingId: listing.id,
       neighborhood: listing.neighborhood,
       city: listing.city,
@@ -158,10 +144,7 @@ export function DailyReveal({
       tier: tierFromAccuracy(result.accuracy),
       accuracy: result.accuracy,
       savedAt: Date.now(),
-    };
-    const updated = [entry, ...savedHomes];
-    setSavedHomes(updated);
-    safeSetItem("pricetag_saved", JSON.stringify(updated));
+    });
   }
 
   const tickedActual = useNumberTicker(result.actual, actualVisible ? 0 : 99999, 1200);
