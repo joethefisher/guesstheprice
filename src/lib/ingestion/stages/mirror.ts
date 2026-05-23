@@ -3,7 +3,7 @@ import sharp from "sharp";
 import { writeCacheDir } from "../cache";
 import type { NormalizedListing, MirroredListing, MirroredPhoto, NormalizedPhoto } from "../types";
 
-const BUCKET = process.env.R2_BUCKET_NAME ?? "pricetag-photos";
+const BUCKET = process.env.R2_BUCKET_NAME ?? "guesstheprice-photos";
 const PUBLIC_URL_BASE = process.env.R2_PUBLIC_URL ?? "";
 
 // How many photos to mirror in parallel. 8 is a sweet spot:
