@@ -13,7 +13,7 @@ const PUBLIC_URL_BASE = process.env.R2_PUBLIC_URL ?? "";
 // Tune up to 16-32 on a beefy machine with good network for faster backfills.
 const DEFAULT_CONCURRENCY = 8;
 
-function getS3Client(): S3Client {
+export function getS3Client(): S3Client {
   return new S3Client({
     region: "auto",
     endpoint: process.env.R2_ENDPOINT,
@@ -47,7 +47,7 @@ export async function runConcurrent<T, R>(
   return results;
 }
 
-async function objectExists(client: S3Client, key: string): Promise<boolean> {
+export async function objectExists(client: S3Client, key: string): Promise<boolean> {
   try {
     await client.send(new HeadObjectCommand({ Bucket: BUCKET, Key: key }));
     return true;
@@ -56,7 +56,7 @@ async function objectExists(client: S3Client, key: string): Promise<boolean> {
   }
 }
 
-async function downloadImage(url: string): Promise<Buffer> {
+export async function downloadImage(url: string): Promise<Buffer> {
   const res = await fetch(url, { signal: AbortSignal.timeout(15_000) });
   if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
 
@@ -73,7 +73,7 @@ async function downloadImage(url: string): Promise<Buffer> {
   return Buffer.from(buf);
 }
 
-async function uploadToR2(
+export async function uploadToR2(
   client: S3Client,
   key: string,
   body: Buffer,
@@ -91,7 +91,7 @@ async function uploadToR2(
   return `${PUBLIC_URL_BASE}/${key}`;
 }
 
-async function mirrorPhoto(
+export async function mirrorPhoto(
   client: S3Client,
   externalId: string,
   photo: NormalizedPhoto,
