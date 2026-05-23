@@ -36,6 +36,29 @@ interface PhotoTask {
   photo: NormalizedPhoto;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * mirrorPhoto swallows download/upload errors and returns null. For a
+ * 143K-photo run, a single transient rdcpix rate-limit shouldn't strand a
+ * photo in the failure file — retry a couple of times with backoff before
+ * giving up. Permanent failures (404s) just burn ~3.5s extra, which is
+ * negligible at this volume and keeps the failure file genuinely actionable.
+ */
+async function mirrorWithRetry(
+  client: Parameters<typeof mirrorPhoto>[0],
+  externalId: string,
+  photo: NormalizedPhoto,
+  attempts = 3,
+): Promise<Awaited<ReturnType<typeof mirrorPhoto>>> {
+  for (let i = 0; i < attempts; i++) {
+    const result = await mirrorPhoto(client, externalId, photo, photo.ordering);
+    if (result) return result;
+    if (i < attempts - 1) await sleep(500 * (i + 1));
+  }
+  return null;
+}
+
 const REQUIRED_ENV = [
   "R2_ENDPOINT",
   "R2_ACCESS_KEY_ID",
@@ -102,7 +125,12 @@ async function main() {
       photoId: row.id,
       externalId,
       photo: {
-        sourceUrl: row.sourceUrl,
+        // Upgrade http://→https:// up front. rdcpix 301-redirects http to
+        // https, so leaving it as http costs a wasted round-trip per photo
+        // and doubles request volume against the CDN — which is what
+        // triggered transient 403 rate-limiting on the first run. Same
+        // bytes either way.
+        sourceUrl: row.sourceUrl.replace(/^http:\/\//, "https://"),
         width: row.width ?? undefined,
         height: row.height ?? undefined,
         ordering: row.ordering,
@@ -132,14 +160,14 @@ async function main() {
 
   await runConcurrent(tasks, concurrency, async (task) => {
     try {
-      const result = await mirrorPhoto(client, task.externalId, task.photo, task.photo.ordering);
+      const result = await mirrorWithRetry(client, task.externalId, task.photo);
       if (!result) {
         failed++;
         failures.push({
           photoId: task.photoId,
           externalId: task.externalId,
           ordering: task.photo.ordering,
-          reason: "mirrorPhoto returned null",
+          reason: "mirrorPhoto returned null after retries",
         });
       } else {
         mirrored++;
