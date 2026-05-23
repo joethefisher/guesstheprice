@@ -18,6 +18,7 @@
     "ingest:normalize": "tsx scripts/ingest-stage.ts normalize",
     "ingest:mirror": "tsx scripts/ingest-stage.ts mirror",
     "ingest:persist": "tsx scripts/ingest-stage.ts persist",
+    "r2:backfill": "tsx scripts/r2-backfill.ts",
     "test": "vitest",
     "test:run": "vitest run"
   },
