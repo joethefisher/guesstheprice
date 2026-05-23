@@ -5,14 +5,14 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const nextConfig = {
   images: {
     // Allow-list only known sources so the /_next/image proxy can't be turned
-    // into an open SSRF / DoS amplifier. Photos in prod come from Realtor.com's
-    // rdcpix CDN (any *.rdcpix.com subdomain — ap/nh observed so far) until
-    // the R2 mirror is fully wired through to photos.pricetag.app. Landing
+    // into an open SSRF / DoS amplifier. Photos come from photos.guesstheprice.ai
+    // (R2 mirror) once the backfill completes. Until then, the **.rdcpix.com
+    // entries cover Realtor.com's CDN (ap/nh subdomains observed). Landing
     // hero falls back to Unsplash.
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "**.rdcpix.com" },
-      { protocol: "https", hostname: "photos.pricetag.app" },
+      { protocol: "https", hostname: "photos.guesstheprice.ai" },
     ],
   },
   async headers() {
