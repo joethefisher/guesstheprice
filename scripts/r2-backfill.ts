@@ -38,18 +38,34 @@ interface PhotoTask {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Per-request throttle (ms) to stay under rdcpix's abuse threshold. The
+// first full run tripped an IP-level 403 block after a few thousand
+// requests in a short window. Set e.g. BACKFILL_DELAY_MS=1000 for a slow
+// sub-threshold trickle. Default 0 (no delay).
+const DELAY_MS = parseInt(process.env.BACKFILL_DELAY_MS ?? "", 10) || 0;
+
+// Circuit breaker: if this many photos fail back-to-back, we're almost
+// certainly IP-blocked (not hitting scattered dead URLs). Abort the run
+// instead of grinding through 140K guaranteed failures and hammering a CDN
+// that's already refusing us. Re-run later once the block lifts — it's
+// idempotent. Override with BACKFILL_BREAKER (0 disables).
+const BREAKER = process.env.BACKFILL_BREAKER !== undefined
+  ? parseInt(process.env.BACKFILL_BREAKER, 10)
+  : 25;
+
 /**
- * mirrorPhoto swallows download/upload errors and returns null. For a
- * 143K-photo run, a single transient rdcpix rate-limit shouldn't strand a
- * photo in the failure file — retry a couple of times with backoff before
- * giving up. Permanent failures (404s) just burn ~3.5s extra, which is
- * negligible at this volume and keeps the failure file genuinely actionable.
+ * mirrorPhoto swallows download/upload errors and returns null. A single
+ * transient blip shouldn't strand a photo in the failure file — retry once
+ * with backoff. We deliberately keep this to ONE retry: when rdcpix
+ * IP-blocks us, every photo fails, and extra retries just multiply load
+ * against a CDN that's already refusing us (the circuit breaker is what
+ * actually protects the run).
  */
 async function mirrorWithRetry(
   client: Parameters<typeof mirrorPhoto>[0],
   externalId: string,
   photo: NormalizedPhoto,
-  attempts = 3,
+  attempts = 2,
 ): Promise<Awaited<ReturnType<typeof mirrorPhoto>>> {
   for (let i = 0; i < attempts; i++) {
     const result = await mirrorPhoto(client, externalId, photo, photo.ordering);
@@ -155,21 +171,40 @@ async function main() {
   let mirrored = 0;
   let dbUpdated = 0;
   let failed = 0;
+  let consecutiveFailures = 0;
+  let aborted = false;
   const failures: { photoId: string; externalId: string; ordering: number; reason: string }[] = [];
   const LOG_EVERY = Math.max(100, Math.floor(total / 500));
 
+  if (DELAY_MS) console.log(`  throttle: ${DELAY_MS}ms/request`);
+  if (BREAKER) console.log(`  circuit breaker: abort after ${BREAKER} consecutive failures`);
+  console.log("");
+
   await runConcurrent(tasks, concurrency, async (task) => {
+    // Once the breaker trips, drain the remaining tasks as fast no-ops
+    // rather than keep hitting a CDN that's blocking us.
+    if (aborted) return;
+    if (DELAY_MS) await sleep(DELAY_MS);
     try {
       const result = await mirrorWithRetry(client, task.externalId, task.photo);
       if (!result) {
         failed++;
+        consecutiveFailures++;
         failures.push({
           photoId: task.photoId,
           externalId: task.externalId,
           ordering: task.photo.ordering,
           reason: "mirrorPhoto returned null after retries",
         });
+        if (BREAKER && consecutiveFailures >= BREAKER && !aborted) {
+          aborted = true;
+          console.error(
+            `\n⚠️  ${consecutiveFailures} consecutive failures — looks like an IP block. ` +
+              `Aborting (run is idempotent; re-run once rdcpix lets us back in).`,
+          );
+        }
       } else {
+        consecutiveFailures = 0;
         mirrored++;
         try {
           await prisma.photo.update({
@@ -189,12 +224,20 @@ async function main() {
       }
     } catch (err) {
       failed++;
+      consecutiveFailures++;
       failures.push({
         photoId: task.photoId,
         externalId: task.externalId,
         ordering: task.photo.ordering,
         reason: `unexpected: ${(err as Error).message}`,
       });
+      if (BREAKER && consecutiveFailures >= BREAKER && !aborted) {
+        aborted = true;
+        console.error(
+          `\n⚠️  ${consecutiveFailures} consecutive failures — looks like an IP block. ` +
+            `Aborting (run is idempotent; re-run once rdcpix lets us back in).`,
+        );
+      }
     } finally {
       done++;
       if (done % LOG_EVERY === 0 || done === total) {
@@ -212,7 +255,11 @@ async function main() {
 
   const totalSec = Math.round((Date.now() - startTs) / 1000);
   const totalMin = (totalSec / 60).toFixed(1);
-  console.log(`\n── Done in ${totalMin}min ─────────────────────────`);
+  console.log(`\n── ${aborted ? "ABORTED (circuit breaker)" : "Done"} in ${totalMin}min ──────────`);
+  if (aborted) {
+    console.log("  Stopped early on a run of consecutive failures (likely IP-blocked).");
+    console.log("  Re-run once rdcpix unblocks us — already-mirrored photos are skipped.");
+  }
   console.log(`  mirrored:   ${mirrored} (incl. idempotent re-uses)`);
   console.log(`  db updated: ${dbUpdated}`);
   console.log(`  failed:     ${failed}`);
