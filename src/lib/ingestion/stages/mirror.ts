@@ -1,4 +1,5 @@
 import { S3Client, PutObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 import sharp from "sharp";
 import { writeCacheDir } from "../cache";
 import type { NormalizedListing, MirroredListing, MirroredPhoto, NormalizedPhoto } from "../types";
@@ -21,6 +22,15 @@ export function getS3Client(): S3Client {
       accessKeyId: process.env.R2_ACCESS_KEY_ID ?? "",
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY ?? "",
     },
+    // Without explicit socket timeouts, a dead upload connection hangs the
+    // worker forever (observed mid-backfill: all workers asleep at 0% CPU,
+    // no progress, no errors). Bounding them lets a stuck request fail fast;
+    // maxAttempts then retries it instead of deadlocking the whole run.
+    maxAttempts: 4,
+    requestHandler: new NodeHttpHandler({
+      connectionTimeout: 10_000,
+      requestTimeout: 60_000,
+    }),
   });
 }
 
