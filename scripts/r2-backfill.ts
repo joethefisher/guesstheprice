@@ -53,6 +53,11 @@ const BREAKER = process.env.BACKFILL_BREAKER !== undefined
   ? parseInt(process.env.BACKFILL_BREAKER, 10)
   : 25;
 
+// Optional cap on how many photos to process this run. Used for calibration
+// runs (measure the sustainable rate on a small slice before committing to
+// the full set). Default 0 = no cap.
+const LIMIT = parseInt(process.env.BACKFILL_LIMIT ?? "", 10) || 0;
+
 /**
  * mirrorPhoto swallows download/upload errors and returns null. A single
  * transient blip shouldn't strand a photo in the failure file — retry once
@@ -156,6 +161,11 @@ async function main() {
 
   if (skippedNoSource) console.log(`  ${skippedNoSource} skipped (no sourceUrl)`);
   if (skippedNoExternalId) console.log(`  ${skippedNoExternalId} skipped (no listing.externalId)`);
+
+  if (LIMIT && tasks.length > LIMIT) {
+    tasks.length = LIMIT;
+    console.log(`  BACKFILL_LIMIT=${LIMIT} — capping this run to ${LIMIT} photos`);
+  }
   console.log(`  ${tasks.length} photos to mirror\n`);
 
   if (tasks.length === 0) {
