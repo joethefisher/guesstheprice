@@ -15,7 +15,7 @@ Think GeoGuessr, but for the housing market.
 - **Saved homes** with hybrid persistence — localStorage for anonymous play, Postgres-backed for signed-in users with cross-device sync
 - **Shareable score cards** with Wordle-style emoji grids
 - **Ingestion pipeline** that fetches, normalizes, and caches real listings from the Realtor.com API
-- **Photo mirroring pipeline** ready for Cloudflare R2
+- **Photo mirroring** to Cloudflare R2 (resized 1600w / 400w variants with immutable cache headers)
 - **Rate limiting** via Upstash Redis on public API routes
 - **Error tracking** via Sentry (server, edge, and browser)
 - **Open Graph share images** generated on-demand with `next/og`
@@ -31,7 +31,7 @@ Think GeoGuessr, but for the housing market.
 | Styling | Tailwind CSS with a custom token system |
 | Animation | Framer Motion |
 | Maps | `@vis.gl/react-google-maps` + Google Maps Static API |
-| Photo storage | Cloudflare R2 (pipeline ready; not wired in production yet) |
+| Photo storage | Cloudflare R2 |
 | Rate limiting | Upstash Redis |
 | Observability | Sentry |
 | Testing | Vitest |
