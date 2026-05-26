@@ -165,12 +165,22 @@ export function GhostButton({
 // ─── Dark close/icon button ───────────────────────────────────────────────────
 
 export function DarkIconButton({ onClick, label = "Close" }: { onClick?: () => void; label?: string }) {
+  // Do NOT use the global .btn-icon class — it hardcodes a near-white
+  // background for light-theme screens (leaderboard/profile/play), which
+  // overrides bg-paper-08 here and leaves the X invisible against it. The
+  // dimensions + shape are inlined to keep the dark-theme styling intact.
   return (
     <button
-      className="btn btn-icon bg-paper-08 text-paper"
+      className="btn bg-paper-08 text-paper grid place-items-center transition-colors hover:bg-[rgba(247,244,238,0.16)]"
       onClick={onClick}
       aria-label={label}
-      style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)" }}
+      style={{
+        width: 44,
+        height: 44,
+        padding: 0,
+        borderRadius: 999,
+        boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)",
+      }}
     >
       <svg aria-hidden="true" width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
         <path d="M5 5l14 14M19 5L5 19" />

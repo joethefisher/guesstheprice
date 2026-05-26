@@ -9,6 +9,7 @@ import {
   SpotlightCones,
   GrainOverlay,
   GhostButton,
+  DarkIconButton,
 } from "./DailyShared";
 import { useSavedHomes } from "@/lib/saved-homes-client";
 import type { DailyResult } from "@/lib/daily/service";
@@ -181,6 +182,17 @@ export function DailyReveal({
         <div className="eyebrow text-spot tracking-[0.3em] text-xs">
           THE REVEAL · DAILY #{dailyNumber}
         </div>
+      </motion.div>
+
+      {/* Close — matches the top-right close on intro/locked/stats so users
+          can always escape back to home, not just via the "Practice rounds" CTA. */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="absolute top-[26px] right-9 z-[6]"
+      >
+        <DarkIconButton onClick={onExit} label="Back to home" />
       </motion.div>
 
       <div className="absolute inset-0 z-[5] flex flex-col justify-center pt-[100px] px-14 pb-9 text-paper">
