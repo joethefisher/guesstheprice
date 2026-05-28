@@ -31,6 +31,7 @@ interface Props {
   newStreak: number;
   onShare: () => void;
   onContinue: () => void;
+  onPractice: () => void;
   onExit: () => void;
 }
 
@@ -103,6 +104,7 @@ export function DailyReveal({
   newStreak,
   onShare,
   onContinue,
+  onPractice,
   onExit,
 }: Props) {
   const [stampVisible, setStampVisible] = useState(false);
@@ -327,7 +329,7 @@ export function DailyReveal({
             {isAlreadySaved ? "Saved" : "Save this home"}
           </button>
           <button
-            onClick={onExit}
+            onClick={onPractice}
             className="bg-transparent text-paper-80 py-[18px] px-[18px] text-sm rounded-3 border-none cursor-pointer"
           >
             Practice rounds →

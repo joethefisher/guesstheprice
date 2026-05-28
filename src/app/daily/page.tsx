@@ -61,6 +61,7 @@ export default function DailyPage() {
   const syncedRef = useRef(false);
 
   const onExit = useCallback(() => router.push("/"), [router]);
+  const onPractice = useCallback(() => router.push("/play"), [router]);
 
   const syncToServer = useCallback((s: DailyStorage) => {
     if (!session) return;
@@ -276,6 +277,7 @@ export default function DailyPage() {
               newStreak={storage.currentStreak}
               onShare={() => setShowShare(true)}
               onContinue={handleRevealToMilestone}
+              onPractice={onPractice}
               onExit={onExit}
             />
             {showShare && (
@@ -320,7 +322,7 @@ export default function DailyPage() {
               storage={storage}
               dailyNumber={dailyData?.dailyNumber ?? 1}
               listing={dailyData?.listing ?? null}
-              onPractice={onExit}
+              onPractice={onPractice}
               onStats={() => setRoute("stats")}
               onExit={onExit}
             />
