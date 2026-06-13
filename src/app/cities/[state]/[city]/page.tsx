@@ -7,6 +7,7 @@ import {
   resolveCityFromSlugs,
   getAllTargetCities,
   getCityStats,
+  getNearbyMarkets,
   formatPriceUsd,
   formatSqft,
 } from "@/lib/city-data";
@@ -206,6 +207,8 @@ export default async function CityPage({ params }: Props) {
         </p>
       </section>
 
+      <NearbyMarkets current={identity} />
+
       <p className="text-ink-mute text-sm mt-12">
         See other cities at{" "}
         <Link href="/cities" className="underline">
@@ -218,5 +221,37 @@ export default async function CityPage({ params }: Props) {
         .
       </p>
     </main>
+  );
+}
+
+// Renders 3-4 cross-links to related cities. Lifts crawl coverage off the
+// homepage onto neighbor city pages so each city earns internal-link equity
+// from N other city pages, not just the /cities index.
+async function NearbyMarkets({
+  current,
+}: {
+  current: { city: string; state: string };
+}) {
+  const nearby = await getNearbyMarkets(current, 4);
+  if (nearby.length === 0) return null;
+  return (
+    <section className="mb-10">
+      <h2 className="display text-xl text-ink mb-3">Nearby markets</h2>
+      <ul className="flex flex-wrap gap-2">
+        {nearby.map((c) => {
+          const href = `/cities/${stateSlug(c.state)}/${citySlug(c.city)}`;
+          return (
+            <li key={`${c.state}-${c.city}`}>
+              <Link
+                href={href}
+                className="inline-block px-4 py-2 border border-rule rounded-md text-ink hover:bg-cream text-sm"
+              >
+                {c.city}, {c.state} →
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
