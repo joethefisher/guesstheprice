@@ -33,6 +33,11 @@ export function Footer() {
                 Leaderboard
               </Link>
             </li>
+            <li>
+              <Link href="/cities" className="hover:text-ink">
+                Cities
+              </Link>
+            </li>
           </ul>
         </div>
 
