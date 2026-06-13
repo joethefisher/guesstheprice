@@ -1,11 +1,9 @@
 import type { MetadataRoute } from "next";
+import { getAllTargetCities, citySlug, stateSlug } from "@/lib/city-data";
 
-// /sitemap.xml — static map of the public, indexable routes.
-//
-// When programmatic city pages land (Phase 3 of the SEO audit), this file
-// will be extended to read from prisma.listing or data/target-markets.json
-// and emit one entry per city. For now it covers the canonical user-facing
-// routes that don't change shape.
+// /sitemap.xml — full map of indexable routes including programmatic city
+// pages. Static base + every target city. Sitemap regenerates when adjacent
+// pages revalidate or on each deploy.
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://guesstheprice.ai";
   const now = new Date();
@@ -19,5 +17,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/how-it-works`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/faq`,          lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${base}/methodology`,  lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    // Cities (Phase 3 — programmatic, generated from data/target-markets.json)
+    { url: `${base}/cities`,       lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
+    ...getAllTargetCities().map(({ city, state }) => ({
+      url: `${base}/cities/${stateSlug(state)}/${citySlug(city)}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.6,
+    })),
   ];
 }
