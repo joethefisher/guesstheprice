@@ -15,9 +15,34 @@ export const metadata: Metadata = {
   },
 };
 
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: "How Pricetag works",
+  description:
+    "Round structure, scoring, accuracy buckets, daily streak, practice mode.",
+  url: "https://guesstheprice.ai/how-it-works",
+  author: {
+    "@type": "Person",
+    name: "Joe Fisher",
+    url: "https://joeking.ai",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Pricetag",
+    url: "https://guesstheprice.ai",
+  },
+  datePublished: "2026-06-12",
+  inLanguage: "en-US",
+};
+
 export default function HowItWorksPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <h1 className="display text-4xl text-ink mb-8">How it works</h1>
 
       <div className="space-y-8 text-ink text-base leading-relaxed">

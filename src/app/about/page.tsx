@@ -15,9 +15,37 @@ export const metadata: Metadata = {
   },
 };
 
+// schema.org Article — qualifies /about for article-card rich-result eligibility
+// in Google sitelinks and bumps the page's signal strength as content (vs a
+// utility route). datePublished pins the original drafting date.
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: "About Pricetag",
+  description:
+    "Pricetag is a house-price guessing game built on real Realtor.com listings.",
+  url: "https://guesstheprice.ai/about",
+  author: {
+    "@type": "Person",
+    name: "Joe Fisher",
+    url: "https://joeking.ai",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Pricetag",
+    url: "https://guesstheprice.ai",
+  },
+  datePublished: "2026-06-12",
+  inLanguage: "en-US",
+};
+
 export default function AboutPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <h1 className="display text-4xl text-ink mb-8">About Pricetag</h1>
 
       <div className="space-y-6 text-ink text-base leading-relaxed">
