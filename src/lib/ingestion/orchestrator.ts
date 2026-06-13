@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { runDiscover } from "./stages/discover";
 import { runFetch } from "./stages/fetch";
 import { runNormalize } from "./stages/normalize";
+import { runEnrich } from "./stages/enrich";
 import { runMirror } from "./stages/mirror";
 import { runPersist } from "./stages/persist";
 import type { IngestionStats } from "./types";
@@ -82,8 +83,11 @@ export async function runFull(opts: OrchestratorOptions = {}): Promise<Ingestion
     // Stage 3: Normalize
     const normalized = await runNormalize(rawByMarket);
 
+    // Stage 3.5: Enrich (Nominatim reverse-geocode for missing neighborhoods)
+    const enriched = await runEnrich(normalized);
+
     // Stage 4: Mirror
-    const mirrored = await runMirror(normalized);
+    const mirrored = await runMirror(enriched);
 
     // Stage 5: Persist
     const { ingested, skipped } = await runPersist(mirrored, prisma);
