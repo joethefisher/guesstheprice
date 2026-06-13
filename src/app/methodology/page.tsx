@@ -15,9 +15,34 @@ export const metadata: Metadata = {
   },
 };
 
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: "Pricetag — methodology",
+  description:
+    "Where Pricetag listings come from, how they're ingested, why some markets are weighted higher, and how the scoring math works.",
+  url: "https://guesstheprice.ai/methodology",
+  author: {
+    "@type": "Person",
+    name: "Joe Fisher",
+    url: "https://joeking.ai",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Pricetag",
+    url: "https://guesstheprice.ai",
+  },
+  datePublished: "2026-06-12",
+  inLanguage: "en-US",
+};
+
 export default function MethodologyPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <h1 className="display text-4xl text-ink mb-8">Methodology</h1>
 
       <div className="space-y-8 text-ink text-base leading-relaxed">

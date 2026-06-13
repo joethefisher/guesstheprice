@@ -1,10 +1,16 @@
 import type { MetadataRoute } from "next";
-import { getAllTargetCities, citySlug, stateSlug } from "@/lib/city-data";
+import {
+  getAllTargetCities,
+  getAllNeighborhoodParams,
+  citySlug,
+  stateSlug,
+  neighborhoodSlug,
+} from "@/lib/city-data";
 
-// /sitemap.xml — full map of indexable routes including programmatic city
-// pages. Static base + every target city. Sitemap regenerates when adjacent
-// pages revalidate or on each deploy.
-export default function sitemap(): MetadataRoute.Sitemap {
+// /sitemap.xml — full map of indexable routes including programmatic city,
+// state, and neighborhood pages. Async because the neighborhood list is
+// fetched via Prisma (with 24h cache).
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://guesstheprice.ai";
   const now = new Date();
   return [
@@ -32,6 +38,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.6,
+    })),
+    // Per-neighborhood pages (only for cities with sufficient coverage)
+    ...(await getAllNeighborhoodParams()).map(({ city, state, neighborhood }) => ({
+      url: `${base}/cities/${stateSlug(state)}/${citySlug(city)}/neighborhoods/${neighborhoodSlug(neighborhood)}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.55,
     })),
   ];
 }

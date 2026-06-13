@@ -33,6 +33,17 @@ const playGameSchema = {
   inLanguage: "en-US",
 };
 
+// schema.org BreadcrumbList — completes the breadcrumb story for the
+// game-route surface so SERPs render a clean hierarchy.
+const playBreadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: "https://guesstheprice.ai" },
+    { "@type": "ListItem", position: 2, name: "Play", item: "https://guesstheprice.ai/play" },
+  ],
+};
+
 /**
  * /play renders as a server component so round 1 ships inline in the HTML —
  * no JS-then-fetch round-trip for the most common path. Subsequent rounds
@@ -46,6 +57,10 @@ export default async function PlayPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(playGameSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(playBreadcrumbSchema) }}
       />
       <PlayClient initialListing={initialListing} />
     </>

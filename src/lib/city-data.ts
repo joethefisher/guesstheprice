@@ -151,6 +151,116 @@ export function formatSqft(sqft: number | null): string | null {
   return `${sqft.toLocaleString("en-US")} sqft`;
 }
 
+export type NeighborhoodIdentity = {
+  city: string;
+  state: string;
+  neighborhood: string;
+};
+
+export function neighborhoodSlug(n: string): string {
+  return n
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+// Build-time helper for generateStaticParams. Returns (city, state, neighborhood)
+// for every (city, state) with at least MIN_CITY_LISTINGS active listings AND
+// every neighborhood within that city having at least MIN_NEIGHBORHOOD_LISTINGS.
+// Bounded build size: cities with thin coverage don't get neighborhood pages.
+export const getAllNeighborhoodParams = unstable_cache(
+  async (): Promise<NeighborhoodIdentity[]> => {
+    const MIN_CITY = 5;
+    const MIN_NEIGHBORHOOD = 2;
+    const groups = await prisma.listing.groupBy({
+      by: ["city", "state", "neighborhood"],
+      where: { isActive: true, neighborhood: { not: null } },
+      _count: { _all: true },
+    });
+    // Count per city across all neighborhoods to apply MIN_CITY.
+    const cityCounts = new Map<string, number>();
+    for (const g of groups) {
+      const k = `${g.state}|${g.city}`;
+      cityCounts.set(k, (cityCounts.get(k) ?? 0) + g._count._all);
+    }
+    return groups
+      .filter((g) => g.neighborhood)
+      .filter((g) => g._count._all >= MIN_NEIGHBORHOOD)
+      .filter((g) => (cityCounts.get(`${g.state}|${g.city}`) ?? 0) >= MIN_CITY)
+      .map((g) => ({
+        city: g.city,
+        state: g.state,
+        neighborhood: g.neighborhood as string,
+      }));
+  },
+  ["all-neighborhood-params"],
+  { revalidate: 86400, tags: ["city-stats"] },
+);
+
+// Resolve a neighborhood URL slug back to the canonical name + parent city.
+// Returns null for unknown slugs (caller should 404).
+export async function resolveNeighborhoodFromSlugs(
+  stateSlugArg: string,
+  citySlugArg: string,
+  neighborhoodSlugArg: string,
+): Promise<NeighborhoodIdentity | null> {
+  const city = resolveCityFromSlugs(stateSlugArg, citySlugArg);
+  if (!city) return null;
+  const all = await getAllNeighborhoodParams();
+  const match = all.find(
+    (n) =>
+      n.city === city.city &&
+      n.state === city.state &&
+      neighborhoodSlug(n.neighborhood) === neighborhoodSlugArg.toLowerCase(),
+  );
+  return match ?? null;
+}
+
+export type NeighborhoodStats = CityStats & { neighborhood: string };
+
+export const getNeighborhoodStats = unstable_cache(
+  async (
+    city: string,
+    state: string,
+    neighborhood: string,
+  ): Promise<NeighborhoodStats> => {
+    const listings = await prisma.listing.findMany({
+      where: { city, state, neighborhood, isActive: true },
+      select: { soldPrice: true, beds: true, sqft: true, neighborhood: true },
+    });
+    if (listings.length === 0) {
+      return {
+        city,
+        state,
+        neighborhood,
+        listingCount: 0,
+        medianPriceUsd: null,
+        medianBeds: null,
+        medianSqft: null,
+        topNeighborhoods: [],
+      };
+    }
+    const prices = listings.map((l) => l.soldPrice).sort((a, b) => a - b);
+    const beds = listings.map((l) => l.beds).sort((a, b) => a - b);
+    const sqfts = listings
+      .map((l) => l.sqft)
+      .filter((s): s is number => s != null)
+      .sort((a, b) => a - b);
+    return {
+      city,
+      state,
+      neighborhood,
+      listingCount: listings.length,
+      medianPriceUsd: median(prices),
+      medianBeds: median(beds),
+      medianSqft: median(sqfts),
+      topNeighborhoods: [],
+    };
+  },
+  ["neighborhood-stats"],
+  { revalidate: 86400, tags: ["city-stats"] },
+);
+
 // Pick "nearby markets" for cross-linking from a city page. Heuristic:
 //   1. Same state, sorted by listing count desc (excluding current city).
 //   2. If <3 same-state matches, fall back to same-tier markets from any state.
