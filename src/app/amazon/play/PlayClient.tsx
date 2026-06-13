@@ -145,13 +145,37 @@ export default function PlayClient({ deck }: { deck: AmazonProduct[] }) {
         </span>
       </div>
 
-      {/* Photo */}
+      {/* Photo — empty in MVP, real Amazon photos come in Phase 1 via RapidAPI.
+          For now: branded color block + product silhouette text. Honest about
+          being a placeholder rather than fake-stocky. */}
       <div
-        className="w-full aspect-[16/10] rounded-lg overflow-hidden mb-6"
-        style={{
-          background: `${product.bandColor} url(${product.photos[0]}) center/cover no-repeat`,
-        }}
-      />
+        className="w-full aspect-[16/10] rounded-lg overflow-hidden mb-6 flex flex-col items-center justify-center text-center px-6 relative"
+        style={{ background: product.bandColor }}
+      >
+        <div
+          className="display italic"
+          style={{
+            fontSize: "clamp(28px, 5vw, 56px)",
+            color: "rgba(26,26,26,0.85)",
+            lineHeight: 1.05,
+            letterSpacing: "-0.02em",
+            mixBlendMode: "multiply",
+          }}
+        >
+          {product.displayTitle}
+        </div>
+        <div
+          className="caption mt-3"
+          style={{
+            fontSize: 11,
+            letterSpacing: "0.16em",
+            color: "rgba(26,26,26,0.55)",
+            textTransform: "uppercase",
+          }}
+        >
+          Real product · placeholder image
+        </div>
+      </div>
 
       {/* Title — only redacted version pre-reveal */}
       <div className="caption text-ink-mute text-xs uppercase tracking-widest mb-2">
