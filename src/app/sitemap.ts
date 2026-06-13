@@ -18,6 +18,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/play`,         lastModified: now, changeFrequency: "daily",   priority: 0.9 },
     { url: `${base}/daily`,        lastModified: now, changeFrequency: "daily",   priority: 0.9 },
     { url: `${base}/leaderboard`,  lastModified: now, changeFrequency: "hourly",  priority: 0.7 },
+    // Amazon edition (Phase 0.5 MVP — landing + play)
+    { url: `${base}/amazon`,       lastModified: now, changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${base}/amazon/play`,  lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
     // Content pages (Phase 2 — stable evergreen content for long-tail discovery)
     { url: `${base}/about`,        lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${base}/how-it-works`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },

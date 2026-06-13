@@ -38,6 +38,11 @@ export function Footer() {
                 Cities
               </Link>
             </li>
+            <li>
+              <Link href="/amazon" className="hover:text-ink">
+                Amazon edition
+              </Link>
+            </li>
           </ul>
         </div>
 
