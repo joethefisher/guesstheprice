@@ -17,6 +17,22 @@ export const metadata: Metadata = {
   },
 };
 
+// schema.org Game — qualifies /play for richer Google rich-results
+// eligibility (game card, related links). Lives here rather than in the root
+// layout because it's specific to the play surface, not the whole site.
+const playGameSchema = {
+  "@context": "https://schema.org",
+  "@type": "Game",
+  name: "Guess the Housing Price",
+  alternateName: "Pricetag",
+  url: "https://guesstheprice.ai/play",
+  description:
+    "Real-estate price guessing game. Real homes, real prices, scored by accuracy.",
+  genre: "Trivia",
+  playMode: "SinglePlayer",
+  inLanguage: "en-US",
+};
+
 /**
  * /play renders as a server component so round 1 ships inline in the HTML —
  * no JS-then-fetch round-trip for the most common path. Subsequent rounds
@@ -25,5 +41,13 @@ export const metadata: Metadata = {
  */
 export default async function PlayPage() {
   const initialListing = await fetchOneListing();
-  return <PlayClient initialListing={initialListing} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(playGameSchema) }}
+      />
+      <PlayClient initialListing={initialListing} />
+    </>
+  );
 }

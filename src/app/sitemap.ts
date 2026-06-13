@@ -19,6 +19,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/methodology`,  lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     // Cities (Phase 3 — programmatic, generated from data/target-markets.json)
     { url: `${base}/cities`,       lastModified: now, changeFrequency: "weekly",  priority: 0.7 },
+    // State index pages (one per distinct state in the target list)
+    ...Array.from(new Set(getAllTargetCities().map((m) => m.state))).map((state) => ({
+      url: `${base}/cities/${stateSlug(state)}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.55,
+    })),
+    // Per-city pages
     ...getAllTargetCities().map(({ city, state }) => ({
       url: `${base}/cities/${stateSlug(state)}/${citySlug(city)}`,
       lastModified: now,
