@@ -58,9 +58,29 @@ const faqs = [
   },
 ];
 
+// schema.org FAQPage — qualifies /faq for Google's question-snippet rich
+// results. Each Q&A maps to a Question entity with an Answer.
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: item.a,
+    },
+  })),
+};
+
 export default function FaqPage() {
   return (
     <main className="mx-auto max-w-2xl px-6 py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
       <h1 className="display text-4xl text-ink mb-8">FAQ</h1>
 
       <div className="space-y-8 text-ink text-base leading-relaxed">

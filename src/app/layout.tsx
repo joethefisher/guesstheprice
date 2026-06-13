@@ -1,8 +1,22 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Footer } from "@/components/Footer";
+
+// Viewport-level PWA hints. theme-color drives the address-bar tint on
+// mobile (Chrome / Safari); paired with manifest.ts which declares the
+// PWA shell. Pricetag is mobile-first; Daily mode pairs perfectly with
+// Add-to-Home-Screen.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F7F4EE" },
+    { media: "(prefers-color-scheme: dark)", color: "#1A1A1A" },
+  ],
+  colorScheme: "light dark",
+  width: "device-width",
+  initialScale: 1,
+};
 
 const fraunces = Fraunces({
   subsets: ["latin"],
