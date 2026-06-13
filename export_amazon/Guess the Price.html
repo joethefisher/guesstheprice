@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Guess the Price — the series.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://api.fontshare.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="styles.css"/>
+
+  <style>
+    body { overflow-x: hidden; }
+    /* The shared stylesheet pins html/body to height:100% (the React games fit
+       the viewport). This hub is a tall scrolling page, so let them grow with
+       content — otherwise content past the viewport has no painted bg. */
+    html, body { height: auto; min-height: 100%; background: var(--paper); }
+    .hub { position: relative; min-height: 100vh; }
+
+    /* ── Top nav ───────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 40;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(247,244,238,0.82);
+      backdrop-filter: blur(14px) saturate(140%);
+      border-bottom: 1px solid transparent;
+      transition: border-color 240ms var(--ease), background 240ms var(--ease);
+    }
+    .nav.scrolled { border-bottom-color: var(--rule); }
+    .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; color: var(--ink); }
+    .brand .mark { width: 30px; height: 30px; }
+    .brand .name {
+      font-family: var(--display); font-style: italic; font-weight: 500;
+      font-size: 22px; letter-spacing: -0.025em; color: var(--ink);
+    }
+    .brand .tld { font-size: 12px; font-weight: 600; color: var(--ink-quiet); letter-spacing: 0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 6px; }
+    .nav-links a {
+      padding: 10px 14px; font-size: 14px; font-weight: 500; color: var(--ink);
+      text-decoration: none; border-radius: 999px;
+    }
+    .nav-links a:hover { background: rgba(26,26,26,0.05); }
+
+    /* ── Hero ──────────────────────────────── */
+    .hero {
+      position: relative; padding: 50px 48px 40px; max-width: 1280px; margin: 0 auto;
+    }
+    .hero-grid { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 54px; align-items: center; }
+    .eyebrow-row { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+    .pulse { width: 8px; height: 8px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 0 0 var(--accent); animation: pulse 2.4s var(--ease) infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,92,57,0.5); } 70% { box-shadow: 0 0 0 9px rgba(255,92,57,0); } 100% { box-shadow: 0 0 0 0 rgba(255,92,57,0); } }
+    .h1 {
+      font-family: var(--display); font-style: italic; font-weight: 500;
+      font-size: clamp(40px, 4.4vw, 74px); line-height: 1.02; letter-spacing: -0.03em;
+      margin: 0 0 18px; color: var(--ink);
+    }
+    .hero-sub { font-size: 17px; line-height: 1.5; color: var(--ink-mute); margin: 0 0 26px; max-width: 34ch; }
+    .hero-copy .stat-row { gap: 28px; }
+    .h1 .rot { color: var(--accent); display: inline-block; white-space: nowrap; transition: opacity 360ms var(--ease), transform 360ms var(--ease); }
+    .h1 .rot.swap { opacity: 0; transform: translateY(8px); }
+    .hero-foot {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      gap: 40px; margin-top: 36px; flex-wrap: wrap;
+    }
+    .hero-foot p { font-size: 17px; line-height: 1.5; color: var(--ink-mute); margin: 0; max-width: 42ch; }
+    .stat-row { display: flex; gap: 30px; }
+    .stat .n { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 30px; line-height: 1; color: var(--ink); }
+    .stat .l { font-size: 12px; color: var(--ink-mute); letter-spacing: 0.02em; margin-top: 5px; }
+
+    /* ── Interactive demo card (the hook) ──── */
+    .demo { background: var(--paper); border-radius: 22px; overflow: hidden; border: 1px solid var(--rule); box-shadow: 0 1px 0 var(--rule), 0 30px 64px -34px rgba(0,0,0,0.55); }
+    .demo-stage { position: relative; height: 288px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; padding: 16px; background: radial-gradient(120% 92% at 50% 6%, #fff, var(--cream)); }
+    .demo-photo { position: absolute; inset: 0; z-index: 0; background-size: contain; background-repeat: no-repeat; background-position: center; filter: drop-shadow(0 18px 30px rgba(0,0,0,0.18)); }
+    .demo-photo.cover { background-size: cover; filter: none; }
+    .demo-stage::after { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(15,13,11,0.18) 0%, transparent 26%, transparent 62%, rgba(15,13,11,0.44) 100%); pointer-events: none; }
+    .demo-tag, .demo-cat { position: relative; z-index: 2; }
+    .demo-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; padding: 6px 11px; border-radius: 999px; background: var(--ink); color: var(--paper); }
+    .demo-cat { font-size: 12px; font-weight: 600; white-space: nowrap; padding: 7px 12px; border-radius: 999px; background: rgba(20,18,16,0.5); color: #fff; backdrop-filter: blur(6px); }
+    .demo-panel { padding: 20px 24px 24px; }
+    .demo-q { font-size: 13px; font-weight: 600; color: var(--ink-mute); margin-bottom: 4px; }
+    .demo-amt { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 54px; line-height: 1; letter-spacing: -0.03em; color: var(--ink); }
+    .demo-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 14px; margin: 16px 0 8px; border-radius: 999px; background: var(--cream); box-shadow: inset 0 1px 2px rgba(0,0,0,0.08); outline: none; }
+    .demo-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 999px; background: radial-gradient(circle, var(--accent) 0 7px, var(--paper) 7px); box-shadow: 0 0 0 2px var(--ink), 0 4px 12px rgba(0,0,0,0.18); cursor: pointer; }
+    .demo-slider::-moz-range-thumb { width: 28px; height: 28px; border: none; border-radius: 999px; background: radial-gradient(circle, var(--accent) 0 7px, var(--paper) 7px); box-shadow: 0 0 0 2px var(--ink), 0 4px 12px rgba(0,0,0,0.18); cursor: pointer; }
+    .demo-slider.hint::-webkit-slider-thumb { animation: thumbPulse 1.7s var(--ease) infinite; }
+    .demo-slider.hint::-moz-range-thumb { animation: thumbPulse 1.7s var(--ease) infinite; }
+    @keyframes thumbPulse { 0%,100% { box-shadow: 0 0 0 2px var(--ink), 0 0 0 0 rgba(255,92,57,0.45); } 50% { box-shadow: 0 0 0 2px var(--ink), 0 0 0 9px rgba(255,92,57,0); } }
+    .demo-hint { font-size: 12px; color: var(--ink-quiet); margin-bottom: 14px; }
+    .demo-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 15px; border-radius: 13px; font-weight: 600; font-size: 15px; color: #fff; background: var(--accent); box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 12px 26px -12px var(--accent); transition: background 200ms var(--ease); border: 0; cursor: pointer; font-family: inherit; }
+    .demo-cta:hover { background: var(--accent-deep); }
+    .demo-cta.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+    .demo-cta.ghost:hover { background: var(--ink); color: var(--paper); }
+    .reveal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 12px; }
+    .reveal-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-quiet); margin-bottom: 5px; }
+    .reveal-lbl.accent { color: var(--accent); }
+    .reveal-guess { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 28px; line-height: 1; color: var(--ink-mute); letter-spacing: -0.02em; }
+    .reveal-actual { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 40px; line-height: 1; color: var(--accent); letter-spacing: -0.025em; }
+    .reveal-line { font-size: 15px; font-weight: 600; margin: 4px 0 16px; }
+    .demo-after { display: flex; align-items: center; gap: 14px; }
+    .demo-after .demo-cta { width: auto; flex: 1; }
+    .demo-link { font-size: 13px; font-weight: 600; color: var(--ink-mute); text-decoration: none; white-space: nowrap; }
+    .demo-link:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── Games section ─────────────────────── */
+    .games { max-width: 1280px; margin: 0 auto; padding: 18px 48px 12px; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
+    .section-head h2 { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 26px; letter-spacing: -0.02em; margin: 0; white-space: nowrap; }
+    .section-head .eyebrow { text-align: right; }
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+
+    .game {
+      position: relative; display: block; text-decoration: none;
+      border-radius: 22px; overflow: hidden; aspect-ratio: 16 / 11;
+      color: var(--paper); isolation: isolate;
+      box-shadow: 0 1px 0 var(--rule), 0 18px 44px -26px rgba(0,0,0,0.5);
+      transition: transform 360ms var(--ease), box-shadow 360ms var(--ease);
+    }
+    .game:hover { transform: translateY(-5px); box-shadow: 0 1px 0 var(--rule), 0 30px 60px -28px rgba(0,0,0,0.55); }
+    .game .photo {
+      position: absolute; inset: 0; background-size: cover; background-position: center;
+      transform: scale(1.02); transition: transform 700ms var(--ease); z-index: -2;
+    }
+    .game:hover .photo { transform: scale(1.07); }
+    .game .scrim {
+      position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(180deg, rgba(20,18,16,0.12) 0%, rgba(20,18,16,0) 32%, rgba(20,18,16,0.55) 66%, rgba(15,13,11,0.86) 100%);
+    }
+    .game .tint { position: absolute; inset: 0; z-index: -1; mix-blend-mode: soft-light; opacity: 0.5; }
+    .game-top { position: absolute; top: 20px; left: 22px; right: 22px; display: flex; align-items: center; justify-content: space-between; }
+    .chip {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
+      padding: 6px 11px; border-radius: 999px; backdrop-filter: blur(6px);
+      background: rgba(20,18,16,0.34); color: var(--paper); border: 1px solid rgba(247,244,238,0.30);
+    }
+    .chip.solid { background: var(--paper); color: var(--ink); border-color: transparent; }
+    .game-body { position: absolute; left: 26px; right: 26px; bottom: 24px; }
+    .game-body .premise-cat { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(247,244,238,0.78); margin-bottom: 10px; }
+    .game-body h3 {
+      font-family: var(--display); font-style: italic; font-weight: 500;
+      font-size: clamp(28px, 3.2vw, 42px); line-height: 1; letter-spacing: -0.02em; margin: 0 0 10px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+    .game-body p { font-size: 14.5px; line-height: 1.45; color: rgba(247,244,238,0.9); margin: 0 0 18px; max-width: 40ch; }
+    .game-meta { display: flex; align-items: center; gap: 16px; }
+    .game-cta {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 13px 20px; border-radius: 12px; font-weight: 600; font-size: 15px;
+      background: var(--g-accent); color: #fff;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.25) inset, 0 12px 26px -10px var(--g-accent);
+      transition: gap 240ms var(--ease);
+    }
+    .game:hover .game-cta { gap: 14px; }
+    .game-meta .dot { color: rgba(247,244,238,0.5); }
+    .game-meta .stat-inline { font-size: 13px; color: rgba(247,244,238,0.82); }
+    .game-meta .stat-inline b { color: var(--paper); font-weight: 700; }
+    .arrow { width: 17px; height: 17px; }
+
+    /* ── Coming soon ───────────────────────── */
+    .soon { max-width: 1280px; margin: 0 auto; padding: 40px 48px 8px; }
+    .soon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .soon-card {
+      position: relative; border-radius: 18px; overflow: hidden; padding: 22px;
+      min-height: 168px; display: flex; flex-direction: column; justify-content: space-between;
+      background: var(--cream); border: 1px solid var(--rule);
+    }
+    .soon-card::before {
+      content: ""; position: absolute; inset: 0; opacity: 0.5; pointer-events: none;
+      background-image: repeating-linear-gradient(135deg, rgba(26,26,26,0.05) 0 1px, transparent 1px 11px);
+    }
+    .soon-card .soon-tag {
+      align-self: flex-start; position: relative; white-space: nowrap;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      padding: 5px 10px; border-radius: 999px; background: var(--ink); color: var(--paper);
+    }
+    .soon-card h4 { position: relative; font-family: var(--display); font-style: italic; font-weight: 500; font-size: 25px; letter-spacing: -0.01em; margin: 0 0 4px; color: var(--ink); }
+    .soon-card p { position: relative; font-size: 13px; color: var(--ink-mute); margin: 0; }
+
+    /* ── Daily banner ──────────────────────── */
+    .daily {
+      max-width: 1280px; margin: 44px auto 0; padding: 0 48px;
+    }
+    .daily-inner {
+      background: var(--ink); color: var(--paper); border-radius: 22px;
+      padding: 34px 40px; display: grid; grid-template-columns: 1.3fr auto; gap: 28px; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .daily-inner .eyebrow { color: rgba(247,244,238,0.55); }
+    .daily-inner h3 { font-family: var(--display); font-style: italic; font-weight: 500; font-size: 34px; line-height: 1.04; letter-spacing: -0.02em; margin: 10px 0 8px; }
+    .daily-inner p { color: rgba(247,244,238,0.7); font-size: 14.5px; margin: 0; max-width: 50ch; line-height: 1.5; }
+    .daily-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .daily-btn {
+      display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+      padding: 16px 20px; border-radius: 13px; font-weight: 600; font-size: 14.5px;
+      color: var(--paper); background: rgba(247,244,238,0.1);
+      box-shadow: inset 0 0 0 1px rgba(247,244,238,0.22);
+      transition: background 200ms var(--ease);
+    }
+    .daily-btn:hover { background: rgba(247,244,238,0.18); }
+    .daily-btn .swatch { width: 9px; height: 9px; border-radius: 999px; }
+
+    /* ── Footer ────────────────────────────── */
+    footer.foot { max-width: 1280px; margin: 0 auto; padding: 56px 48px 48px; }
+    .foot-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 40px; flex-wrap: wrap; border-top: 1px solid var(--rule); padding-top: 32px; }
+    .foot .colhead { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-quiet); margin-bottom: 12px; }
+    .foot-cols { display: flex; gap: 56px; flex-wrap: wrap; }
+    .foot-cols a { display: block; font-size: 14px; color: var(--ink-mute); text-decoration: none; margin-bottom: 10px; line-height: 1.4; max-width: 22ch; }
+    .foot-cols a:hover { color: var(--ink); }
+    .foot-note { margin-top: 36px; font-size: 12.5px; color: var(--ink-quiet); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+
+    @media (max-width: 880px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+      .demo-stage { height: 240px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .soon-grid { grid-template-columns: 1fr; }
+      .daily-inner { grid-template-columns: 1fr; }
+      .nav { padding: 16px 22px; }
+      .hero, .games, .soon, .daily, footer.foot { padding-left: 22px; padding-right: 22px; }
+    }
+
+    /* Content is always visible — no opacity-based entrance (those stay blank
+       on backgrounded/paused loads). Life comes from the rotating word, the
+       pulse, and card hovers instead. */
+    .rise { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .h1 .rot { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="hub grain">
+
+    <!-- NAV -->
+    <nav class="nav" id="nav">
+      <a class="brand" href="#">
+        <svg class="mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+          <path d="M3 6 L17 4 L25 14 L11 24 Z" fill="var(--ink)"/>
+          <circle cx="13" cy="9" r="1.6" fill="var(--paper)"/>
+        </svg>
+        <span class="name">guess the price</span>
+        <span class="tld">.ai</span>
+      </a>
+      <div class="nav-links">
+        <a href="#games">Games</a>
+        <a href="#daily">Daily</a>
+        <a href="#">Leaderboard</a>
+        <a class="btn btn-secondary" href="#" style="padding:10px 18px;font-size:13px;">Sign in</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow-row">
+            <span class="pulse"></span>
+            <span class="eyebrow">The series · two games live</span>
+          </div>
+          <h1 class="h1">Guess the price of <em class="rot" id="rot">anything.</em></h1>
+          <p class="hero-sub">Real homes. Real products. One question — how close can you get?</p>
+          <div class="stat-row">
+            <div class="stat"><div class="n tnum">184,920</div><div class="l">guesses this week</div></div>
+            <div class="stat"><div class="n tnum">71%</div><div class="l">global avg</div></div>
+            <div class="stat"><div class="n tnum">2</div><div class="l">games &middot; more soon</div></div>
+          </div>
+        </div>
+
+        <div class="demo" id="demo" aria-label="Try a quick round">
+          <div class="demo-stage" id="demoStage">
+            <div class="demo-photo" id="demoPhoto"></div>
+            <span class="demo-tag">Try a round — no sign-up</span>
+            <span class="demo-cat" id="demoCat"></span>
+          </div>
+          <div class="demo-panel">
+            <div class="demo-q" id="demoQ">What would you pay?</div>
+            <div class="demo-amt tnum" id="demoAmt">$0</div>
+            <input type="range" min="0" max="1000" value="500" class="demo-slider hint" id="demoSlider" aria-label="Your guess"/>
+            <div class="demo-hint" id="demoHint">Drag to set your guess.</div>
+            <button class="demo-cta" id="demoCta">Lock it in</button>
+            <div class="demo-reveal" id="demoReveal" hidden>
+              <div class="reveal-row">
+                <div><div class="reveal-lbl">Your guess</div><div class="reveal-guess tnum" id="rGuess"></div></div>
+                <div><div class="reveal-lbl accent">Actual price</div><div class="reveal-actual tnum" id="rActual"></div></div>
+              </div>
+              <div class="reveal-line" id="rLine"></div>
+              <div class="demo-after">
+                <button class="demo-cta ghost" id="demoNext">Try another &rarr;</button>
+                <a class="demo-link" href="#games">or pick a game &darr;</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- GAMES -->
+    <section class="games" id="games">
+      <div class="section-head rise d2">
+        <h2>Pick your game</h2>
+        <span class="eyebrow">Same question, different world</span>
+      </div>
+      <div class="card-grid">
+
+        <!-- Housing -->
+        <a class="game rise d3" href="Pricetag.html" style="--g-accent:#FF5C39;">
+          <div class="photo" style="background-image:url('https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1600&q=85');"></div>
+          <div class="tint" style="background:#FF5C39;"></div>
+          <div class="scrim"></div>
+          <div class="game-top">
+            <span class="chip">Game 01</span>
+            <span class="chip solid">Daily</span>
+          </div>
+          <div class="game-body">
+            <div class="premise-cat">Real estate</div>
+            <h3>Guess the House Price</h3>
+            <p>Brooklyn brownstones, desert moderns, Malibu glass boxes. Real listings, real prices — how close can you get?</p>
+            <div class="game-meta">
+              <span class="game-cta">Play <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              <span class="stat-inline"><b class="tnum">1,247</b> homes</span>
+              <span class="dot">&middot;</span>
+              <span class="stat-inline">avg <b class="tnum">73%</b></span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Amazon -->
+        <a class="game rise d4" href="Guess the Amazon Price.html" style="--g-accent:#3E6FA8;">
+          <div class="photo" style="background-image:url('https://images.unsplash.com/photo-1498049794561-7780e7231661?w=1600&q=85');"></div>
+          <div class="tint" style="background:#3E6FA8;"></div>
+          <div class="scrim"></div>
+          <div class="game-top">
+            <span class="chip">Game 02</span>
+            <span class="chip solid" style="background:#3E6FA8;color:#fff;">New</span>
+          </div>
+          <div class="game-body">
+            <div class="premise-cat">Shopping</div>
+            <h3>Guess the Amazon Price</h3>
+            <p>From a $25 Casio to a $749 espresso machine. Star ratings, reviews, Prime — every product, one question.</p>
+            <div class="game-meta">
+              <span class="game-cta">Play <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+              <span class="stat-inline"><b class="tnum">2,310</b> products</span>
+              <span class="dot">&middot;</span>
+              <span class="stat-inline">avg <b class="tnum">68%</b></span>
+            </div>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- COMING SOON -->
+    <section class="soon">
+      <div class="section-head">
+        <h2>In the pipeline</h2>
+        <span class="eyebrow">Vote for what's next</span>
+      </div>
+      <div class="soon-grid">
+        <div class="soon-card">
+          <span class="soon-tag">Soon</span>
+          <div>
+            <h4>Guess the Car Price</h4>
+            <p>Auction lots to dealership floors — from beaters to hypercars.</p>
+          </div>
+        </div>
+        <div class="soon-card">
+          <span class="soon-tag">Soon</span>
+          <div>
+            <h4>Guess the Menu Price</h4>
+            <p>Corner diners to tasting menus. How much was that one dish?</p>
+          </div>
+        </div>
+        <div class="soon-card">
+          <span class="soon-tag">In research</span>
+          <div>
+            <h4>Guess the Art Price</h4>
+            <p>The hammer comes down. Did it go for thousands, or millions?</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAILY -->
+    <section class="daily" id="daily">
+      <div class="daily-inner grain">
+        <div>
+          <span class="eyebrow">The Daily &middot; June 12</span>
+          <h3>One Daily.<br/>Both games. One streak.</h3>
+          <p>A fresh home and a fresh product every day at midnight, local. Same pair everyone else is playing — keep the streak alive across the whole series.</p>
+        </div>
+        <div class="daily-actions">
+          <a class="daily-btn" href="Pricetag.html"><span class="swatch" style="background:#FF5C39;"></span> Today's home</a>
+          <a class="daily-btn" href="Guess the Amazon Price.html"><span class="swatch" style="background:#3E6FA8;"></span> Today's product</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="foot">
+      <div class="foot-top">
+        <a class="brand" href="#">
+          <svg class="mark" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+            <path d="M3 6 L17 4 L25 14 L11 24 Z" fill="var(--ink)"/>
+            <circle cx="13" cy="9" r="1.6" fill="var(--paper)"/>
+          </svg>
+          <span class="name">guess the price</span>
+        </a>
+        <div class="foot-cols">
+          <div>
+            <div class="colhead">Games</div>
+            <a href="Pricetag.html">Guess the House Price</a>
+            <a href="Guess the Amazon Price.html">Guess the Amazon Price</a>
+            <a href="#">Coming soon</a>
+          </div>
+          <div>
+            <div class="colhead">Play</div>
+            <a href="#daily">The Daily</a>
+            <a href="#">Leaderboard</a>
+            <a href="#">How scoring works</a>
+          </div>
+          <div>
+            <div class="colhead">More</div>
+            <a href="#">About</a>
+            <a href="#">Submit a listing</a>
+            <a href="#">Sign in</a>
+          </div>
+        </div>
+      </div>
+      <div class="foot-note">
+        <span>&copy; 2026 Guess the Price. A Pricetag game.</span>
+        <span>Prices are real. Your guesses are between you and us.</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Sticky nav border on scroll
+    const nav = document.getElementById('nav');
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Rotating hero word (maps to the two games)
+    const rot = document.getElementById('rot');
+    const words = ["a brownstone.", "a beach house.", "a desert modern.", "a glass box.", "a penthouse.", "a starter home."];
+    let i = 0;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) {
+      setInterval(() => {
+        rot.classList.add('swap');
+        setTimeout(() => {
+          i = (i + 1) % words.length;
+          rot.textContent = words[i];
+          rot.classList.remove('swap');
+        }, 360);
+      }, 2600);
+    }
+
+    // ── Interactive hero demo (the hook) ──────────────────────────────
+    (function(){
+      const stage=document.getElementById('demoStage'), photo=document.getElementById('demoPhoto'),
+            cat=document.getElementById('demoCat'), qEl=document.getElementById('demoQ'),
+            amt=document.getElementById('demoAmt'), slider=document.getElementById('demoSlider'),
+            hint=document.getElementById('demoHint'), cta=document.getElementById('demoCta'),
+            reveal=document.getElementById('demoReveal'), rGuess=document.getElementById('rGuess'),
+            rActual=document.getElementById('rActual'), rLine=document.getElementById('rLine'),
+            nextBtn=document.getElementById('demoNext');
+      const items=[
+        { cat:'Sony \u00b7 Over-ear headphones', kind:'product', img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&q=80', price:399, min:25, max:1500 },
+        { cat:'Carbon Beach \u00b7 Malibu, CA', kind:'home', img:'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&q=80', price:18750000, min:1500000, max:40000000 },
+        { cat:'Casio \u00b7 Vintage watch', kind:'product', img:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1200&q=80', price:25, min:5, max:400 }
+      ];
+      let idx=0, locked=false, touched=false, timer=null;
+      function fmt(n,kind){ n=Math.max(0,n);
+        if(kind==='home'){ if(n>=1e6) return '$'+(n/1e6).toFixed(2).replace(/\.?0+$/,'')+'M'; return '$'+Math.round(n/1000)+'k'; }
+        return '$'+Math.round(n).toLocaleString('en-US');
+      }
+      function price(v){ const it=items[idx], r=v/1000; return Math.exp(Math.log(it.min)+(Math.log(it.max)-Math.log(it.min))*r); }
+      function updateAmt(){ amt.textContent=fmt(price(+slider.value), items[idx].kind); }
+      function reaction(p){ let c,b;
+        if(p<=0.02){c='var(--moss)';b=['Are you a professional?','Suspiciously precise.'];}
+        else if(p<=0.05){c='var(--moss)';b=['Nailed it.','Add to cart.','Frighteningly close.'];}
+        else if(p<=0.15){c='var(--moss)';b=['Solid guess.','Respectable.','You read the room.'];}
+        else if(p<=0.30){c='var(--gold)';b=['In the ballpark.','Close enough.','Not bad.'];}
+        else if(p<=0.50){c='var(--flag)';b=['Not quite.','Vibes were off.'];}
+        else{c='var(--flag)';b=['Yikes.','Bold strategy.','The market would like a word.'];}
+        return { c:c, t:b[Math.floor(Math.random()*b.length)] };
+      }
+      function load(i){
+        idx=i; locked=false; touched=false;
+        const it=items[i];
+        cat.textContent=it.cat;
+        photo.style.backgroundImage='url('+it.img+')';
+        photo.className='demo-photo cover';
+        stage.style.background = it.kind==='home' ? '#23201d' : 'radial-gradient(120% 92% at 50% 6%, #fff, var(--cream))';
+        reveal.hidden=true; cta.style.display=''; qEl.style.display=''; amt.style.display='';
+        slider.style.display=''; slider.value=500; slider.classList.add('hint'); hint.style.display='';
+        updateAmt();
+        clearTimeout(timer); timer=setTimeout(function(){ if(!touched) advance(); }, 7000);
+      }
+      function lock(){
+        if(locked) return; locked=true; touched=true; clearTimeout(timer);
+        const it=items[idx], g=price(+slider.value), p=Math.abs(g-it.price)/it.price, rr=reaction(p);
+        rGuess.textContent=fmt(g,it.kind);
+        rLine.textContent=rr.t+'  Off by '+Math.round(p*100)+'%.';
+        rLine.style.color=rr.c;
+        slider.style.display='none'; hint.style.display='none'; qEl.style.display='none'; amt.style.display='none'; cta.style.display='none';
+        reveal.hidden=false;
+        rActual.textContent=fmt(it.price,it.kind);   // correct value first — animation is enhancement only
+        if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+          const t0=performance.now();
+          function cu(t){ const k=Math.min(1,(t-t0)/900), e=1-Math.pow(1-k,3); rActual.textContent=fmt(it.price*e,it.kind); if(k<1) requestAnimationFrame(cu); else rActual.textContent=fmt(it.price,it.kind); }
+          requestAnimationFrame(cu);
+        }
+      }
+      function advance(){ load((idx+1)%items.length); }
+      slider.addEventListener('input', function(){ touched=true; slider.classList.remove('hint'); hint.style.display='none'; clearTimeout(timer); updateAmt(); });
+      cta.addEventListener('click', lock);
+      nextBtn.addEventListener('click', advance);
+      load(0);
+    })();
+  </script>
+</body>
+</html>
