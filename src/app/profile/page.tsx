@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
@@ -6,6 +7,14 @@ import { bucketEmoji, accuracyToBucket } from "@/lib/daily/service";
 import type { AccuracyBucket } from "@/lib/daily/service";
 
 export const dynamic = "force-dynamic";
+
+// Profile is gated behind auth; tell crawlers not to index it (the robots.ts
+// already disallows /profile but per-page noindex is the belt-and-suspenders).
+export const metadata: Metadata = {
+  title: "Profile — Pricetag",
+  alternates: { canonical: "/profile" },
+  robots: { index: false, follow: true },
+};
 
 const BUCKET_LABELS: Record<AccuracyBucket, string> = {
   "90+": "90%+",
