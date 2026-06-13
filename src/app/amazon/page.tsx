@@ -86,11 +86,21 @@ export default function AmazonLandingPage() {
           {sample.map((p) => (
             <li key={p.id} className="border border-rule rounded-md overflow-hidden bg-cream">
               <div
-                className="aspect-square w-full"
-                style={{
-                  background: `${p.bandColor} url(${p.photos[0]}) center/cover no-repeat`,
-                }}
-              />
+                className="aspect-square w-full flex items-center justify-center p-4 text-center"
+                style={{ background: p.bandColor }}
+              >
+                <div
+                  className="display italic"
+                  style={{
+                    fontSize: 18,
+                    color: "rgba(26,26,26,0.85)",
+                    lineHeight: 1.15,
+                    mixBlendMode: "multiply",
+                  }}
+                >
+                  {p.displayTitle}
+                </div>
+              </div>
               <div className="p-3">
                 <div className="text-ink-mute text-xs uppercase tracking-wide">{p.category}</div>
                 <div className="text-ink text-sm mt-1">{p.displayTitle}</div>
@@ -98,6 +108,10 @@ export default function AmazonLandingPage() {
             </li>
           ))}
         </ul>
+        <p className="text-ink-mute text-xs mt-4">
+          Real Amazon photos mirror in Phase 1 once RapidAPI integration lands.
+          MVP uses branded placeholder cards — honest about the gap.
+        </p>
       </section>
 
       <section className="border-t border-rule pt-8">
