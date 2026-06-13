@@ -150,3 +150,32 @@ export function formatSqft(sqft: number | null): string | null {
   if (sqft == null) return null;
   return `${sqft.toLocaleString("en-US")} sqft`;
 }
+
+// Pick "nearby markets" for cross-linking from a city page. Heuristic:
+//   1. Same state, sorted by listing count desc (excluding current city).
+//   2. If <3 same-state matches, fall back to same-tier markets from any state.
+// Returns up to `limit` items. Cheap (in-process; no DB call beyond getAllCityCounts).
+export async function getNearbyMarkets(
+  current: CityIdentity,
+  limit = 4,
+): Promise<CityIdentity[]> {
+  const allCounts = await getAllCityCounts();
+
+  const sameState = allCounts
+    .filter((c) => c.state === current.state && c.city !== current.city)
+    .sort((a, b) => b.listingCount - a.listingCount)
+    .slice(0, limit)
+    .map(({ city, state }) => ({ city, state }));
+
+  if (sameState.length >= limit) return sameState;
+
+  // Fill remaining slots with high-coverage out-of-state markets to keep the
+  // section meaningful even when the current state has limited coverage.
+  const fillers = allCounts
+    .filter((c) => c.state !== current.state)
+    .sort((a, b) => b.listingCount - a.listingCount)
+    .slice(0, limit - sameState.length)
+    .map(({ city, state }) => ({ city, state }));
+
+  return [...sameState, ...fillers];
+}
