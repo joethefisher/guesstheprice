@@ -98,25 +98,28 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
       <div className="grain absolute inset-0" />
 
       {/* Top nav */}
-      <header className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center px-9 py-[26px]">
+      <header className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center px-4 md:px-9 py-[26px]">
         <Wordmark size={20} />
         <nav className="flex items-center gap-2">
           <button className="btn btn-ghost text-paper-95 text-sm" onClick={onDaily}>
             Daily
           </button>
-          <button className="btn btn-ghost text-paper-95 text-sm" onClick={onLeaderboard}>
+          {/* Leaderboard + Saved would crowd the header at phone widths;
+              users can reach them from summary / user-menu instead. */}
+          <button className="hidden md:inline-flex btn btn-ghost text-paper-95 text-sm" onClick={onLeaderboard}>
             Leaderboard
           </button>
-          <button className="btn btn-ghost text-paper-95 text-sm" onClick={onSaved}>
+          <button className="hidden md:inline-flex btn btn-ghost text-paper-95 text-sm" onClick={onSaved}>
             Saved
           </button>
           <UserMenu variant="dark" />
         </nav>
       </header>
 
-      {/* Main composition — sits above bottom strip */}
-      <div className="absolute left-0 right-0 top-0 bottom-[96px] z-10 flex items-end px-14 pb-9 text-paper">
-        <div className="w-full grid gap-14 items-end" style={{ gridTemplateColumns: "1.5fr 1fr" }}>
+      {/* Main composition — sits above bottom strip. Stacks vertically on
+          phones (headline over CTAs), splits into 1.5/1 grid at md+. */}
+      <div className="absolute left-0 right-0 top-0 bottom-[96px] z-10 flex items-end px-5 md:px-14 pb-6 md:pb-9 text-paper">
+        <div className="w-full flex flex-col gap-6 md:grid md:gap-14 md:items-end md:grid-cols-[1.5fr_1fr]">
           {/* Left: headline */}
           <div>
             <motion.h1
@@ -125,7 +128,9 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
               transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
               className="display m-0 text-paper max-w-[12ch]"
               style={{
-                fontSize: "clamp(64px, 8.4vw, 132px)",
+                // Bumped the minimum down from 64px so it fits on ~375px
+                // viewports without overflowing the 12ch max-width.
+                fontSize: "clamp(48px, 12vw, 132px)",
                 textShadow: "0 2px 30px rgba(0,0,0,0.25)",
               }}
             >
@@ -164,11 +169,11 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
         </div>
       </div>
 
-      {/* Bottom strip */}
+      {/* Bottom strip — 3-col on phone (no dividers, tighter padding),
+          5-col with vertical dividers at md+ where there's horizontal room. */}
       <div
-        className="absolute bottom-0 left-0 right-0 z-10 h-24 bg-ink-55 border-t border-[rgba(247,244,238,0.08)] grid items-center px-10"
+        className="absolute bottom-0 left-0 right-0 z-10 h-24 bg-ink-55 border-t border-[rgba(247,244,238,0.08)] grid grid-cols-3 md:grid-cols-[1fr_auto_1fr_auto_1fr] items-center px-4 md:px-10"
         style={{
-          gridTemplateColumns: "1fr auto 1fr auto 1fr",
           backdropFilter: "blur(20px) saturate(140%)",
         }}
       >
@@ -215,7 +220,7 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
         </div>
 
         {/* Divider */}
-        <div className="w-px h-10 bg-[rgba(247,244,238,0.12)] mx-8" />
+        <div className="hidden md:block w-px h-10 bg-[rgba(247,244,238,0.12)] mx-8" />
 
         {/* Top scorer */}
         <button
@@ -236,7 +241,7 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
         </button>
 
         {/* Divider */}
-        <div className="w-px h-10 bg-[rgba(247,244,238,0.12)] mx-8" />
+        <div className="hidden md:block w-px h-10 bg-[rgba(247,244,238,0.12)] mx-8" />
 
         {/* Now showing */}
         <div className="flex flex-col gap-1">

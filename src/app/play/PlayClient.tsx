@@ -326,18 +326,21 @@ export default function PlayClient({ initialListing }: Props) {
         </div>
       </header>
 
-      {/* Two-column game layout */}
-      <main className="flex-1 grid" style={{ gridTemplateColumns: "1.55fr 1fr" }}>
-        {/* Photo column */}
-        <div className="relative p-7">
+      {/* Game layout: stacks vertically on phones, splits into the two-column
+          side-by-side layout at md+ (768px) where there's horizontal room. */}
+      <main className="flex-1 flex flex-col md:grid md:grid-cols-[1.55fr_1fr]">
+        {/* Photo column — capped height on mobile so the guess panel is
+            reachable without a long scroll; fills the column at md+. */}
+        <div className="relative p-4 md:p-7 h-[52vh] md:h-auto">
           <div className="h-full rounded-5 overflow-hidden">
             <PhotoCarousel photos={listing.photos} />
           </div>
         </div>
 
-        {/* Guess panel */}
-        <div className="flex flex-col pt-7 pr-8 pb-7 border-l border-rule">
-          <div className="flex-1 overflow-y-auto pl-7">
+        {/* Guess panel — divider becomes a top border on mobile, left
+            border at md+ where the columns sit next to each other. */}
+        <div className="flex flex-col pt-4 md:pt-7 pr-4 md:pr-8 pb-4 md:pb-7 border-t md:border-t-0 md:border-l border-rule">
+          <div className="flex-1 overflow-y-auto px-4 md:pl-7 md:pr-0">
             <div className="flex items-center justify-between gap-3 mb-2">
               <div className="eyebrow">Listed in {listing.city}</div>
               <YearSoldPill year={listing.yearSold} />
@@ -441,7 +444,7 @@ export default function PlayClient({ initialListing }: Props) {
           </div>
 
           {/* CTA row */}
-          <div className="flex flex-col gap-3 mt-6 pl-7">
+          <div className="flex flex-col gap-3 mt-6 px-4 md:pl-7 md:pr-0">
             {scoreError && (
               <div className="text-sm text-flag font-medium">
                 {scoreError}
@@ -496,11 +499,11 @@ function parsePrice(s: string): number | null {
 
 function PlaySkeleton() {
   return (
-    <div className="min-h-screen grid bg-paper" style={{ gridTemplateColumns: "1.55fr 1fr" }}>
-      <div className="p-7">
+    <div className="min-h-screen flex flex-col md:grid md:grid-cols-[1.55fr_1fr] bg-paper">
+      <div className="p-4 md:p-7 h-[52vh] md:h-auto">
         <div className="h-full bg-cream rounded-5" />
       </div>
-      <div className="p-7">
+      <div className="p-4 md:p-7">
         <div className="h-3 w-[40%] bg-cream rounded-md mb-4" />
         <div className="h-8 w-[80%] bg-cream rounded-lg mb-6" />
         <div className="h-16 w-[70%] bg-cream rounded-lg" />
