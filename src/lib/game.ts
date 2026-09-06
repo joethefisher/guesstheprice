@@ -95,6 +95,20 @@ export function formatDelta(n: number): string {
   return `${sign}${formatPrice(Math.abs(n))}`;
 }
 
+/**
+ * Split a string into rows of `n` visible characters. Iterates by code
+ * points (Array.from) so surrogate-pair emoji like 🟩 stay intact — a
+ * naive `.match(/.{1,n}/g)` splits at UTF-16 boundaries and produces
+ * orphan surrogates that render as "?" tofu.
+ */
+export function chunkGraphemes(s: string, n: number): string[] {
+  if (n <= 0) return s.length ? [s] : [];
+  const glyphs = Array.from(s);
+  const rows: string[] = [];
+  for (let i = 0; i < glyphs.length; i += n) rows.push(glyphs.slice(i, i + n).join(""));
+  return rows;
+}
+
 export function tierEmoji(tier: AccuracyTier): string {
   switch (tier) {
     case "expert":

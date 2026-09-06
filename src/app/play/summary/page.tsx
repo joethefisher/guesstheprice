@@ -9,6 +9,7 @@ import {
   formatPrice,
   formatDelta,
   tierEmoji,
+  chunkGraphemes,
   type RoundResult,
 } from "@/lib/game";
 
@@ -196,7 +197,7 @@ function SummaryContent() {
           <div className="bg-paper border border-rule rounded-6 px-7 pt-7 pb-6 shadow-card">
             <div className="eyebrow mb-4">Your results</div>
             <pre className="font-mono text-lg leading-[1.5] m-0 mb-4 text-ink tracking-[0.05em]">
-              {emojiGrid.match(/.{1,5}/g)?.join("\n")}
+              {chunkGraphemes(emojiGrid, 5).join("\n")}
             </pre>
             <div className="text-sm text-ink-mute mb-5 font-mono">
               {avgAccuracy}% accurate · {streak}-game streak
