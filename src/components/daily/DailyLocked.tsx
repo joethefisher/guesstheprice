@@ -11,6 +11,7 @@ import {
   DarkIconButton,
 } from "./DailyShared";
 import { MapExpandedModal } from "./map/MapExpandedModal";
+import { NotifyMeControl } from "./NotifyMeControl";
 import type { DailyResult, DailyStorage } from "@/lib/daily/service";
 import type { ListingPublic } from "@/lib/game";
 
@@ -114,12 +115,7 @@ export function DailyLocked({
               </div>
               <NextDailyCountdown size={40} color="var(--spot)" />
             </div>
-            <button
-              className="btn px-4 py-3 text-sm rounded-[10px] bg-[rgba(247,244,238,0.1)] text-paper"
-              style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.25)" }}
-            >
-              Notify me
-            </button>
+            <NotifyMeControl source="daily-locked" />
           </motion.div>
 
           {/* Buttons */}

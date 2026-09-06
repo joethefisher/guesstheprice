@@ -28,6 +28,10 @@ const RATE_LIMITS = {
   batch:    { count: 20, window: "60 s" as const },
   login:    { count: 5,  window: "10 m" as const },
   signup:   { count: 3,  window: "60 m" as const },
+  // Notify opt-in: very tight — one legitimate user submits once, so a
+  // handful of attempts covers typos + retries. Higher and it becomes a
+  // waitlist-flooding vector.
+  notify:   { count: 3,  window: "60 s" as const },
 };
 
 function makeLimiter(name: keyof typeof RATE_LIMITS) {
@@ -45,6 +49,7 @@ const limiterListings = makeLimiter("listings");
 const limiterBatch = makeLimiter("batch");
 const limiterLogin = makeLimiter("login");
 const limiterSignup = makeLimiter("signup");
+const limiterNotify = makeLimiter("notify");
 
 export const config = {
   matcher: [
@@ -59,6 +64,7 @@ export const config = {
     // bcrypt-heavy login rate limit was silently a no-op.
     "/api/auth/:path*",
     "/api/saved/:path*",
+    "/api/notify/:path*",
   ],
 };
 
@@ -95,6 +101,14 @@ export async function middleware(req: NextRequest) {
   if (path.startsWith("/api/auth/")) {
     if (!limiterLogin) return NextResponse.next();
     const { success } = await limiterLogin.limit(ip);
+    if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    return NextResponse.next();
+  }
+
+  // Notify waitlist: tight bucket, POST-only in practice.
+  if (path.startsWith("/api/notify/")) {
+    if (!limiterNotify) return NextResponse.next();
+    const { success } = await limiterNotify.limit(ip);
     if (!success) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     return NextResponse.next();
   }

@@ -192,3 +192,15 @@ model SavedHome {
   @@unique([userId, listingId])
   @@index([userId, savedAt])
 }
+
+// Email opt-in for "notify me when the next daily house drops". Populated
+// by /api/notify/subscribe from the DailyLocked "Notify me" affordance.
+// Not linked to User because anonymous players are the main audience.
+model NotifyWaitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("daily-locked")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
