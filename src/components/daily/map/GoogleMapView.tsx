@@ -19,6 +19,7 @@
  * <MapErrorBoundary> above it will fall back to the illustrated variant.
  */
 
+import { useEffect, useState } from "react";
 import { Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import { getGoogleMapsApiKey, getGoogleMapId } from "@/lib/map/config";
 import { STATIC_MAP_STYLES } from "@/lib/map/style";
@@ -95,11 +96,22 @@ function StaticMapImage({
     params.append("path", `fillcolor:0xFF5C3933|color:0xFF5C39|weight:2|${circle}`);
   }
 
+  // If the Static Maps request 403s (e.g. billing lapse, key restricted
+  // to the wrong domain), the browser shows a broken-image icon and the
+  // user gets a dead thumbnail. Detect the load failure and throw so the
+  // MapErrorBoundary falls back to the illustrated variant + alerts Sentry.
+  const [errored, setErrored] = useState(false);
+  if (errored) {
+    throw new Error("Google Static Maps request failed (likely billing/quota/referrer)");
+  }
+
+  const src = `https://maps.googleapis.com/maps/api/staticmap?${params.toString()}`;
   return (
     <img
-      src={`https://maps.googleapis.com/maps/api/staticmap?${params.toString()}`}
+      src={src}
       alt={city ? `Map near ${city}` : "Neighborhood map"}
       loading="lazy"
+      onError={() => setErrored(true)}
       style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
     />
   );
@@ -135,6 +147,24 @@ function InteractiveMap({
   exact?: LatLng | null;
 }) {
   const mapId = getGoogleMapId();
+
+  // Google's sanctioned auth-failure callback: when set, Google calls
+  // it INSTEAD of rendering the "This page can't load Google Maps
+  // correctly" overlay. Flip state → throw → boundary catches → fall
+  // back to illustrated + Sentry alert. Cleanup restores any prior
+  // callback so we don't stomp on other map instances.
+  const [authFailed, setAuthFailed] = useState(false);
+  useEffect(() => {
+    const w = window as unknown as { gm_authFailure?: () => void };
+    const prev = w.gm_authFailure;
+    w.gm_authFailure = () => setAuthFailed(true);
+    return () => {
+      w.gm_authFailure = prev;
+    };
+  }, []);
+  if (authFailed) {
+    throw new Error("Google Maps auth failure (gm_authFailure) — likely billing/quota/referrer");
+  }
 
   const defaultCenter = revealed && exact ? exact : centroid;
   const defaultZoom = revealed ? Math.max(zoom + 2, 16) : zoom;

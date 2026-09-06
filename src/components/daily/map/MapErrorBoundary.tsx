@@ -1,6 +1,7 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
+import * as Sentry from "@sentry/nextjs";
 
 interface Props {
   fallback: ReactNode;
@@ -13,10 +14,13 @@ interface State {
 
 /**
  * Catches errors from the Google Maps renderer and falls back to the
- * illustrated variant. Per GOOGLE_MAPS_INTEGRATION.md §9, every failure
- * mode (missing key, referrer mismatch, quota exhausted, "for dev
- * purposes only" watermark) should degrade to the SVG variant, never
- * show a broken map.
+ * illustrated variant. Every failure mode (missing key, referrer
+ * mismatch, quota exhausted, billing lapse, "for dev purposes only"
+ * watermark) should degrade to the SVG variant, never show a broken map.
+ *
+ * Fires a tagged Sentry event on every fallback so ops notices when the
+ * Google integration silently regresses (e.g. billing lapse) — otherwise
+ * a silent fallback would let the problem sit for days.
  */
 export class MapErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
@@ -26,18 +30,11 @@ export class MapErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: unknown) {
-    // Log to Sentry if it's wired (otherwise no-op).
-    if (typeof window !== "undefined") {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const Sentry = (window as any).Sentry;
-        if (Sentry?.captureException) Sentry.captureException(error);
-      } catch {
-        // ignore
-      }
-      // eslint-disable-next-line no-console
-      console.warn("[MapRenderer] Google variant failed, falling back to illustrated:", error);
-    }
+    Sentry.captureException(error, {
+      tags: { component: "MapErrorBoundary", fallback: "illustrated" },
+    });
+    // eslint-disable-next-line no-console
+    console.warn("[MapRenderer] Google variant failed, falling back to illustrated:", error);
   }
 
   render() {
