@@ -1,0 +1,80 @@
+name: Ingest fresh listings (weekly)
+
+# Runs the ingestion pipeline on a schedule so the daily-house pool
+# doesn't stagnate. The manual dispatch trigger is useful for one-off
+# refreshes (e.g. after a new market lands in data/target-markets.json).
+#
+# Required repo secrets (Settings → Secrets and variables → Actions):
+#   DATABASE_URL          Supabase pooled URL
+#   DIRECT_URL            Supabase direct URL (only used by prisma generate)
+#   RAPIDAPI_KEY          Realty US on RapidAPI
+#   R2_ENDPOINT           Cloudflare R2 account endpoint
+#   R2_ACCESS_KEY_ID
+#   R2_SECRET_ACCESS_KEY
+#   R2_BUCKET_NAME        e.g. guesstheprice-photos
+#   R2_PUBLIC_URL         e.g. https://photos.guesstheprice.ai
+#
+# If any secret is missing the ingest degrades gracefully:
+#   - No R2 secrets → mirror stage falls back to source CDN URLs (dev mode)
+#   - No RAPIDAPI_KEY → fetch stage errors out early
+#   - No DATABASE_URL → persist stage errors out early
+
+on:
+  schedule:
+    # Sunday 08:00 UTC = Sunday 04:00 ET (03:00 during DST).
+    # Off-peak so we don't compete with normal player traffic against R2/DB.
+    - cron: "0 8 * * 0"
+  workflow_dispatch:
+    inputs:
+      quota:
+        description: "Max listings to ingest this run (default 500)"
+        required: false
+        default: "500"
+      markets:
+        description: "Comma-separated markets, or 'all' (default all)"
+        required: false
+        default: "all"
+
+# Prevent overlapping runs — an ingest still going when the next schedule
+# fires would double-hit RapidAPI and R2.
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+      RAPIDAPI_HOST: realty-us.p.rapidapi.com
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET_NAME: ${{ secrets.R2_BUCKET_NAME }}
+      R2_PUBLIC_URL: ${{ secrets.R2_PUBLIC_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Run ingestion
+        run: |
+          QUOTA="${{ github.event.inputs.quota || '500' }}"
+          MARKETS="${{ github.event.inputs.markets || 'all' }}"
+          echo "Running ingest: quota=$QUOTA, markets=$MARKETS"
+          npm run ingest:full -- --quota="$QUOTA" --markets="$MARKETS"
