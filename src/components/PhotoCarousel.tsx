@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Icon } from "./Icons";
+
+const SWIPE_THRESHOLD_PX = 40;
 
 interface Photo {
   url: string;
@@ -41,6 +43,29 @@ export function PhotoCarousel({ photos, overlayCount, bandColor = "#bfae93", onI
     return () => window.removeEventListener("keydown", handler);
   }, [go]);
 
+  // Swipe tracking — commit at ±SWIPE_THRESHOLD_PX horizontal delta.
+  // Vertical delta larger than horizontal → treat as a page scroll and
+  // cancel the swipe so the carousel doesn't steal the scroll gesture.
+  const touchRef = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchRef.current = { x: t.clientX, y: t.clientY };
+  }, []);
+  const onTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      const start = touchRef.current;
+      if (!start) return;
+      touchRef.current = null;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - start.x;
+      const dy = t.clientY - start.y;
+      if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return;
+      if (Math.abs(dy) > Math.abs(dx)) return;
+      go(dx < 0 ? 1 : -1);
+    },
+    [go]
+  );
+
   if (!photos.length) {
     return (
       <div className="w-full h-full grid place-items-center" style={{ background: bandColor, color: "var(--ink-mute)" }}>
@@ -51,8 +76,10 @@ export function PhotoCarousel({ photos, overlayCount, bandColor = "#bfae93", onI
 
   return (
     <div
-      className="relative w-full h-full overflow-hidden"
-      style={{ background: bandColor, borderRadius: "inherit" }}
+      className="relative w-full h-full overflow-hidden select-none"
+      style={{ background: bandColor, borderRadius: "inherit", touchAction: "pan-y" }}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {/* Photo crossfade */}
       <AnimatePresence initial={false}>
@@ -76,11 +103,12 @@ export function PhotoCarousel({ photos, overlayCount, bandColor = "#bfae93", onI
         }}
       />
 
-      {/* Arrow nav */}
+      {/* Arrow nav — hidden on phone where swipe takes over; the arrows
+          there would cover too much of the photo. */}
       <button
         onClick={() => go(-1)}
         aria-label="Previous photo"
-        className="btn-icon absolute top-1/2 -translate-y-1/2"
+        className="btn-icon absolute top-1/2 -translate-y-1/2 hidden md:grid"
         style={{ left: 14, color: "var(--ink)", boxShadow: "0 4px 12px rgba(0,0,0,0.18)" }}
       >
         <Icon.Arrow dir="left" size={20} />
@@ -88,7 +116,7 @@ export function PhotoCarousel({ photos, overlayCount, bandColor = "#bfae93", onI
       <button
         onClick={() => go(1)}
         aria-label="Next photo"
-        className="btn-icon absolute top-1/2 -translate-y-1/2"
+        className="btn-icon absolute top-1/2 -translate-y-1/2 hidden md:grid"
         style={{ right: 14, color: "var(--ink)", boxShadow: "0 4px 12px rgba(0,0,0,0.18)" }}
       >
         <Icon.Arrow size={20} />
@@ -125,13 +153,27 @@ export function PhotoCarousel({ photos, overlayCount, bandColor = "#bfae93", onI
             onClick={() => { setIdx(i); onIndexChange?.(i); }}
             aria-label={`Photo ${i + 1}`}
             style={{
-              width: i === idx ? 22 : 6,
-              height: 6,
-              borderRadius: 4,
-              background: i === idx ? "var(--paper)" : "rgba(247,244,238,0.5)",
-              transition: "all 280ms cubic-bezier(0.32,0.72,0,1)",
+              // Hit area padded to ~32px tall around the 6px pill so each
+              // dot is individually tappable on touch.
+              padding: "13px 0",
+              background: "none",
+              border: 0,
+              cursor: "pointer",
+              display: "grid",
+              placeItems: "center",
             }}
-          />
+          >
+            <span
+              style={{
+                display: "block",
+                width: i === idx ? 22 : 6,
+                height: 6,
+                borderRadius: 4,
+                background: i === idx ? "var(--paper)" : "rgba(247,244,238,0.5)",
+                transition: "all 280ms cubic-bezier(0.32,0.72,0,1)",
+              }}
+            />
+          </button>
         ))}
       </div>
     </div>

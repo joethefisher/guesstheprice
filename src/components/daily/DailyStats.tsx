@@ -67,19 +67,20 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
       <GrainOverlay opacity={0.3} />
 
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center px-9 py-[26px]">
-        <div className="flex items-center gap-3.5">
+      <header className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center px-4 md:px-9 py-5 md:py-[26px]">
+        <div className="flex items-center gap-2 md:gap-3.5">
           <div style={{ filter: "invert(1) hue-rotate(180deg)" }}>
             <Wordmark size={18} />
           </div>
-          <div className="w-px h-[18px] bg-paper-20" />
+          <div className="hidden sm:block w-px h-[18px] bg-paper-20" />
           <DailyBadge dailyNumber={dailyNumber} subtle />
         </div>
         <DarkIconButton onClick={onExit} />
       </header>
 
-      {/* Two-column body */}
-      <div className="absolute top-[88px] left-14 right-14 bottom-6 z-[3] grid gap-12 overflow-y-auto" style={{ gridTemplateColumns: "1.1fr 1.4fr" }}>
+      {/* Body — stacks on phone (stats hero, then calendar heatmap),
+          side-by-side at md+. Scrolls as a single column on phone. */}
+      <div className="absolute top-[72px] md:top-[88px] left-4 right-4 md:left-14 md:right-14 bottom-4 md:bottom-6 z-[3] flex flex-col gap-8 md:grid md:gap-12 md:[grid-template-columns:1.1fr_1.4fr] overflow-y-auto">
         {/* LEFT — stats hero */}
         <div className="flex flex-col">
           <motion.div {...fadeUp(0)}>
@@ -168,7 +169,7 @@ export function DailyStats({ storage, dailyNumber, onExit }: Props) {
                 </div>
                 <NextDailyCountdown size={26} color="var(--spot)" />
               </div>
-              <div className="text-xs text-paper-60 text-right max-w-[160px]">
+              <div className="hidden sm:block text-xs text-paper-60 text-right max-w-[160px]">
                 Resets at midnight Eastern.<br />Miss it and your streak goes to zero.
               </div>
             </div>

@@ -292,23 +292,27 @@ export default function PlayClient({ initialListing }: Props) {
   return (
     <DailyMapsProvider>
     <div className="min-h-screen flex flex-col bg-paper">
-      {/* Top bar */}
-      <header className="flex items-center justify-between px-7 py-4 shrink-0 border-b border-rule">
-        <div className="flex items-center gap-4">
+      {/* Top bar — on phone, hide the ComboFlame + StreakFlame chips so
+          the Wordmark + Round pill + two icon buttons fit on one row.
+          Combo state is still visible on streak animations. */}
+      <header className="flex items-center justify-between px-4 md:px-7 py-3 md:py-4 shrink-0 border-b border-rule gap-2">
+        <div className="flex items-center gap-2 md:gap-4 min-w-0">
           <button onClick={() => router.push("/")} className="cursor-pointer" aria-label="Go to home">
             <Wordmark size={18} />
           </button>
           <RoundPill current={roundIdx + 1} total={TOTAL_ROUNDS} />
-          <ComboFlame key={combo} combo={combo} />
-          {streak > 0 && <StreakFlame count={streak} />}
+          <div className="hidden sm:flex items-center gap-4">
+            <ComboFlame key={combo} combo={combo} />
+            {streak > 0 && <StreakFlame count={streak} />}
+          </div>
         </div>
         {history.length > 0 && (
-          <div className="tnum text-sm font-bold text-ink absolute left-1/2 -translate-x-1/2">
+          <div className="hidden md:block tnum text-sm font-bold text-ink absolute left-1/2 -translate-x-1/2">
             {history.reduce((s, r) => s + r.score, 0)}
             <span className="font-normal text-ink-mute ml-1">pts</span>
           </div>
         )}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-none">
           <button
             className="btn-icon cursor-pointer"
             aria-label={isAlreadySaved ? "Remove saved home" : "Save home"}

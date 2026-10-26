@@ -1,6 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
+  future: {
+    // Gate `hover:*` behind `@media (hover: hover)` so the touch devices
+    // don't get stuck in a "hover" state after a tap. ~39 hover: usages
+    // across the codebase were firing on touch before this.
+    hoverOnlyWhenSupported: true,
+  },
   theme: {
     extend: {
       colors: {

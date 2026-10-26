@@ -7,7 +7,9 @@ import Link from "next/link";
 import { Wordmark } from "@/components/Wordmark";
 
 const INPUT_CLASSES =
-  "px-3.5 py-3 rounded-2 border-[1.5px] border-ink-15 text-base text-ink bg-[rgba(26,26,26,0.02)] outline-none focus:border-accent";
+  // text-md (17px) not text-base (15px): iOS zooms-on-focus for any
+  // input below 16px font-size.
+  "px-3.5 py-3 rounded-2 border-[1.5px] border-ink-15 text-md text-ink bg-[rgba(26,26,26,0.02)] outline-none focus:border-accent";
 
 export default function SignUpPage() {
   const router = useRouter();

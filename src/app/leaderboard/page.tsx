@@ -43,7 +43,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="flex items-center justify-between px-10 py-6 border-b border-rule">
+      <header className="flex items-center justify-between px-4 md:px-10 py-4 md:py-6 border-b border-rule">
         <button onClick={() => router.push("/")} aria-label="Home">
           <Wordmark size={20} />
         </button>
@@ -53,13 +53,13 @@ export default function LeaderboardPage() {
         </button>
       </header>
 
-      <div className="max-w-default mx-auto py-12 px-8">
+      <div className="max-w-default mx-auto py-8 md:py-12 px-4 md:px-8">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
         >
-          <h1 className="display m-0 mb-8 leading-[0.95]" style={{ fontSize: "clamp(40px, 6vw, 72px)" }}>
+          <h1 className="display m-0 mb-6 md:mb-8 leading-[0.95]" style={{ fontSize: "clamp(32px, 9vw, 72px)" }}>
             Who's the best<br />
             <span className="text-accent">price guesser?</span>
           </h1>
@@ -71,7 +71,7 @@ export default function LeaderboardPage() {
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`caption py-2 px-[18px] rounded-pill text-sm font-semibold tracking-[0.08em] cursor-pointer transition-all duration-200 ${
+              className={`caption py-2.5 px-[18px] rounded-pill text-sm font-semibold tracking-[0.08em] cursor-pointer transition-all duration-200 min-h-[40px] ${
                 tab === key ? "bg-ink text-paper" : "bg-ink-06 text-ink-mute"
               }`}
             >

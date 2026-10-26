@@ -57,7 +57,7 @@ export function DailyIntro({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="absolute top-[26px] left-9 right-9 z-10 flex justify-between items-center"
+        className="absolute top-5 md:top-[26px] left-4 right-4 md:left-9 md:right-9 z-10 flex justify-between items-center gap-2"
       >
         <div style={{ filter: "invert(1) hue-rotate(180deg)" }}>
           <Wordmark size={18} />
@@ -72,7 +72,7 @@ export function DailyIntro({
       </motion.header>
 
       {/* Center stage */}
-      <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-[60px] text-center">
+      <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-5 md:px-[60px] text-center pt-16 pb-20 md:pt-0 md:pb-0 overflow-y-auto">
         {/* Plaque + bulbs */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -106,7 +106,8 @@ export function DailyIntro({
           animate="show"
           className="display m-0 text-paper leading-[0.95] max-w-[16ch] tracking-[-0.03em] flex flex-wrap justify-center"
           style={{
-            fontSize: "clamp(72px, 9vw, 120px)",
+            // Lower min so 'One house.' fits on 375px without overflow.
+            fontSize: "clamp(44px, 13vw, 120px)",
             textShadow: "0 4px 40px rgba(255,214,107,0.25)",
             gap: "0 0.25em",
           }}
@@ -142,7 +143,7 @@ export function DailyIntro({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 0.9 }}
-          className="btn bg-accent text-white py-6 px-10 text-md rounded-4 inline-flex items-center gap-3"
+          className="btn bg-accent text-white py-4 md:py-6 px-7 md:px-10 text-md rounded-4 inline-flex items-center gap-3 w-full sm:w-auto max-w-[360px]"
           onClick={onBegin}
           style={{ boxShadow: "0 1px 0 rgba(255,255,255,0.3) inset, 0 20px 50px -10px rgba(255,92,57,0.6)" }}
         >
@@ -155,7 +156,7 @@ export function DailyIntro({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 1.0 }}
-          className="flex items-center gap-7 mt-[38px] text-paper-80 text-sm"
+          className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 md:gap-7 mt-7 md:mt-[38px] text-paper-80 text-sm"
         >
           {currentStreak > 0 && (
             <>
@@ -188,7 +189,7 @@ export function DailyIntro({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 1.1 }}
-        className="absolute bottom-6 left-9 right-9 z-10 flex justify-between items-center px-[22px] py-3.5 rounded-2 bg-paper-08 text-paper-95 text-sm"
+        className="hidden md:flex absolute bottom-6 left-9 right-9 z-10 justify-between items-center px-[22px] py-3.5 rounded-2 bg-paper-08 text-paper-95 text-sm"
         style={{
           backdropFilter: "blur(12px)",
           boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.08)",

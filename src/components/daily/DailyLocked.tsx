@@ -60,15 +60,16 @@ export function DailyLocked({
       <GrainOverlay opacity={0.3} />
 
       {/* Header */}
-      <header className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center px-9 py-[26px]">
+      <header className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center px-4 md:px-9 py-5 md:py-[26px]">
         <div style={{ filter: "invert(1) hue-rotate(180deg)" }}>
           <Wordmark size={18} />
         </div>
         <DarkIconButton onClick={onExit} />
       </header>
 
-      {/* Two-column grid */}
-      <div className="absolute inset-0 z-[3] grid grid-cols-2 gap-[70px] items-center pt-[100px] px-20 pb-[60px]">
+      {/* Two-column layout — stacks on phone (message then photo card
+          with its own scroll area), side-by-side at md+. */}
+      <div className="absolute inset-0 z-[3] flex flex-col gap-6 md:grid md:grid-cols-2 md:gap-[70px] md:items-center pt-[72px] md:pt-[100px] px-4 md:px-20 pb-6 md:pb-[60px] overflow-y-auto">
         {/* LEFT — message */}
         <div>
           {/* Done pill */}
@@ -89,7 +90,7 @@ export function DailyLocked({
           {/* Headline */}
           <motion.h1
             custom={1} variants={fadeUpVariant} initial="hidden" animate="show"
-            className="display m-0 text-display-xl leading-[0.95] tracking-[-0.03em]"
+            className="display m-0 text-[clamp(48px,13vw,140px)] md:text-display-xl leading-[0.95] tracking-[-0.03em]"
           >
             See you<br />
             <span className="text-spot italic">tomorrow.</span>
@@ -103,33 +104,34 @@ export function DailyLocked({
             You played today's house. The next one drops at midnight Eastern — same time as the rest of the world.
           </motion.p>
 
-          {/* Countdown card */}
+          {/* Countdown card — stacks on phone so the countdown isn't
+              crushed next to the Notify Me control. */}
           <motion.div
             custom={3} variants={fadeUpVariant} initial="hidden" animate="show"
-            className="py-[22px] px-6 rounded-4 bg-paper-08 flex items-center justify-between mb-[22px]"
+            className="py-[18px] md:py-[22px] px-5 md:px-6 rounded-4 bg-paper-08 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 md:mb-[22px]"
             style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.15)" }}
           >
             <div>
               <div className="eyebrow text-paper-60 mb-1.5">
                 NEXT HOUSE IN
               </div>
-              <NextDailyCountdown size={40} color="var(--spot)" />
+              <NextDailyCountdown size={36} color="var(--spot)" />
             </div>
             <NotifyMeControl source="daily-locked" />
           </motion.div>
 
-          {/* Buttons */}
-          <motion.div className="flex gap-3"
+          {/* Buttons — stack full-width on phone, side-by-side at sm+. */}
+          <motion.div className="flex flex-col sm:flex-row gap-2 sm:gap-3"
             custom={4} variants={fadeUpVariant} initial="hidden" animate="show"
           >
             <button
-              className="btn btn-primary py-4 px-[22px] text-sm rounded-2"
+              className="btn btn-primary py-4 px-[22px] text-sm rounded-2 w-full sm:w-auto"
               onClick={onPractice}
             >
               Play practice rounds
             </button>
             <button
-              className="btn py-4 px-[22px] text-sm rounded-2 bg-[rgba(247,244,238,0.08)] text-paper"
+              className="btn py-4 px-[22px] text-sm rounded-2 bg-[rgba(247,244,238,0.08)] text-paper w-full sm:w-auto"
               onClick={onStats}
               style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)" }}
             >

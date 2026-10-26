@@ -67,7 +67,7 @@ export function LandingScreen({ heroPhotoUrl, heroLocation, topScorer, recentSta
   const spark = buildSparkline(recentStats.last7Days);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-paper">
+    <div className="relative w-full h-[100dvh] overflow-hidden bg-paper">
       {/* Hero photo */}
       <div className="absolute inset-0 overflow-hidden">
         <Image

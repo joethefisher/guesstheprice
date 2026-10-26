@@ -16,6 +16,12 @@ export const viewport: Viewport = {
   colorScheme: "light dark",
   width: "device-width",
   initialScale: 1,
+  // viewportFit=cover lets env(safe-area-inset-*) report real notch /
+  // home-indicator insets on iPhones. Without this the insets return 0
+  // and pinned top/bottom bars disappear behind the notch or home bar.
+  viewportFit: "cover",
+  // Don't lock maximum-scale — WCAG 2.2 1.4.4 requires users can zoom.
+  // iOS field-focus zoom is suppressed via input font-size:16px (globals.css).
 };
 
 const fraunces = Fraunces({

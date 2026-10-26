@@ -101,7 +101,7 @@ export function DailyShare({ result, storage, dailyNumber, listing, onClose }: P
         exit={{ scale: 0.94, opacity: 0, y: 12 }}
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         onClick={(e) => e.stopPropagation()}
-        className="w-[480px] rounded-7 overflow-hidden"
+        className="w-[calc(100vw-24px)] max-w-[480px] rounded-7 overflow-hidden"
         style={{
           background: "rgba(28,26,22,0.98)",
           boxShadow: "0 40px 100px -20px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(247,244,238,0.12)",

@@ -43,8 +43,11 @@
   --text-xl: 24px;
   --text-2xl: 32px;
   --text-3xl: 44px;
-  --text-display-l: clamp(56px, 6vw, 78px);
-  --text-display-xl: clamp(64px, 9vw, 140px);
+  /* Display floors lowered so tabular numbers like $12,500,000 fit on a
+     375px viewport without truncation. Growth curve is unchanged for
+     tablet/desktop — the clamp maxes stay the same. */
+  --text-display-l: clamp(40px, 9vw, 78px);
+  --text-display-xl: clamp(48px, 11vw, 140px);
 
   /* Container widths */
   --w-narrow: 440px;
@@ -61,7 +64,10 @@
 html, body {
   margin: 0;
   padding: 0;
-  min-height: 100%;
+  /* Use the dynamic viewport unit (dvh) so full-height sections survive
+     iOS Safari's collapsing address bar. 100vh on iOS Safari would push
+     any pinned-bottom controls off-screen when the toolbar shows. */
+  min-height: 100dvh;
   background: var(--paper);
   color: var(--ink);
   font-family: var(--body);
@@ -72,9 +78,21 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
+/* No horizontal scroll on mobile. If any screen genuinely needs a wider
+   layout than the viewport, it can opt out with `overflow-x: auto` on
+   its own container. */
+html, body { overflow-x: hidden; }
+
 button, input, select, textarea {
   font-family: inherit;
   color: inherit;
+}
+
+/* iOS Safari auto-zooms when a focused form field has a font-size below
+   16px. The zoom-in disrupts the user and often doesn't zoom back out.
+   Floor every form input at 16px to suppress it. */
+input, select, textarea {
+  font-size: max(16px, 1em);
 }
 
 button {
@@ -88,7 +106,24 @@ button {
   padding: 0;
 }
 
+/* Kill the grey tap-flash on iOS/Android. We provide our own :active
+   feedback (.btn:active already handles the scale/translate press state). */
+button, a, input, select, textarea, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
 img { display: block; max-width: 100%; }
+
+/* ─── Safe-area insets (iPhone notch / home indicator) ─────────────
+   Apply these on anything pinned to a screen edge so content clears the
+   notch and home-bar. Paired with viewportFit:"cover" in layout.tsx. */
+.pt-safe { padding-top: env(safe-area-inset-top); }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pl-safe { padding-left: env(safe-area-inset-left); }
+.pr-safe { padding-right: env(safe-area-inset-right); }
+/* Combined with existing padding — adds safe-area ON TOP of your value. */
+.pt-safe-plus { padding-top: calc(env(safe-area-inset-top) + var(--pad, 0px)); }
+.pb-safe-plus { padding-bottom: calc(env(safe-area-inset-bottom) + var(--pad, 0px)); }
 
 /* ─── Grain texture ─────────────────────────── */
 .grain::before {

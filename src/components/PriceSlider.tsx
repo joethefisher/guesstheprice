@@ -54,12 +54,17 @@ export function PriceSlider({ value, onChange, locked = false }: Props) {
   useEffect(() => {
     if (!drag) return;
     const m = (e: MouseEvent | TouchEvent) => {
+      // On touch, preventDefault stops the page from scrolling vertically
+      // under the finger while the user drags the slider. Must be a
+      // non-passive listener for preventDefault to take effect, which is
+      // why we attach it imperatively rather than via onTouchMove.
+      if ("touches" in e) e.preventDefault();
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
       updateFromX(clientX);
     };
     const u = () => setDrag(false);
     window.addEventListener("mousemove", m);
-    window.addEventListener("touchmove", m, { passive: true });
+    window.addEventListener("touchmove", m, { passive: false });
     window.addEventListener("mouseup", u);
     window.addEventListener("touchend", u);
     return () => {
@@ -74,7 +79,9 @@ export function PriceSlider({ value, onChange, locked = false }: Props) {
     <div
       style={{
         position: "relative",
-        padding: "32px 0 0",
+        // Horizontal padding keeps the first/last tick labels and the
+        // thumb at either extreme from clipping on narrow viewports.
+        padding: "32px 20px 20px",
         opacity: locked ? 0.55 : 1,
         pointerEvents: locked ? "none" : "auto",
       }}
@@ -101,19 +108,32 @@ export function PriceSlider({ value, onChange, locked = false }: Props) {
         ))}
       </div>
 
-      {/* Track */}
+      {/* Track — wrapped in a 44px-tall touch area for easier finger
+          targeting without inflating the visual track itself. */}
       <div
-        ref={trackRef}
         onMouseDown={(e) => { setDrag(true); updateFromX(e.clientX); }}
         onTouchStart={(e) => { setDrag(true); updateFromX(e.touches[0].clientX); }}
         style={{
           position: "relative",
-          height: 14,
+          height: 44,
           marginTop: 8,
+          display: "flex",
+          alignItems: "center",
+          cursor: locked ? "default" : "pointer",
+          // Prevents the browser's default horizontal pan/pinch from
+          // competing with the drag gesture.
+          touchAction: "none",
+        }}
+      >
+      <div
+        ref={trackRef}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: 14,
           background: "var(--cream)",
           borderRadius: 999,
           boxShadow: "inset 0 1px 2px rgba(0,0,0,0.08)",
-          cursor: locked ? "default" : "pointer",
         }}
       >
         {/* Gradient hints */}
@@ -159,15 +179,16 @@ export function PriceSlider({ value, onChange, locked = false }: Props) {
           }}
         />
 
-        {/* Thumb */}
+        {/* Thumb — 32px visual size with the 44px parent touch area
+            providing the full touch target per 2026 mobile guidelines. */}
         <div
           style={{
             position: "absolute",
             left: `${pct * 100}%`,
             top: "50%",
             transform: "translate(-50%, -50%)",
-            width: 28,
-            height: 28,
+            width: 32,
+            height: 32,
             borderRadius: 999,
             background: "var(--paper)",
             boxShadow: "0 0 0 2px var(--ink), 0 4px 12px rgba(0,0,0,0.18)",
@@ -177,12 +198,13 @@ export function PriceSlider({ value, onChange, locked = false }: Props) {
           <div
             style={{
               position: "absolute",
-              inset: 6,
+              inset: 7,
               borderRadius: 999,
               background: "var(--accent)",
             }}
           />
         </div>
+      </div>
       </div>
     </div>
   );

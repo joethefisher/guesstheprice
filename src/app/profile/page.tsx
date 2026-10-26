@@ -87,7 +87,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-paper">
-      <header className="flex items-center justify-between px-10 py-6 border-b border-rule">
+      <header className="flex items-center justify-between px-4 md:px-10 py-4 md:py-6 border-b border-rule gap-2">
         <Link href="/" className="no-underline">
           <span className="display text-lg italic text-ink">
             Pricetag
@@ -101,17 +101,17 @@ export default async function ProfilePage() {
         </Link>
       </header>
 
-      <div className="max-w-default mx-auto py-12 px-8">
+      <div className="max-w-default mx-auto py-8 md:py-12 px-4 md:px-8">
         {/* Hero: username + member since */}
-        <div className="mb-12">
+        <div className="mb-8 md:mb-12">
           <div className="eyebrow mb-3 text-ink-mute">Member since {memberSince}</div>
-          <h1 className="display m-0 leading-[0.9]" style={{ fontSize: "clamp(44px, 7vw, 88px)" }}>
+          <h1 className="display m-0 leading-[0.9] break-words" style={{ fontSize: "clamp(32px, 10vw, 88px)" }}>
             @{user.username}
           </h1>
         </div>
 
-        {/* Stat cards row */}
-        <div className="grid grid-cols-4 gap-4 mb-10">
+        {/* Stat cards row — 4 across would crush values on phone. */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8 md:mb-10">
           {[
             { label: "Best score", value: bestGame?.totalScore?.toLocaleString() ?? "—", sub: "freeplay" },
             { label: "Games played", value: recentGames.length > 0 ? `${recentGames.length}+` : "0", sub: "freeplay" },
@@ -130,7 +130,7 @@ export default async function ProfilePage() {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
           {/* Daily accuracy distribution */}
           <div className="bg-cream rounded-6 p-6">
             <div className="eyebrow mb-4 text-ink-mute">Daily accuracy breakdown</div>

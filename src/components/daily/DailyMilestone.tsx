@@ -61,7 +61,7 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
       {fired && <Confetti fire count={120} />}
 
       {/* Center content */}
-      <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-[60px] py-20 text-center">
+      <div className="absolute inset-0 z-[5] flex flex-col items-center justify-center px-5 md:px-[60px] py-12 md:py-20 text-center overflow-y-auto">
         {/* Medal */}
         <motion.div className="mb-8"
           initial={{ scale: 0, rotate: -20, opacity: 0 }}
@@ -103,7 +103,7 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
           transition={{ duration: 0.5, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="display m-0 mb-[18px] leading-[0.95] tracking-[-0.03em] text-paper max-w-[14ch]"
           style={{
-            fontSize: "clamp(56px, 7vw, 96px)",
+            fontSize: "clamp(40px, 11vw, 96px)",
             textShadow: "0 4px 40px rgba(255,214,107,0.2)",
           }}
         >
@@ -156,7 +156,7 @@ export function DailyMilestone({ threshold, streak, avgAccuracy, onContinue }: P
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 1.1 }}
-          className="btn btn-primary py-[22px] px-11 text-md rounded-4"
+          className="btn btn-primary py-4 md:py-[22px] px-8 md:px-11 text-md rounded-4 w-full sm:w-auto max-w-[360px]"
           onClick={onContinue}
           style={{ boxShadow: "0 1px 0 rgba(255,255,255,0.25) inset, 0 20px 50px -10px rgba(255,92,57,0.6)" }}
         >

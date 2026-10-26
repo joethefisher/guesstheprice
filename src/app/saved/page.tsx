@@ -76,7 +76,7 @@ export default function SavedPage() {
   return (
     <div className="min-h-screen bg-paper">
       {/* Header */}
-      <header className="flex items-center justify-between px-10 py-6 border-b border-rule">
+      <header className="flex items-center justify-between px-4 md:px-10 py-4 md:py-6 border-b border-rule">
         <Wordmark size={20} />
         <button className="btn btn-secondary text-sm" onClick={() => router.push("/play")}>
           Play again →
@@ -84,23 +84,25 @@ export default function SavedPage() {
       </header>
 
       {/* Display headline */}
-      <div className="px-10 pt-12 pb-8">
-        <h1 className="display m-0 text-ink" style={{ fontSize: "clamp(40px,5vw,72px)" }}>
+      <div className="px-4 md:px-10 pt-8 md:pt-12 pb-6 md:pb-8">
+        <h1 className="display m-0 text-ink" style={{ fontSize: "clamp(32px,7vw,72px)" }}>
           Homes you'd actually live in.
         </h1>
       </div>
 
-      {/* Sticky filter rail */}
+      {/* Sticky filter rail — horizontally scrolls the pills on mobile
+          to avoid the overflow bug when all 5 price filters + 3 sorts
+          don't fit side-by-side. Snap gives tactile feedback. */}
       <div
-        className="sticky top-0 z-10 flex items-center justify-between px-10 py-3 gap-6 bg-paper-95 border-y border-rule"
+        className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-6 px-4 md:px-10 py-3 bg-paper-95 border-y border-rule"
         style={{ backdropFilter: "blur(12px)" }}
       >
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto scrollbar-none -mx-4 sm:mx-0 px-4 sm:px-0 snap-x snap-mandatory">
           {PRICE_FILTERS.map((f) => (
             <button
               key={f.key}
               onClick={() => setPriceFilter(f.key)}
-              className={`caption px-3.5 py-[7px] rounded-pill text-xs font-semibold tracking-[0.08em] cursor-pointer transition-all duration-200 ${
+              className={`caption px-3.5 py-2.5 rounded-pill text-xs font-semibold tracking-[0.08em] cursor-pointer transition-all duration-200 snap-start flex-none min-h-[36px] ${
                 priceFilter === f.key
                   ? "bg-ink text-paper border-none"
                   : "bg-transparent text-ink-mute border-[1.5px] border-rule"
@@ -111,12 +113,12 @@ export default function SavedPage() {
           ))}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 overflow-x-auto scrollbar-none -mx-4 sm:mx-0 px-4 sm:px-0 flex-none">
           {SORTS.map((s) => (
             <button
               key={s.key}
               onClick={() => setSort(s.key)}
-              className={`caption px-3.5 py-[7px] rounded-pill text-xs font-semibold tracking-[0.08em] border-none cursor-pointer transition-all duration-200 ${
+              className={`caption px-3.5 py-2.5 rounded-pill text-xs font-semibold tracking-[0.08em] border-none cursor-pointer transition-all duration-200 flex-none min-h-[36px] ${
                 sort === s.key ? "bg-ink-08 text-ink" : "bg-transparent text-ink-mute"
               }`}
             >
@@ -127,14 +129,14 @@ export default function SavedPage() {
       </div>
 
       {/* Content */}
-      <div className="px-10 py-7">
+      <div className="px-4 md:px-10 py-5 md:py-7">
         {!ready ? (
           <LoadingState />
         ) : filtered.length === 0 ? (
           <EmptyState onPlay={() => router.push("/play")} />
         ) : (
           /* 3-column CSS masonry */
-          <div style={{ columnCount: 3, columnGap: 20 }}>
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-5">
             {filtered.map((home, i) => (
               <motion.div
                 key={home.listingId}
@@ -156,7 +158,7 @@ export default function SavedPage() {
                   {/* Heart */}
                   <button
                     onClick={() => handleRemove(home.listingId)}
-                    className="absolute top-3 right-3 w-8 h-8 rounded-pill bg-ink-55 border-none cursor-pointer grid place-items-center text-accent"
+                    className="absolute top-3 right-3 w-11 h-11 rounded-pill bg-ink-55 border-none cursor-pointer grid place-items-center text-accent"
                     style={{ backdropFilter: "blur(8px)" }}
                     aria-label="Remove from saved"
                   >

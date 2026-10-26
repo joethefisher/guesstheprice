@@ -54,7 +54,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.36, ease: [0.32, 0.72, 0, 1] }}
-        className="grain relative overflow-hidden bg-paper rounded-7 w-full max-w-default mx-6 pt-9 px-10 pb-10 shadow-modal"
+        className="grain relative overflow-hidden bg-paper rounded-7 w-full max-w-default mx-4 md:mx-6 pt-6 md:pt-9 px-5 md:px-10 pb-6 md:pb-10 shadow-modal max-h-[90vh] overflow-y-auto"
       >
         <Confetti fire={isNailed && tickerDone} />
 
@@ -69,8 +69,9 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
           {result.reaction}
         </h2>
 
-        {/* Two-column number stack */}
-        <div className="flex gap-12 mb-6 items-start">
+        {/* Two-column number stack — stacks on phone so the big actual
+            price has room to render without colliding with the guess. */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-12 mb-6 items-start">
           <div className="flex flex-col gap-1">
             <div className="eyebrow">Your guess</div>
             <div className="display tnum text-2xl text-ink-mute">
@@ -92,8 +93,8 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
 
         <hr className="hairline mb-6" />
 
-        {/* Three metrics */}
-        <div className="flex gap-8 mb-6">
+        {/* Three metrics — gap tightens on phone to prevent wrap/overflow. */}
+        <div className="flex flex-wrap gap-x-6 gap-y-3 sm:gap-x-8 mb-6">
           <div className="flex flex-col gap-1">
             <div className="eyebrow">Off by</div>
             <div className={`tnum font-semibold text-md ${result.errorDollars >= 0 ? "text-flag" : "text-moss"}`}>

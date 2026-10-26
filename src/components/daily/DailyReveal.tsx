@@ -197,23 +197,22 @@ export function DailyReveal({
         <DarkIconButton onClick={onExit} label="Back to home" />
       </motion.div>
 
-      <div className="absolute inset-0 z-[5] flex flex-col justify-center pt-[100px] px-14 pb-9 text-paper">
-        {/* Three-column: YOUR GUESS | SOLD | ACTUAL */}
-        <div
-          className="grid gap-10 items-center mb-8"
-          style={{ gridTemplateColumns: "1fr auto 1fr" }}
-        >
+      <div className="absolute inset-0 z-[5] flex flex-col justify-center pt-[80px] md:pt-[100px] px-4 md:px-14 pb-6 md:pb-9 text-paper overflow-y-auto">
+        {/* Price reveal — stacks on phone (your guess, SOLD stamp between,
+            actual below), three-column on md+. Centered alignment on phone
+            so the stacked rows have a shared anchor line. */}
+        <div className="flex flex-col items-center gap-4 md:grid md:gap-10 md:items-center md:[grid-template-columns:1fr_auto_1fr] mb-6 md:mb-8">
           {/* YOUR GUESS */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="text-right"
+            className="text-center md:text-right"
           >
-            <div className="eyebrow mb-3 text-paper-60 tracking-[0.22em]">
+            <div className="eyebrow mb-2 md:mb-3 text-paper-60 tracking-[0.22em]">
               YOUR GUESS
             </div>
-            <div className="display tnum text-display-l leading-none text-paper-60 tracking-[-0.025em]">
+            <div className="display tnum text-[clamp(40px,10vw,78px)] md:text-display-l leading-none text-paper-60 tracking-[-0.025em]">
               {formatPrice(result.guess)}
             </div>
           </motion.div>
@@ -238,8 +237,9 @@ export function DailyReveal({
             initial={{ opacity: 0, x: 30 }}
             animate={actualVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center md:text-left"
           >
-            <div className="eyebrow mb-3 text-spot tracking-[0.22em]">
+            <div className="eyebrow mb-2 md:mb-3 text-spot tracking-[0.22em]">
               ACTUAL PRICE
             </div>
             <motion.div
@@ -247,7 +247,7 @@ export function DailyReveal({
                 ? { scale: [1, 1.05, 1] }
                 : {}}
               transition={{ duration: 0.3, delay: 1.3 }}
-              className="display tnum text-display-xl leading-none text-spot tracking-[-0.03em]"
+              className="display tnum text-[clamp(52px,13vw,140px)] md:text-display-xl leading-none text-spot tracking-[-0.03em]"
               style={{ textShadow: "0 0 60px rgba(255,214,107,0.4)" }}
             >
               {formatPrice(tickedActual)}
@@ -275,7 +275,7 @@ export function DailyReveal({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 1.8 }}
-          className="grid grid-cols-4 gap-px bg-[rgba(247,244,238,0.1)] rounded-3 overflow-hidden max-w-wide mx-auto w-full"
+          className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[rgba(247,244,238,0.1)] rounded-3 overflow-hidden max-w-wide mx-auto w-full"
         >
           {[
             { label: "Accuracy", value: `${result.accuracy}%`, tone: "var(--spot)" },
@@ -305,35 +305,38 @@ export function DailyReveal({
           ))}
         </motion.div>
 
-        {/* CTAs */}
-        <motion.div className="flex justify-center gap-3 mt-7"
+        {/* CTAs — stack on phone (full-width primary, secondary row below).
+            Side-by-side at md+. Share button stays prominent either way. */}
+        <motion.div className="flex flex-col md:flex-row justify-center gap-2 md:gap-3 mt-6 md:mt-7"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, delay: 2.0 }}
         >
           <button
-            className="btn btn-primary py-[18px] px-8 text-base rounded-3"
+            className="btn btn-primary py-4 md:py-[18px] px-6 md:px-8 text-base rounded-3 w-full md:w-auto"
             onClick={onShare}
           >
             <Icon.Share size={16} /> Share my result
           </button>
-          <GhostButton onClick={onContinue} style={{ padding: "18px 24px" }}>
+          <GhostButton onClick={onContinue} style={{ padding: "14px 20px" }}>
             See full stats
           </GhostButton>
-          <button
-            onClick={handleSaveToggle}
-            className="bg-transparent text-paper-80 py-[18px] px-[18px] text-sm rounded-3 border-none cursor-pointer flex items-center gap-2"
-            aria-label={isAlreadySaved ? "Remove saved home" : "Save this home"}
-          >
-            <Icon.Heart size={14} filled={isAlreadySaved} />
-            {isAlreadySaved ? "Saved" : "Save this home"}
-          </button>
-          <button
-            onClick={onPractice}
-            className="bg-transparent text-paper-80 py-[18px] px-[18px] text-sm rounded-3 border-none cursor-pointer"
-          >
-            Practice rounds →
-          </button>
+          <div className="flex gap-2 justify-center md:contents">
+            <button
+              onClick={handleSaveToggle}
+              className="bg-transparent text-paper-80 py-3 md:py-[18px] px-3 md:px-[18px] text-sm rounded-3 border-none cursor-pointer flex items-center gap-2 min-h-[44px]"
+              aria-label={isAlreadySaved ? "Remove saved home" : "Save this home"}
+            >
+              <Icon.Heart size={14} filled={isAlreadySaved} />
+              {isAlreadySaved ? "Saved" : "Save this home"}
+            </button>
+            <button
+              onClick={onPractice}
+              className="bg-transparent text-paper-80 py-3 md:py-[18px] px-3 md:px-[18px] text-sm rounded-3 border-none cursor-pointer min-h-[44px]"
+            >
+              Practice rounds →
+            </button>
+          </div>
         </motion.div>
       </div>
     </div>

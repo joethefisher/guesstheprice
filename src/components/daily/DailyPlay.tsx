@@ -100,18 +100,18 @@ export function DailyPlay({
   return (
     <div className="relative w-full h-full bg-paper overflow-hidden flex flex-col">
       {/* Header */}
-      <header className="flex-none flex items-center justify-between px-7 py-[18px] z-[5] border-b border-rule">
-        <div className="flex items-center gap-3.5">
+      <header className="flex-none flex items-center justify-between px-4 md:px-7 py-[18px] z-[5] border-b border-rule gap-2">
+        <div className="flex items-center gap-2 md:gap-3.5 min-w-0">
           <Wordmark size={17} />
-          <div className="w-px h-[18px] bg-rule" />
+          <div className="hidden sm:block w-px h-[18px] bg-rule" />
           <DailyBadge dailyNumber={dailyNumber} />
-          <span className="tnum text-sm text-ink-mute">
+          <span className="hidden sm:inline tnum text-sm text-ink-mute truncate">
             {formatDateLabel(dateET)}
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3 flex-none">
           {currentStreak > 0 && (
-            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-pill bg-[rgba(255,92,57,0.1)] text-accent text-sm font-bold">
+            <span className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-pill bg-[rgba(255,92,57,0.1)] text-accent text-sm font-bold">
               <Icon.Flame size={13} />
               <span className="tnum">{currentStreak} day streak</span>
             </span>
@@ -133,13 +133,12 @@ export function DailyPlay({
         </div>
       </header>
 
-      {/* Main grid */}
-      <div
-        className="flex-1 grid px-7 pb-7 min-h-0 gap-7 overflow-hidden"
-        style={{ gridTemplateColumns: "minmax(0, 1.55fr) minmax(380px, 1fr)" }}
-      >
+      {/* Main layout — stacks on phone (photo on top, controls below with
+          their own scroll), side-by-side at md+. The min-h-0 on both the
+          outer and inner column lets the right-side scroll area work. */}
+      <div className="flex-1 flex flex-col md:grid md:[grid-template-columns:minmax(0,1.55fr)_minmax(380px,1fr)] px-4 pb-4 md:px-7 md:pb-7 min-h-0 gap-4 md:gap-7 overflow-hidden">
         {/* Photo */}
-        <div className="relative rounded-5 overflow-hidden shadow-photo mt-7">
+        <div className="relative rounded-5 overflow-hidden shadow-photo mt-4 md:mt-7 h-[42vh] md:h-auto flex-none md:flex-auto">
           <PhotoCarousel photos={listing.photos} />
 
           {/* ONE GUESS badge overlay */}
@@ -168,7 +167,7 @@ export function DailyPlay({
         </div>
 
         {/* Right column */}
-        <div className="pt-7 flex flex-col overflow-y-auto">
+        <div className="pt-0 md:pt-7 flex flex-col md:overflow-y-auto flex-1 min-h-0">
           {/* Property info */}
           <div className="pb-[18px] mb-[18px] border-b border-rule">
             <div className="flex items-center justify-between gap-3 mb-2.5">
@@ -281,7 +280,7 @@ function ForfeitModal({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.94, opacity: 0 }}
         transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-paper rounded-6 px-9 py-8 w-[440px] shadow-modal text-center"
+        className="bg-paper rounded-6 px-6 py-7 md:px-9 md:py-8 w-[calc(100vw-32px)] max-w-[440px] shadow-modal text-center"
       >
         <h2 className="h2 mb-3">
           Forfeit today's house?

@@ -75,7 +75,7 @@ function SignInForm() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              className="px-3.5 py-3 rounded-2 border-[1.5px] border-ink-15 text-base text-ink bg-[rgba(26,26,26,0.02)] outline-none focus:border-accent"
+              className="px-3.5 py-3 rounded-2 border-[1.5px] border-ink-15 text-md text-ink bg-[rgba(26,26,26,0.02)] outline-none focus:border-accent"
             />
           </div>
 
@@ -89,7 +89,7 @@ function SignInForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="px-3.5 py-3 rounded-2 border-[1.5px] border-ink-15 text-base text-ink bg-[rgba(26,26,26,0.02)] outline-none focus:border-accent"
+              className="px-3.5 py-3 rounded-2 border-[1.5px] border-ink-15 text-md text-ink bg-[rgba(26,26,26,0.02)] outline-none focus:border-accent"
             />
           </div>
 

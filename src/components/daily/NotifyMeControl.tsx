@@ -95,8 +95,8 @@ export function NotifyMeControl({ source = "daily-locked" }: Props) {
           }}
           disabled={submitting}
           aria-label="Email address"
-          className="px-3 py-2.5 text-sm rounded-[10px] bg-[rgba(247,244,238,0.08)] text-paper placeholder:text-paper-40 outline-none"
-          style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)", minWidth: 220 }}
+          className="px-3 py-2.5 text-md rounded-[10px] bg-[rgba(247,244,238,0.08)] text-paper placeholder:text-paper-40 outline-none flex-1 min-w-0 sm:min-w-[220px] sm:flex-none"
+          style={{ boxShadow: "inset 0 0 0 1px rgba(247,244,238,0.2)" }}
         />
         <button
           type="submit"

@@ -92,7 +92,7 @@ function SummaryContent() {
   return (
     <div className="min-h-screen bg-paper pb-20">
       {/* Header */}
-      <header className="flex items-center justify-between px-10 py-6 border-b border-rule">
+      <header className="flex items-center justify-between px-4 md:px-10 py-4 md:py-6 border-b border-rule">
         <Wordmark size={20} />
         <div className="flex items-center gap-4">
           <span className="eyebrow">
@@ -104,16 +104,16 @@ function SummaryContent() {
         </div>
       </header>
 
-      <div className="max-w-wide mx-auto px-10 pt-12">
-        {/* Hero stat row */}
-        <div className="grid grid-cols-2 gap-8 mb-12 items-start">
+      <div className="max-w-wide mx-auto px-4 md:px-10 pt-6 md:pt-12">
+        {/* Hero stat row — stacks on phone, side-by-side at md+. */}
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-6 md:gap-8 mb-8 md:mb-12 items-start">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             <div className="eyebrow mb-3">{history.length} round{history.length !== 1 ? "s" : ""} scored</div>
-            <div className="font-display italic font-medium leading-[0.95]" style={{ fontSize: "clamp(80px,9vw,132px)" }}>
+            <div className="font-display italic font-medium leading-[0.95]" style={{ fontSize: "clamp(44px,10vw,132px)" }}>
               <span>You scored </span>
               <span className="tnum text-accent">{totalScore}</span>
             </div>
@@ -141,10 +141,11 @@ function SummaryContent() {
           </div>
         </div>
 
-        <hr className="hairline mb-10" />
+        <hr className="hairline mb-8 md:mb-10" />
 
-        {/* Round cards grid */}
-        <div className="grid grid-cols-5 gap-3 mb-12">
+        {/* Round cards grid — 5 forced desktop would crush each to ~50px
+            on phone. Use 2 at smallest, scale up with breakpoints. */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 md:gap-3 mb-8 md:mb-12">
           {history.map((r, i) => {
             const isBest = r === bestRound;
             const isWorst = r === worstRound;
@@ -191,8 +192,8 @@ function SummaryContent() {
           })}
         </div>
 
-        {/* Footer: share + next */}
-        <div className="grid grid-cols-2 gap-6">
+        {/* Footer: share + next — stack on phone, side-by-side at md+. */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           {/* Share card */}
           <div className="bg-paper border border-rule rounded-6 px-7 pt-7 pb-6 shadow-card">
             <div className="eyebrow mb-4">Your results</div>
@@ -242,7 +243,7 @@ function SummaryContent() {
 
         {/* Worst guess zinger */}
         {worstRound && (
-          <div className="mt-8 bg-cream rounded-6 px-7 py-6 flex gap-5 items-center">
+          <div className="mt-6 md:mt-8 bg-cream rounded-6 px-5 md:px-7 py-5 md:py-6 flex gap-4 md:gap-5 items-center">
             {worstRound.listing.photos[0] && (
               <div
                 className="w-[72px] h-[72px] rounded-2 bg-cover bg-center flex-shrink-0"
