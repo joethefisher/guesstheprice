@@ -381,7 +381,7 @@ export default function PlayClient({ initialListing }: Props) {
               )}
             </div>
 
-            <hr className="hairline mb-5" />
+            <hr className="hairline mt-2 mb-7 md:mt-0 md:mb-5" />
 
             {/* Guess display */}
             <div className="eyebrow mb-2">Your guess</div>

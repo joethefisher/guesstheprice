@@ -240,7 +240,21 @@ export default function DailyPage() {
 
   return (
     <DailyMapsProvider>
-    <div className="fixed inset-0 overflow-hidden">
+    {/* Safe-area padding on the viewport wrapper so daily screens (intro,
+        play, reveal, locked, stats) clear the notch, Dynamic Island, and
+        home indicator on iPhones with viewportFit:"cover" active. Each
+        child screen's absolute-positioned header + CTAs then sit inside
+        the safe area. Non-notched devices report 0 insets so this is a
+        no-op there. */}
+    <div
+      className="fixed inset-0 overflow-hidden"
+      style={{
+        paddingTop: "env(safe-area-inset-top)",
+        paddingRight: "env(safe-area-inset-right)",
+        paddingBottom: "env(safe-area-inset-bottom)",
+        paddingLeft: "env(safe-area-inset-left)",
+      }}
+    >
       <AnimatePresence mode="wait">
         {route === "intro" && (
           <Slide key="intro">
