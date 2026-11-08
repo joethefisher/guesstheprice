@@ -190,11 +190,18 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
           </button>
           <button
             onClick={handleSave}
-            className="btn btn-secondary gap-2 text-sm"
+            className="btn btn-secondary gap-2 text-sm px-4 sm:px-6"
             aria-label="Save this home"
           >
             <Icon.Heart filled={saved} size={18} />
-            {saved ? "Saved" : "Save this home"}
+            {/* Shorter label on phone — the heart icon already conveys
+                "save" semantically; full "Save this home" crowds the
+                right edge of the modal at ~375px. */}
+            {saved ? "Saved" : (
+              <>
+                Save<span className="hidden sm:inline"> this home</span>
+              </>
+            )}
           </button>
         </div>
       </motion.div>
