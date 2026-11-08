@@ -355,7 +355,7 @@ export default function PlayClient({ initialListing }: Props) {
             </h2>
 
             {/* Property stats */}
-            <div className="flex flex-wrap gap-x-5 gap-y-2 mb-5">
+            <div className="flex flex-wrap gap-x-6 sm:gap-x-5 gap-y-2.5 mb-5">
               <Stat
                 icon={Icon.Bed}
                 label="beds"

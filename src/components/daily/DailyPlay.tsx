@@ -178,7 +178,7 @@ export function DailyPlay({
               {listing.neighborhood ? `${listing.neighborhood}, ` : ""}
               <span className="text-ink-mute">{listing.city}, {listing.state}</span>
             </h2>
-            <div className="flex flex-wrap gap-x-[18px] gap-y-2.5 mt-3">
+            <div className="flex flex-wrap gap-x-6 sm:gap-x-[18px] gap-y-2.5 mt-3">
               {listing.beds && <Stat icon={Icon.Bed} label="bd" value={listing.beds} />}
               {listing.baths && <Stat icon={Icon.Bath} label="ba" value={listing.baths} />}
               {listing.sqft && <Stat icon={Icon.Sqft} label="sqft" value={listing.sqft.toLocaleString()} />}

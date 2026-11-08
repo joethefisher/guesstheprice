@@ -19,10 +19,18 @@
   }
 }
 
-/* Modal: full-bleed on mobile */
+/* Modal: full-bleed on mobile. Honor the iOS safe-area insets — now
+   that layout.tsx sets viewportFit:"cover", content that reaches the
+   viewport edge extends UNDER the notch / home indicator unless it
+   applies env(safe-area-inset-*) padding. Without this the title
+   clipped behind the left inset on 16E (reported 2026-11-08). */
 @media (max-width: 600px) {
   .map-modal-backdrop {
-    padding: 0 !important;
+    padding:
+      env(safe-area-inset-top)
+      env(safe-area-inset-right)
+      env(safe-area-inset-bottom)
+      env(safe-area-inset-left) !important;
   }
   .map-modal-card {
     width: 100% !important;
@@ -30,6 +38,11 @@
     max-width: none !important;
     max-height: none !important;
     border-radius: 0 !important;
+  }
+  /* Smaller, more phone-appropriate headline size so neighborhood +
+     city + state fits without the italic 'G' overhanging. */
+  .map-modal-card .font-display.text-2xl {
+    font-size: 20px;
   }
 }
 
