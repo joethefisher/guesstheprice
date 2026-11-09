@@ -25,3 +25,8 @@ design_handoff_pricetag/
 # Tracked here so they don't leak into the public repo. Each plans/*.md
 # is a focused brief for an upcoming work session.
 plans/
+
+# Playwright artifacts
+/playwright-report/
+/test-results/
+/playwright/.cache/

@@ -20,7 +20,9 @@
     "ingest:persist": "tsx scripts/ingest-stage.ts persist",
     "r2:backfill": "tsx scripts/r2-backfill.ts",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
@@ -42,6 +44,7 @@
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
+    "@playwright/test": "^1.65.0",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.7",

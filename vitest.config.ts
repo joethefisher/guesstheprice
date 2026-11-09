@@ -9,6 +9,10 @@ export default defineConfig({
     // that don't need it.
     environment: "node",
     setupFiles: ["./test/setup.ts"],
+    // Keep vitest out of playwright-tests/ — Playwright has its own
+    // runner and syntax (test imports from @playwright/test); vitest
+    // would fail to run those files.
+    exclude: ["**/node_modules/**", "**/dist/**", "**/.next/**", "**/playwright-tests/**"],
   },
   resolve: {
     alias: {

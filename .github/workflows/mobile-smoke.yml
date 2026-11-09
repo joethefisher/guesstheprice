@@ -1,0 +1,67 @@
+name: Mobile smoke
+
+# Runs the Playwright mobile smoke suite — asserts no horizontal
+# overflow at 3 iOS viewport widths on every key route. Catches the
+# regression class the mobile pass (commit c0fb26d) was built to fix.
+#
+# Triggers:
+#   - push to main (catches regressions as they land)
+#   - pull_request (blocks merging a PR that breaks mobile)
+#   - workflow_dispatch (manual re-runs after flaky infra failures)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: mobile-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # The suite boots `npm run dev` as its webServer. The dev server
+      # imports Prisma on route handlers, so these need to be set — same
+      # values as the ingest cron workflow uses. Falls back to the
+      # pricetag prod URLs; add dedicated test DB secrets later if the
+      # suite grows beyond read-only smoke.
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.DIRECT_URL }}
+      # NextAuth needs a secret even in test mode or session routes 500.
+      AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Install Playwright (Chromium only)
+        # --with-deps installs the OS libraries Chromium needs on Ubuntu.
+        # We only install Chromium because the smoke suite runs there
+        # (see playwright.config.ts for why we picked Chromium).
+        run: npx playwright install --with-deps chromium
+
+      - name: Run mobile smoke suite
+        run: npm run test:e2e
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
