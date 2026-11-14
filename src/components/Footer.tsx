@@ -9,7 +9,7 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="border-t border-rule mt-16 py-10 text-ink-mute text-sm">
-      <div className="mx-auto max-w-5xl px-6 grid grid-cols-2 sm:grid-cols-4 gap-8">
+      <div className="mx-auto max-w-3xl px-6 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
         <div>
           <div className="display text-ink text-base mb-3">Pricetag</div>
           <ul className="space-y-1.5">
@@ -87,34 +87,8 @@ export function Footer() {
             </li>
           </ul>
         </div>
-
-        <div>
-          <div className="display text-ink text-base mb-3">More</div>
-          <ul className="space-y-1.5">
-            <li>
-              <a
-                href="https://joeking.ai"
-                className="hover:text-ink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                joeking.ai
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://joeking.ai/f1-oracle"
-                className="hover:text-ink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                F1 Oracle
-              </a>
-            </li>
-          </ul>
-        </div>
       </div>
-      <div className="mx-auto max-w-5xl px-6 mt-8 text-ink-quiet text-xs">
+      <div className="mx-auto max-w-3xl px-6 mt-8 text-ink-quiet text-xs text-center">
         &copy; {new Date().getFullYear()} Pricetag. Listings sourced from public Realtor.com data.
       </div>
     </footer>
