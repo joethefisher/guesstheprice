@@ -8,7 +8,7 @@ import type { AccuracyBucket } from "@/lib/daily/service";
 
 export const dynamic = "force-dynamic";
 
-// Profile is gated behind auth; tell crawlers not to index it (the robots.ts
+// Profile is gated behind auth; tell crawlers not to index it (robots.txt
 // already disallows /profile but per-page noindex is the belt-and-suspenders).
 export const metadata: Metadata = {
   title: "Profile — Pricetag",
