@@ -12,6 +12,7 @@ import {
   chunkGraphemes,
   type RoundResult,
 } from "@/lib/game";
+import { events } from "@/lib/analytics";
 
 function SummaryContent() {
   const router = useRouter();
@@ -67,6 +68,7 @@ function SummaryContent() {
     try {
       await navigator.clipboard.writeText(shareText);
       setCopied(true);
+      events.resultShared();
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fallback for HTTP or permission denied
@@ -80,6 +82,7 @@ function SummaryContent() {
         document.execCommand("copy");
         document.body.removeChild(ta);
         setCopied(true);
+        events.resultShared();
         setTimeout(() => setCopied(false), 2000);
       } catch {
         // Both methods failed — nothing to do

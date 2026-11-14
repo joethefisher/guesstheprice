@@ -6,6 +6,7 @@ import { Wordmark } from "@/components/Wordmark";
 import { PriceSlider } from "@/components/PriceSlider";
 import { PhotoCarousel } from "@/components/PhotoCarousel";
 import { Stat } from "@/components/GameChips";
+import { events } from "@/lib/analytics";
 import { YearSoldPill } from "@/components/YearSoldPill";
 import { Icon } from "@/components/Icons";
 import { DailyBadge } from "./DailyShared";
@@ -71,6 +72,7 @@ export function DailyPlay({
       accuracy: null,
       savedAt: Date.now(),
     });
+    events.homeSaved({ source: "daily" });
   }
 
   const handleSlider = useCallback((v: number) => {

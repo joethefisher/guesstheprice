@@ -12,6 +12,7 @@ import {
   DarkIconButton,
 } from "./DailyShared";
 import { useSavedHomes } from "@/lib/saved-homes-client";
+import { events } from "@/lib/analytics";
 import type { DailyResult } from "@/lib/daily/service";
 import type { ListingPublic, AccuracyTier } from "@/lib/game";
 
@@ -148,6 +149,7 @@ export function DailyReveal({
       accuracy: result.accuracy,
       savedAt: Date.now(),
     });
+    events.homeSaved({ source: "daily" });
   }
 
   const tickedActual = useNumberTicker(result.actual, actualVisible ? 0 : 99999, 1200);

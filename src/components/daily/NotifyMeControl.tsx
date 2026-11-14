@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { events } from "@/lib/analytics";
 
 /**
  * Small opt-in control shown on DailyLocked. Captures an email into the
@@ -74,6 +75,7 @@ export function NotifyMeControl({ source = "daily-locked" }: Props) {
         return;
       }
       setMode("success");
+      events.notifyMeSubscribed({ source });
     } catch {
       setError("Network hiccup — try again.");
       setMode("error");

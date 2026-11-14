@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Wordmark } from "@/components/Wordmark";
+import { events } from "@/lib/analytics";
 
 const INPUT_CLASSES =
   // text-md (17px) not text-base (15px): iOS zooms-on-focus for any
@@ -47,6 +48,8 @@ export default function SignUpPage() {
         return;
       }
 
+      // Account created successfully — fire the event before the next step.
+      events.signUpCompleted();
       // Auto sign-in after successful signup
       const result = await signIn("credentials", { username, password, redirect: false });
       if (result?.error) {

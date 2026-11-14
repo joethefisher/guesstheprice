@@ -23,6 +23,7 @@ import {
 } from "@/lib/game";
 import { popFromCache } from "@/lib/prefetch";
 import { useSavedHomes } from "@/lib/saved-homes-client";
+import { events } from "@/lib/analytics";
 
 const TOTAL_ROUNDS = 5;
 
@@ -121,6 +122,11 @@ export default function PlayClient({ initialListing }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fire game_started exactly once per mount — counts freeplay sessions.
+  useEffect(() => {
+    events.gameStarted();
+  }, []);
+
   async function handleSubmit() {
     if (!listing || submitting || !hasInteracted) return;
     setSubmitting(true);
@@ -166,6 +172,11 @@ export default function PlayClient({ initialListing }: Props) {
       };
       setReveal(result);
       setHistory((prev) => [...prev, result]);
+      events.roundSubmitted({
+        round_number: roundIdx + 1,
+        accuracy: Math.round((1 - data.errorPct) * 100),
+        tier: data.tier,
+      });
     } catch {
       setScoreError("Couldn't score your guess — please try again.");
     } finally {
@@ -197,6 +208,10 @@ export default function PlayClient({ initialListing }: Props) {
           body: JSON.stringify({ totalScore: finalScore }),
         }).catch(() => { /* non-critical */ });
       }
+      const avgAccuracy = Math.round(
+        history.reduce((s, r) => s + (1 - r.errorPct) * 100, 0) / history.length,
+      );
+      events.gameCompleted({ total_score: finalScore, avg_accuracy: avgAccuracy });
       router.push("/play/summary");
       return;
     }
@@ -225,6 +240,7 @@ export default function PlayClient({ initialListing }: Props) {
       accuracy,
       savedAt: Date.now(),
     });
+    events.homeSaved({ source: "play" });
   }
 
   // When the round reveals, upgrade any pre-reveal save with the score data
@@ -482,7 +498,7 @@ export default function PlayClient({ initialListing }: Props) {
             roundNumber={roundIdx + 1}
             totalRounds={TOTAL_ROUNDS}
             onNext={handleNext}
-            onSave={addSavedHome}
+            onSave={(home) => { addSavedHome(home); events.homeSaved({ source: "reveal" }); }}
             alreadySaved={isAlreadySaved}
           />
         )}

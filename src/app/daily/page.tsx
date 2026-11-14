@@ -27,6 +27,7 @@ import { DailyStats } from "@/components/daily/DailyStats";
 import { DailyShare } from "@/components/daily/DailyShare";
 import { DailyMilestone } from "@/components/daily/DailyMilestone";
 import { DailyMapsProvider } from "@/components/daily/map/DailyMapsProvider";
+import { events } from "@/lib/analytics";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -151,6 +152,7 @@ export default function DailyPage() {
     if (entryState.type === "locked") {
       if (stored.lastResult) setResult(stored.lastResult);
       setRoute("locked");
+      events.dailyOpened({ state: "locked", current_streak: stored.currentStreak });
     } else {
       setStreakBroken(entryState.streakBroken);
       if (entryState.streakBroken) {
@@ -159,6 +161,10 @@ export default function DailyPage() {
         setStorage(reset);
       }
       setRoute("intro");
+      events.dailyOpened({
+        state: "intro",
+        current_streak: entryState.streakBroken ? 0 : stored.currentStreak,
+      });
     }
   }
 
@@ -199,9 +205,11 @@ export default function DailyPage() {
       setResult(newResult);
       setStorage(updated);
       syncToServer(updated);
+      events.dailySubmitted({ accuracy, new_streak: updated.currentStreak });
 
       if (milestone) {
         setMilestoneThreshold(milestone);
+        events.dailyStreakMilestone({ streak: updated.currentStreak });
         setRoute("reveal");
         // milestone fires after reveal — DailyReveal calls onMilestone
       } else {

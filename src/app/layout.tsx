@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Footer } from "@/components/Footer";
@@ -110,6 +111,9 @@ export default function RootLayout({
               Zero-config on Vercel deploys (it auto-detects the project).
               Custom events via `track()` from "@vercel/analytics". */}
           <Analytics />
+          {/* Speed Insights — Core Web Vitals (LCP, INP, CLS) measured
+              from real user devices in the field. Vercel dashboard. */}
+          <SpeedInsights />
         </body>
     </html>
   );
