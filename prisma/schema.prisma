@@ -197,10 +197,28 @@ model SavedHome {
 // by /api/notify/subscribe from the DailyLocked "Notify me" affordance.
 // Not linked to User because anonymous players are the main audience.
 model NotifyWaitlist {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  source    String   @default("daily-locked")
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  email      String   @unique
+  source     String   @default("daily-locked")
+  // Stable per-subscriber token for one-click unsubscribe links. Random
+  // (not a hash of email) so it's revocable and leaks nothing.
+  unsubToken String   @unique @default(cuid())
+  createdAt  DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// Idempotency ledger for the daily notification. One row per
+// (email, dailyNumber) that was successfully sent, so re-running the
+// cron skips already-notified subscribers and only picks up new ones +
+// prior failures. Not FK'd to NotifyWaitlist because a subscriber may
+// unsubscribe (row deleted) while their delivery history should remain.
+model NotifyDelivery {
+  id          String   @id @default(cuid())
+  email       String
+  dailyNumber Int
+  sentAt      DateTime @default(now())
+
+  @@unique([email, dailyNumber])
+  @@index([dailyNumber])
 }
