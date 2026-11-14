@@ -10,8 +10,9 @@
  *     users can pan and zoom.
  *
  * Both modes:
- *   - Pre-submit: a translucent accent circle at the centroid, NO marker
- *     and NO clickable POIs (those leak the answer).
+ *   - Pre-submit: a translucent accent circle (plus a small dot) at the
+ *     obfuscated centroid only — never the exact coords — and NO
+ *     clickable POIs (those leak the answer).
  *   - Post-reveal: an <AdvancedMarker> with the price-tag pin at the
  *     exact coords.
  *
@@ -20,10 +21,10 @@
  */
 
 import { useEffect, useState } from "react";
-import { Map, AdvancedMarker } from "@vis.gl/react-google-maps";
+import { Map, AdvancedMarker, Circle } from "@vis.gl/react-google-maps";
 import { getGoogleMapsApiKey, getGoogleMapId } from "@/lib/map/config";
 import { STATIC_MAP_STYLES } from "@/lib/map/style";
-import type { LatLng } from "@/lib/map";
+import { preSubmitAreaRadiusM, type LatLng } from "@/lib/map";
 
 interface Props {
   centroid: LatLng;
@@ -92,7 +93,7 @@ function StaticMapImage({
   } else {
     // Pre-submit: a translucent area circle approximated via a polygon
     // (the Static API has no native "circle" primitive).
-    const circle = encodeCircle(centroid, 600, 24);
+    const circle = encodeCircle(centroid, preSubmitAreaRadiusM(centroid.lat), 24);
     params.append("path", `fillcolor:0xFF5C3933|color:0xFF5C39|weight:2|${circle}`);
   }
 
@@ -184,25 +185,39 @@ function InteractiveMap({
       clickableIcons={false}
       style={{ width: "100%", height: "100%" }}
     >
-      {/* Pre-submit: translucent circle. We render a Circle by overlaying
-          a div via the Map's overlay layer is complex, so we use a marker
-          with a custom DOM element to draw a soft halo for now. The full
-          spec calls for a <Circle> primitive — TODO(map): switch to a
-          proper Circle once @vis.gl/react-google-maps exposes one. */}
+      {/* Pre-submit: a true geographic area circle covering the whole
+          obfuscation cell. Because the radius is in meters (not pixels),
+          it scales with the map — growing as you zoom in and shrinking to
+          a dot as you zoom out — instead of ballooning over the whole
+          metro. The fixed-pixel center dot (on the centroid, which is
+          already public) keeps the area findable at far zoom. */}
       {!revealed && (
-        <AdvancedMarker position={centroid}>
-          <div
-            aria-hidden
-            style={{
-              width: 180,
-              height: 180,
-              borderRadius: "50%",
-              background: "rgba(255, 92, 57, 0.18)",
-              border: "2px solid rgba(255, 92, 57, 0.7)",
-              transform: "translate(0, 0)",
-            }}
+        <>
+          <Circle
+            center={centroid}
+            radius={preSubmitAreaRadiusM(centroid.lat)}
+            clickable={false}
+            fillColor="#FF5C39"
+            fillOpacity={0.18}
+            strokeColor="#FF5C39"
+            strokeOpacity={0.7}
+            strokeWeight={2}
           />
-        </AdvancedMarker>
+          {/* Anchor the dot's center (not the default bottom-center) on
+              the centroid so it sits exactly in the circle's middle. */}
+          <AdvancedMarker position={centroid} anchorLeft="-50%" anchorTop="-50%">
+            <div
+              aria-hidden
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: "#FF5C39",
+                border: "1.5px solid rgba(255, 255, 255, 0.9)",
+              }}
+            />
+          </AdvancedMarker>
+        </>
       )}
 
       {revealed && exact && (

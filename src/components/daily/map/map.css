@@ -44,6 +44,11 @@
   .map-modal-card .font-display.text-2xl {
     font-size: 20px;
   }
+  /* The enlarge toggle is a no-op on phones — the modal is already
+     full-bleed here — so hide it to keep the header uncluttered. */
+  .map-modal-expand {
+    display: none !important;
+  }
 }
 
 /* Prevent the body from scrolling when the user pinches the map */

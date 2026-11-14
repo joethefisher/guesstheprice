@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapRenderer } from "./MapRenderer";
 import "./map.css";
@@ -30,6 +30,7 @@ export function MapExpandedModal({
   onClose,
 }: Props) {
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [expanded, setExpanded] = useState(false);
 
   // Esc closes, focus the close button on mount, lock body scroll
   useEffect(() => {
@@ -59,7 +60,7 @@ export function MapExpandedModal({
         exit={{ opacity: 0 }}
         transition={{ duration: 0.18 }}
         onClick={onClose}
-        className="map-modal-backdrop fixed inset-0 z-[60] grid place-items-center p-6"
+        className={`map-modal-backdrop fixed inset-0 z-[60] grid place-items-center ${expanded ? "p-0" : "p-6"}`}
         style={{
           background: "rgba(15, 13, 10, 0.55)",
           backdropFilter: "blur(8px)",
@@ -75,7 +76,11 @@ export function MapExpandedModal({
           exit={{ opacity: 0, scale: 0.96 }}
           transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
           onClick={(e) => e.stopPropagation()}
-          className="map-modal-card w-full max-w-wide max-h-[660px] bg-paper rounded-6 overflow-hidden shadow-modal grid"
+          className={`map-modal-card w-full bg-paper overflow-hidden shadow-modal grid transition-[max-width,width,height] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+            expanded
+              ? "max-w-none h-[100dvh] rounded-none"
+              : "max-w-[min(1400px,94vw)] h-[min(820px,90vh)] rounded-6"
+          }`}
           style={{ gridTemplateRows: "auto 1fr auto" }}
         >
           {/* Header */}
@@ -92,25 +97,64 @@ export function MapExpandedModal({
               </div>
             </div>
 
-            <button
-              ref={closeRef}
-              type="button"
-              onClick={onClose}
-              aria-label="Close map"
-              className="map-modal-close w-10 h-10 rounded-2 border-none bg-accent text-white cursor-pointer grid place-items-center transition-colors flex-shrink-0 hover:bg-accent-deep"
-            >
-              <svg
-                width={16}
-                height={16}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={2.2}
-                strokeLinecap="round"
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                aria-label="Enlarge map"
+                aria-pressed={expanded}
+                className="map-modal-expand w-10 h-10 rounded-2 border border-rule bg-transparent text-ink cursor-pointer grid place-items-center transition-colors hover:bg-ink hover:text-paper"
               >
-                <path d="M5 5l14 14M19 5L5 19" />
-              </svg>
-            </button>
+                <svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2.2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {expanded ? (
+                    /* collapse — arrows pointing inward */
+                    <>
+                      <polyline points="9 3 9 9 3 9" />
+                      <polyline points="15 3 15 9 21 9" />
+                      <polyline points="9 21 9 15 3 15" />
+                      <polyline points="15 21 15 15 21 15" />
+                    </>
+                  ) : (
+                    /* expand — arrows pointing outward */
+                    <>
+                      <polyline points="3 9 3 3 9 3" />
+                      <polyline points="21 9 21 3 15 3" />
+                      <polyline points="3 15 3 21 9 21" />
+                      <polyline points="21 15 21 21 15 21" />
+                    </>
+                  )}
+                </svg>
+              </button>
+
+              <button
+                ref={closeRef}
+                type="button"
+                onClick={onClose}
+                aria-label="Close map"
+                className="map-modal-close w-10 h-10 rounded-2 border-none bg-accent text-white cursor-pointer grid place-items-center transition-colors hover:bg-accent-deep"
+              >
+                <svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2.2}
+                  strokeLinecap="round"
+                >
+                  <path d="M5 5l14 14M19 5L5 19" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Body */}

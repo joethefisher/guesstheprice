@@ -34,6 +34,22 @@ export function centroidFromExact(lat: number, lng: number): LatLng {
 
 export const DEFAULT_NEIGHBORHOOD_ZOOM = 14;
 
+/**
+ * Radius (in meters) of the pre-submit "area" circle drawn around the
+ * centroid: the half-diagonal of the 0.01° grid cell from
+ * `centroidFromExact`, so the circle circumscribes the cell and every
+ * possible house position is inside it. Longitude degrees shrink with
+ * latitude, hence the cos(lat) term (≈766m at 19°N, ≈674m at 47°N).
+ * Reveals nothing beyond the centroid itself. Shared by the static
+ * thumbnail and the interactive map so both render the same size.
+ */
+export function preSubmitAreaRadiusM(lat: number): number {
+  const METERS_PER_DEG_LAT = 111_320;
+  const halfCellLat = 0.005 * METERS_PER_DEG_LAT;
+  const halfCellLng = halfCellLat * Math.cos((lat * Math.PI) / 180);
+  return Math.ceil(Math.hypot(halfCellLat, halfCellLng));
+}
+
 /** Build a MapBlock from a listing's exact coords. Returns null if no coords. */
 export function buildMapBlock(lat: number | null, lng: number | null): MapBlock | null {
   if (lat == null || lng == null) return null;
