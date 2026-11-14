@@ -25,6 +25,17 @@ runFull({
   dryRun,
 })
   .then((stats) => {
+    // Fetching zero listings across every market is never a legitimate
+    // outcome — it means the API rejected us (lapsed subscription, bad
+    // key, quota). Exit non-zero so the scheduled CI run goes red instead
+    // of silently "succeeding" every week with nothing ingested.
+    if (stats.listingsFound === 0) {
+      console.error(
+        "Ingestion fetched 0 listings across all markets — treating as failure. " +
+          "Check the fetch-stage errors above (e.g. RapidAPI 403 'not subscribed').",
+      );
+      process.exit(1);
+    }
     console.log("Ingestion complete.");
     process.exit(0);
   })
