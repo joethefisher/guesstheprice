@@ -29,6 +29,7 @@
     "@sentry/nextjs": "^10.52.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
+    "@vercel/analytics": "^2.0.1",
     "@vis.gl/react-google-maps": "^1.8.3",
     "bcryptjs": "^3.0.3",
     "eslint-config-next": "^16.2.6",

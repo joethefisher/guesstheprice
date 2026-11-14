@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Fraunces, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { Providers } from "./providers";
 import { Footer } from "@/components/Footer";
@@ -105,6 +106,10 @@ export default function RootLayout({
             {children}
             <Footer />
           </Providers>
+          {/* Vercel Analytics — page views, referrers, country/browser.
+              Zero-config on Vercel deploys (it auto-detects the project).
+              Custom events via `track()` from "@vercel/analytics". */}
+          <Analytics />
         </body>
     </html>
   );
