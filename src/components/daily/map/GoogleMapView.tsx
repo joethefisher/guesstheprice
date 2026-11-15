@@ -221,7 +221,11 @@ function InteractiveMap({
       )}
 
       {revealed && exact && (
-        <AdvancedMarker position={exact}>
+        // Anchor the pin's bottom-center (its tip) on the exact coords.
+        // Positioning lives here, not in a CSS transform on the content —
+        // the marker already anchors the content, so a transform would
+        // offset it a second time.
+        <AdvancedMarker position={exact} anchorLeft="-50%" anchorTop="-100%">
           <PriceTagPin />
         </AdvancedMarker>
       )}
@@ -231,8 +235,8 @@ function InteractiveMap({
 
 function PriceTagPin() {
   return (
-    <div style={{ transform: "translate(-50%, -100%)" }}>
-      <svg width={36} height={46} viewBox="0 0 32 42">
+    <div>
+      <svg width={36} height={46} viewBox="0 0 32 42" style={{ display: "block" }}>
         <path
           d="M16 0 C 25 0 32 7 32 16 C 32 27 16 42 16 42 C 16 42 0 27 0 16 C 0 7 7 0 16 0 Z"
           fill="#FF5C39"
