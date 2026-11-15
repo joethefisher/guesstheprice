@@ -19,6 +19,7 @@ Disallow: /api/
 Disallow: /auth/
 Disallow: /profile
 Disallow: /saved
+Disallow: /md/
 
 Host: https://guesstheprice.ai
 Sitemap: https://guesstheprice.ai/sitemap.xml

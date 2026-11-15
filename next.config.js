@@ -15,6 +15,26 @@ const nextConfig = {
       { protocol: "https", hostname: "photos.guesstheprice.ai" },
     ],
   },
+  async rewrites() {
+    // Markdown for Agents: content negotiation on content pages. Requests
+    // that ask for text/markdown are served by /md/<path> (HTML converted
+    // to markdown); everyone else gets the normal HTML page. `beforeFiles`
+    // so the rewrite wins over the page routes themselves. The path
+    // allow-list is enforced again inside the route (src/lib/agent-markdown.ts).
+    // Case-insensitive (media types are). An explicit `q=0` refusal is
+    // re-checked in the route, which then passes the HTML through.
+    const acceptsMarkdown = [
+      { type: "header", key: "accept", value: ".*[Tt][Ee][Xx][Tt]/[Mm][Aa][Rr][Kk][Dd][Oo][Ww][Nn].*" },
+    ];
+    return {
+      beforeFiles: [
+        { source: "/", has: acceptsMarkdown, destination: "/md" },
+        { source: "/:page(about|how-it-works|methodology|faq)", has: acceptsMarkdown, destination: "/md/:page" },
+        { source: "/cities", has: acceptsMarkdown, destination: "/md/cities" },
+        { source: "/cities/:path+", has: acceptsMarkdown, destination: "/md/cities/:path+" },
+      ],
+    };
+  },
   async headers() {
     // Baseline security headers Vercel doesn't set by default. CSP is
     // intentionally left out for now — needs nonce wiring + a per-page
@@ -30,6 +50,8 @@ const nextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
+      // (No `Vary: Accept` on the HTML pages: Next overwrites Vary on
+      // page responses, and Vercel's CDN keys on Accept regardless.)
     ];
   },
 };
