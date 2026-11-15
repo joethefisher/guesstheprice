@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
@@ -26,19 +26,36 @@ export const viewport: Viewport = {
   // iOS field-focus zoom is suppressed via input font-size:16px (globals.css).
 };
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  axes: ["opsz", "SOFT", "WONK"],
-  style: ["normal", "italic"],
+// Fonts are self-hosted (src/app/fonts/, latin subset, SIL OFL 1.1;
+// Fraunces latin-ext lives in public/fonts/, declared in globals.css)
+// rather than loaded via next/font/google: the Google variant downloads
+// the files from fonts.gstatic.com on every build, and a flaky fetch
+// there failed a production deploy (58d431b, 2026-11-15). Same files
+// Google serves — Fraunces is a variable font carrying the opsz / SOFT /
+// WONK axes; JetBrains Mono is a variable-weight file (400–800), declared 400–500
+// to keep today's rendering (bold is synthesized from 500).
+const fraunces = localFont({
+  src: [
+    { path: "./fonts/fraunces-latin.woff2", weight: "100 900", style: "normal" },
+    { path: "./fonts/fraunces-italic-latin.woff2", weight: "100 900", style: "italic" },
+  ],
   variable: "--font-fraunces",
   display: "swap",
+  // next/font/local would size the fallback from the file's default
+  // instance (weight 900), ~10% wider than Google's Regular-based
+  // metrics. Keep Google's exact values instead: "Fraunces Fallback"
+  // is declared in globals.css.
+  adjustFontFallback: false,
+  fallback: ["Fraunces Ext", "Fraunces Fallback"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const jetbrainsMono = localFont({
+  src: [{ path: "./fonts/jetbrains-mono-latin.woff2", weight: "400 500", style: "normal" }],
   variable: "--font-mono",
   display: "swap",
+  // No metric-adjusted Arial stand-in: the Tailwind stack falls back to
+  // ui-monospace / SF Mono, a closer match for a monospace face.
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

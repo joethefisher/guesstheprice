@@ -2,6 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Metric-matched stand-in for Fraunces while the webfont loads (see
+   layout.tsx). Values are the ones next/font/google generated from
+   Fraunces Regular, so swapping in the real font doesn't reflow text. */
+@font-face {
+  font-family: "Fraunces Fallback";
+  src: local("Times New Roman");
+  ascent-override: 84.71%;
+  descent-override: 22.09%;
+  line-gap-override: 0%;
+  size-adjust: 115.45%;
+}
+
+/* Fraunces latin-ext (ā, ī, ł… — Hawaiian / Polish place names in the
+   listings data). Separate family listed in the Fraunces fallback stack
+   (layout.tsx), so the browser only downloads it when a page actually
+   contains one of these characters — same behavior as Google's loader. */
+@font-face {
+  font-family: "Fraunces Ext";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/fraunces-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "Fraunces Ext";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/fraunces-italic-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
   /* Ink / paper */
   --ink: #1A1A1A;
@@ -30,9 +63,12 @@
   --velvet: #8B2A2A;
 
   /* Type families */
-  --display: "Fraunces", "Georgia", serif;
+  /* --font-fraunces / --font-mono are set by next/font (layout.tsx) and
+     resolve to whatever family names the build generates — don't
+     hard-code "Fraunces" / "JetBrains Mono" here, they won't match. */
+  --display: var(--font-fraunces), "Georgia", serif;
   --body: "General Sans", -apple-system, system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --mono: var(--font-mono), ui-monospace, "SF Mono", monospace;
 
   /* Type scale — 10 steps. Every fontSize in components MUST snap to one of these. */
   --text-xs: 11px;

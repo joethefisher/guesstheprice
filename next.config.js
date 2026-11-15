@@ -50,6 +50,12 @@ const nextConfig = {
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],
       },
+      // Self-hosted latin-ext font files (public/fonts, loaded on demand
+      // by globals.css). Not content-hashed: rename a file if it changes.
+      {
+        source: "/fonts/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
       // (No `Vary: Accept` on the HTML pages: Next overwrites Vary on
       // page responses, and Vercel's CDN keys on Accept regardless.)
     ];

@@ -59,7 +59,7 @@ Run a single test file: `npx vitest run src/lib/ingestion/__tests__/quality.test
 - `src/components/RevealOverlay.tsx` — Modal with Framer Motion scale-in, NumberTicker actual price
 - `src/components/LandingScreen.tsx` — Full-bleed hero, grain overlay, bottom stats strip
 
-**Design system:** Tokens live in `tailwind.config.js` and mirrored as CSS custom props in `globals.css`. Fonts: Fraunces (variable, via `next/font/google`), General Sans (via Fontshare link tag), JetBrains Mono (via `next/font/google`). Use `--ease` and `--ease-out` CSS vars for animations, not Tailwind's default. Use `.tnum` class on all prices/scores.
+**Design system:** Tokens live in `tailwind.config.js` and mirrored as CSS custom props in `globals.css`. Fonts: Fraunces (variable) and JetBrains Mono are self-hosted via `next/font/local` from `src/app/fonts/` (latin subset, OFL — see `OFL.txt` there; no build-time Google Fonts fetch); General Sans via Fontshare link tag. Use `--ease` and `--ease-out` CSS vars for animations, not Tailwind's default. Use `.tnum` class on all prices/scores.
 
 ### API Routes
 
