@@ -1,6 +1,21 @@
 // @ts-check
 const { withSentryConfig } = require("@sentry/nextjs");
 
+// Requests asking for markdown (see rewrites below). Case-insensitive,
+// as media types are.
+/** @type {import('next/dist/lib/load-custom-routes').RouteHas[]} */
+const acceptsMarkdown = ([
+  { type: "header", key: "accept", value: ".*[Tt][Ee][Xx][Tt]/[Mm][Aa][Rr][Kk][Dd][Oo][Ww][Nn].*" },
+]);
+
+// Content pages that have a markdown representation: [source, its path].
+const MARKDOWN_PAGES = [
+  ["/", "/"],
+  ["/:page(about|how-it-works|methodology|faq)", "/:page"],
+  ["/cities", "/cities"],
+  ["/cities/:path+", "/cities/:path+"],
+];
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -21,18 +36,14 @@ const nextConfig = {
     // to markdown); everyone else gets the normal HTML page. `beforeFiles`
     // so the rewrite wins over the page routes themselves. The path
     // allow-list is enforced again inside the route (src/lib/agent-markdown.ts).
-    // Case-insensitive (media types are). An explicit `q=0` refusal is
-    // re-checked in the route, which then passes the HTML through.
-    const acceptsMarkdown = [
-      { type: "header", key: "accept", value: ".*[Tt][Ee][Xx][Tt]/[Mm][Aa][Rr][Kk][Dd][Oo][Ww][Nn].*" },
-    ];
+    // An explicit `q=0` refusal is re-checked in the route, which then
+    // passes the HTML through.
     return {
-      beforeFiles: [
-        { source: "/", has: acceptsMarkdown, destination: "/md" },
-        { source: "/:page(about|how-it-works|methodology|faq)", has: acceptsMarkdown, destination: "/md/:page" },
-        { source: "/cities", has: acceptsMarkdown, destination: "/md/cities" },
-        { source: "/cities/:path+", has: acceptsMarkdown, destination: "/md/cities/:path+" },
-      ],
+      beforeFiles: MARKDOWN_PAGES.map(([source, path]) => ({
+        source,
+        has: acceptsMarkdown,
+        destination: path === "/" ? "/md" : `/md${path}`,
+      })),
     };
   },
   async headers() {
@@ -58,6 +69,22 @@ const nextConfig = {
       },
       // (No `Vary: Accept` on the HTML pages: Next overwrites Vary on
       // page responses, and Vercel's CDN keys on Accept regardless.)
+      //
+      // RFC 8288 Link headers for agent discovery on the same content
+      // pages the markdown rewrites cover: each page advertises its own
+      // markdown representation (same URL, Accept: text/markdown) and the
+      // sitemap. Only point at resources that actually exist. Skipped on
+      // markdown responses, which send their own canonical Link.
+      ...MARKDOWN_PAGES.map(([source, path]) => ({
+        source,
+        missing: acceptsMarkdown,
+        headers: [
+          {
+            key: "Link",
+            value: `<${path}>; rel="alternate"; type="text/markdown", </sitemap.xml>; rel="sitemap"; type="application/xml"`,
+          },
+        ],
+      })),
     ];
   },
 };
