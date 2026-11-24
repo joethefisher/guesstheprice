@@ -89,7 +89,9 @@ async function fetchPage(
   const { listings, totalPages } = parseSearchBuyResponse(json);
 
   const withPrice = listings
-    .filter((l) => l.last_sold_price != null)
+    // list_price is the answer. last_sold_price is still required so the pool
+    // keeps excluding new construction (unchanged composition).
+    .filter((l) => l.list_price != null && l.last_sold_price != null)
     .map(toRawListing);
 
   const result = { listings: withPrice, totalPages };

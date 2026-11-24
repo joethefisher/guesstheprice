@@ -19,6 +19,7 @@ type SeedListing = {
   lotSqft?: number;
   yearBuilt?: number;
   homeType?: string;
+  listPrice?: number;
   soldPrice: number;
   soldDate?: string;
   photos: string[];
@@ -55,9 +56,11 @@ async function main() {
         lotSqft: l.lotSqft,
         yearBuilt: l.yearBuilt,
         homeType: l.homeType,
+        // Sample data has no separate asking price; use it as the answer in dev.
+        listPrice: l.listPrice ?? l.soldPrice,
         soldPrice: l.soldPrice,
         soldDate: l.soldDate ? new Date(l.soldDate) : undefined,
-        isSold: true,
+        isSold: false,
         qualityScore: 80,
         photos: {
           create: l.photos.map((url, i) => ({

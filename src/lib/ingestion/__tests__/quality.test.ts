@@ -19,6 +19,7 @@ function makeListing(overrides: Partial<RawListing> = {}): RawListing {
       year_built: 2010,
       lot_sqft: 6000,
     },
+    list_price: 799_000,
     last_sold_price: 750_000,
     last_sold_date: new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000).toISOString(),
     photos: Array.from({ length: 12 }, (_, i) => ({
@@ -44,13 +45,13 @@ describe("scoreRaw", () => {
   });
 
   it("rejects a listing with price below $50K", () => {
-    const { reject, reasons } = scoreRaw(makeListing({ last_sold_price: 10_000 }));
+    const { reject, reasons } = scoreRaw(makeListing({ list_price: 10_000 }));
     expect(reject).toBe(true);
     expect(reasons.some((r) => r.includes("price out of range"))).toBe(true);
   });
 
   it("rejects a listing with price above $50M", () => {
-    const { reject } = scoreRaw(makeListing({ last_sold_price: 60_000_000 }));
+    const { reject } = scoreRaw(makeListing({ list_price: 60_000_000 }));
     expect(reject).toBe(true);
   });
 
@@ -103,4 +104,24 @@ describe("scoreRaw", () => {
     expect(scoreRaw(withSqft).score).toBeGreaterThan(scoreRaw(noSqft).score);
   });
 
+  it("rejects a listing with no list price even if it has a previous sale", () => {
+    const { reject, reasons } = scoreRaw(makeListing({ list_price: undefined }));
+    expect(reject).toBe(true);
+    expect(reasons).toContain("missing list price");
+  });
+
+  it("range-checks the list price, not the previous sale", () => {
+    // Previous sale below $50K must not reject a normally-priced listing.
+    expect(scoreRaw(makeListing({ last_sold_price: 10_000 })).reject).toBe(false);
+  });
+
+  it("does not reject on previous-sale age and scores old/new sales the same", () => {
+    const old = scoreRaw(makeListing({ last_sold_date: "2006-03-31" }));
+    const none = scoreRaw(makeListing({ last_sold_date: undefined, last_sold_price: undefined }));
+    const recent = scoreRaw(makeListing());
+    expect(old.reject).toBe(false);
+    expect(none.reject).toBe(false);
+    expect(old.score).toBe(recent.score);
+    expect(none.score).toBe(recent.score);
+  });
 });

@@ -219,7 +219,7 @@ export function DailyReveal({
             </div>
           </motion.div>
 
-          {/* SOLD stamp */}
+          {/* LISTED stamp (answer is the asking price, not a sale) */}
           <motion.div
             initial={{ scale: 0, rotate: -30, opacity: 0 }}
             animate={stampVisible
@@ -230,11 +230,11 @@ export function DailyReveal({
             style={{ animation: shake ? "cameraShake 0.4s ease-in-out" : undefined }}
           >
             <div className="sold-stamp text-xl text-accent">
-              Sold
+              Listed
             </div>
           </motion.div>
 
-          {/* ACTUAL */}
+          {/* LIST PRICE (the answer) */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={actualVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 30 }}
@@ -242,7 +242,7 @@ export function DailyReveal({
             className="text-center md:text-left"
           >
             <div className="eyebrow mb-2 md:mb-3 text-spot tracking-[0.22em]">
-              ACTUAL PRICE
+              LIST PRICE
             </div>
             <motion.div
               animate={actualVisible && tickedActual >= result.actual

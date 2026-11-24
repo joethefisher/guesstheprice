@@ -2,7 +2,9 @@
 // Endpoint: GET /properties/search-buy
 // Location slug: city:{state_lower}_{city_lower} (e.g. city:il_chicago)
 // Pagination: ?page=N — 20 results per page, meta.totalPage gives total
-// Sold price: top-level last_sold_price (populated on resale listings, null on new construction)
+// Answer: top-level list_price (the current asking price — this is a FOR-SALE
+// endpoint). last_sold_price is the home's PREVIOUS sale (null on new
+// construction) and is not the answer.
 
 import type { RawListing } from "../types";
 

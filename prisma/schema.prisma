@@ -34,9 +34,15 @@ model Listing {
   homeType        String?  // "single_family" | "condo" | "townhouse" | etc.
 
   // The answer
-  soldPrice       Int      // in dollars, the truth
-  soldDate        DateTime?
-  isSold          Boolean  @default(true)
+  // listPrice is the truth players are scored against: the asking price on
+  // the for-sale listing at ingest time. Null = not backfilled / no list
+  // price; such listings are excluded from play.
+  listPrice       Int?
+  // Legacy: the home's PREVIOUS sale (Realty US `last_sold_price`), NOT the
+  // answer. Kept for history / rounds scored before list-price truth.
+  soldPrice       Int      // in dollars
+  soldDate        DateTime? // date of the previous sale
+  isSold          Boolean  @default(true) // legacy; listings are for-sale
 
   // Quality control
   isActive        Boolean  @default(true)
@@ -57,6 +63,7 @@ model Listing {
   @@index([isActive, qualityScore])
   @@index([state, city])
   @@index([soldPrice])
+  @@index([listPrice])
 }
 
 model Photo {

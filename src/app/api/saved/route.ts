@@ -69,7 +69,7 @@ export async function GET() {
  *
  * SECURITY:
  * - userId comes from session.
- * - actualPrice is derived from Listing.soldPrice (server-side), never trusted from body.
+ * - actualPrice is derived from Listing.listPrice (server-side), never trusted from body.
  * - Per-user cap of 500 saves enforced before insert (skipped when this is an
  *   upgrade to an existing row).
  * - FK on listingId catches non-existent listings.
@@ -97,11 +97,11 @@ export async function POST(req: NextRequest) {
   }
   const { listingId, guess, tier, accuracy } = parsed.data;
 
-  // Look up listing for soldPrice (and to fast-fail on a bad id without the
+  // Look up listing for listPrice (and to fast-fail on a bad id without the
   // generic FK 400 below).
   const listing = await prisma.listing.findUnique({
     where: { id: listingId },
-    select: { id: true, isActive: true, soldPrice: true },
+    select: { id: true, isActive: true, listPrice: true },
   });
   if (!listing || !listing.isActive) {
     return NextResponse.json({ error: "listing not found" }, { status: 400 });
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
         guess,
         tier: tier ?? null,
         accuracy: accuracy ?? null,
-        actualPrice: listing.soldPrice,
+        actualPrice: listing.listPrice,
       }
     : null;
 

@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: "Where does the price come from?",
-    a: "The list price as published when the listing was ingested. Some homes have been updated since; the price we score against is the one our ingest captured. We disclose the ingest date on the reveal screen so you know whether you're guessing a fresh listing or a few-months-old one.",
+    a: "The list price (the seller's asking price) on the for-sale listing, as captured when we ingested it. It is not a sold price — these homes were on the market, and the eventual sale price may differ. Some listings have been repriced since; the price we score against is the one our ingest captured.",
   },
   {
     q: "Why are some markets shown more than others?",
@@ -53,8 +53,8 @@ const faqs = [
     a: "More US cities, yes — the target-markets list grows as we expand. International markets are not currently planned; Realtor.com's coverage is US-only, and other data sources have their own quirks we'd need to handle separately.",
   },
   {
-    q: "I'd guess better if I could see the year sold and the original price",
-    a: "Some rounds show the year-sold pill. We deliberately limit how much sale history is visible so the game stays a guessing exercise, not a search exercise.",
+    q: "I'd guess better if I could see when it last sold and for how much",
+    a: "Some rounds show a last-sold year pill (when the home previously changed hands). We deliberately limit how much sale history is visible so the game stays a guessing exercise, not a search exercise.",
   },
 ];
 

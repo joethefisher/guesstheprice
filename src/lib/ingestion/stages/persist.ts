@@ -20,6 +20,7 @@ export async function persistOne(listing: MirroredListing, prisma: PrismaClient)
       await tx.listing.upsert({
         where: { externalId: listing.externalId },
         update: {
+          listPrice: listing.listPrice,
           soldPrice: listing.soldPrice,
           qualityScore: listing.qualityScore,
           updatedAt: new Date(),
@@ -50,9 +51,10 @@ export async function persistOne(listing: MirroredListing, prisma: PrismaClient)
           lotSqft: listing.lotSqft,
           yearBuilt: listing.yearBuilt,
           homeType: listing.homeType,
+          listPrice: listing.listPrice,
           soldPrice: listing.soldPrice,
           soldDate: listing.soldDate,
-          isSold: true,
+          isSold: false,
           isActive: true,
           qualityScore: listing.qualityScore,
           photos: {
