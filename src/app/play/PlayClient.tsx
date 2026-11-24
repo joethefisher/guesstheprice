@@ -24,6 +24,7 @@ import {
 import { popFromCache } from "@/lib/prefetch";
 import { useSavedHomes } from "@/lib/saved-homes-client";
 import { events } from "@/lib/analytics";
+import { classifyScoreFailure, PLAY_UNPLAYABLE_MESSAGE } from "@/lib/score-response";
 
 const TOTAL_ROUNDS = 5;
 
@@ -58,6 +59,8 @@ export default function PlayClient({ initialListing }: Props) {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [scoreError, setScoreError] = useState<string | null>(null);
+  // Short notice shown after an unplayable (409) listing was swapped out.
+  const [swapNotice, setSwapNotice] = useState<string | null>(null);
   const [reveal, setReveal] = useState<RoundResult | null>(null);
   const [guessTab, setGuessTab] = useState<GuessTab>("slider");
   const [typeInput, setTypeInput] = useState("");
@@ -131,6 +134,8 @@ export default function PlayClient({ initialListing }: Props) {
     if (!listing || submitting || !hasInteracted) return;
     setSubmitting(true);
     setScoreError(null);
+    setSwapNotice(null);
+    let swapped = false;
     try {
       const finalGuess =
         guessTab === "type" ? parsePrice(typeInput) ?? guess : guess;
@@ -144,6 +149,13 @@ export default function PlayClient({ initialListing }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(scoreBody),
       });
+      if (!res.ok && classifyScoreFailure(res.status) === "unplayable") {
+        // This listing can never be scored. Same round, different home;
+        // usedIds already holds it so /api/listings excludes it.
+        swapped = true;
+        setSwapNotice(PLAY_UNPLAYABLE_MESSAGE);
+        return;
+      }
       if (!res.ok) throw new Error("score_api_error");
       const data = await res.json();
       if (data.score == null || !data.tier || data.actualPrice == null) {
@@ -181,6 +193,8 @@ export default function PlayClient({ initialListing }: Props) {
       setScoreError("Couldn't score your guess — please try again.");
     } finally {
       setSubmitting(false);
+      // In finally: the 409 branch returns early from the try.
+      if (swapped) fetchListing(usedIds);
     }
   }
 
@@ -216,6 +230,7 @@ export default function PlayClient({ initialListing }: Props) {
       return;
     }
     setRoundIdx(nextRound);
+    setSwapNotice(null);
     fetchListing(usedIds);
   }
 
@@ -268,6 +283,7 @@ export default function PlayClient({ initialListing }: Props) {
       return;
     }
     setRoundIdx((i) => i + 1);
+    setSwapNotice(null);
     fetchListing(usedIds);
   }
 
@@ -465,6 +481,11 @@ export default function PlayClient({ initialListing }: Props) {
 
           {/* CTA row */}
           <div className="flex flex-col gap-3 mt-6 px-4 md:pl-7 md:pr-0">
+            {swapNotice && (
+              <div className="text-sm text-ink-mute font-medium" role="status">
+                {swapNotice}
+              </div>
+            )}
             {scoreError && (
               <div className="text-sm text-flag font-medium">
                 {scoreError}
