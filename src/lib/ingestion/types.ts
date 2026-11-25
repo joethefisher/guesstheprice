@@ -60,6 +60,7 @@ export interface NormalizedListing {
   lotSqft?: number;
   yearBuilt?: number;
   homeType?: string;
+  listPrice: number;
   soldPrice: number;
   soldDate?: Date;
   qualityScore: number;

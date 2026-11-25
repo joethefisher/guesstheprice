@@ -59,11 +59,11 @@ function median<T extends number>(arr: T[]): T | null {
 // 24h revalidate keeps it fresh without hammering the DB on every crawl.
 export const getCityStats = unstable_cache(
   async (city: string, state: string): Promise<CityStats> => {
-    const where = { city, state, isActive: true };
+    const where = { city, state, isActive: true, listPrice: { not: null } };
     const listings = await prisma.listing.findMany({
       where,
       select: {
-        soldPrice: true,
+        listPrice: true,
         beds: true,
         sqft: true,
         neighborhood: true,
@@ -82,7 +82,7 @@ export const getCityStats = unstable_cache(
       };
     }
 
-    const prices = listings.map((l) => l.soldPrice).sort((a, b) => a - b);
+    const prices = listings.map((l) => l.listPrice as number).sort((a, b) => a - b);
     const beds = listings.map((l) => l.beds).sort((a, b) => a - b);
     const sqfts = listings
       .map((l) => l.sqft)
@@ -225,8 +225,8 @@ export const getNeighborhoodStats = unstable_cache(
     neighborhood: string,
   ): Promise<NeighborhoodStats> => {
     const listings = await prisma.listing.findMany({
-      where: { city, state, neighborhood, isActive: true },
-      select: { soldPrice: true, beds: true, sqft: true, neighborhood: true },
+      where: { city, state, neighborhood, isActive: true, listPrice: { not: null } },
+      select: { listPrice: true, beds: true, sqft: true, neighborhood: true },
     });
     if (listings.length === 0) {
       return {
@@ -240,7 +240,7 @@ export const getNeighborhoodStats = unstable_cache(
         topNeighborhoods: [],
       };
     }
-    const prices = listings.map((l) => l.soldPrice).sort((a, b) => a - b);
+    const prices = listings.map((l) => l.listPrice as number).sort((a, b) => a - b);
     const beds = listings.map((l) => l.beds).sort((a, b) => a - b);
     const sqfts = listings
       .map((l) => l.sqft)

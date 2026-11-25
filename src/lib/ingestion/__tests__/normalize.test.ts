@@ -30,6 +30,7 @@ function makeRaw(overrides: Partial<RawListing> = {}): RawListing {
       lot_sqft: 7200,
       type: "single_family",
     },
+    list_price: 1_450_000,
     last_sold_price: 1_200_000,
     last_sold_date: "2024-06-15",
     photos: Array.from({ length: 8 }, (_, i) => ({
@@ -49,6 +50,8 @@ describe("normalizeOne", () => {
     expect(result!.source).toBe("realtor");
     expect(result!.city).toBe("Denver");
     expect(result!.state).toBe("CO");
+    // Truth is the asking price, not the previous sale.
+    expect(result!.listPrice).toBe(1_450_000);
     expect(result!.soldPrice).toBe(1_200_000);
     expect(result!.baths).toBe(3.5);
     expect(result!.photos).toHaveLength(8);
@@ -96,9 +99,22 @@ describe("normalizeOne", () => {
     expect(result!.photos[0].sourceUrl).toBe("https://photos.example.com/0.jpg");
   });
 
-  it("uses list_price when last_sold_price is absent", () => {
-    const raw = makeRaw({ last_sold_price: undefined, list_price: 850_000 });
+  it("keeps list_price as truth and falls back soldPrice to it when there is no prior sale", () => {
+    const raw = makeRaw({ last_sold_price: undefined, last_sold_date: undefined, list_price: 850_000 });
     const result = normalizeOne(raw);
+    expect(result!.listPrice).toBe(850_000);
     expect(result!.soldPrice).toBe(850_000);
+    expect(result!.soldDate).toBeUndefined();
+  });
+
+  it("returns null when list_price is missing even if a previous sale exists", () => {
+    const raw = makeRaw({ list_price: undefined, last_sold_price: 900_000 });
+    expect(normalizeOne(raw)).toBeNull();
+  });
+
+  it("does not reject listings whose previous sale is older than 24 months", () => {
+    const result = normalizeOne(makeRaw({ last_sold_date: "2006-03-31" }));
+    expect(result).not.toBeNull();
+    expect(result!.listPrice).toBe(1_450_000);
   });
 });

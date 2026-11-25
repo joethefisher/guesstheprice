@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { answerPrice } from "@/lib/answer-price";
 import { scoreGuess, accuracyFromGuess } from "@/lib/scoring";
 import { getReaction, getSubReaction } from "@/lib/reactions";
 
@@ -41,14 +42,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "listing not found" }, { status: 404 });
   }
 
-  const result = scoreGuess(guess, listing.soldPrice);
+  // Truth = the for-sale asking price. Listings without one are not playable
+  // (gameplay queries already exclude them); never fall back to soldPrice,
+  // which is the home's previous sale.
+  const actualPrice = answerPrice(listing);
+  if (actualPrice == null) {
+    return NextResponse.json({ error: "listing not playable" }, { status: 409 });
+  }
+
+  const result = scoreGuess(guess, actualPrice);
   const reaction = getReaction(result.tier, listingId);
   const subReaction = getSubReaction(result.tier);
 
   // Materialised 0..1 accuracy stored on the Round so aggregates don't have
   // to recompute + join Listing on every read. Clamped so wild guesses can't
   // make AVG() go negative.
-  const accuracy = accuracyFromGuess(guess, listing.soldPrice);
+  const accuracy = accuracyFromGuess(guess, actualPrice);
 
   // Persist round for any active game — anonymous or signed-in.
   // Anonymous rounds power the landing "around the world" aggregate; signed-in
@@ -95,7 +104,7 @@ export async function POST(req: NextRequest) {
     tier: result.tier,
     errorPct: result.errorPct,
     errorDollars: result.errorDollars,
-    actualPrice: listing.soldPrice,
+    actualPrice,
     streetAddress: listing.streetAddress,
     // Exact coords are only revealed here, post-submit — never in the pre-guess payload.
     exact: listing.latitude != null && listing.longitude != null

@@ -5,7 +5,7 @@ export function YearSoldPill({ year }: { year: number | null | undefined }) {
   return (
     <span
       role="img"
-      aria-label={`Sold in ${year}`}
+      aria-label={`Last sold in ${year}`}
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -43,7 +43,7 @@ export function YearSoldPill({ year }: { year: number | null | undefined }) {
           fontWeight: 500,
         }}
       >
-        SOLD
+        LAST SOLD
       </span>
       <span
         aria-hidden="true"

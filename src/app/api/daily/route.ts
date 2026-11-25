@@ -17,6 +17,12 @@ interface DailyPayload {
  * Wrapped in unstable_cache keyed on the ET date so the same listing isn't
  * recomputed every request — the daily is identical for all callers within
  * a calendar day in America/New_York. 24h TTL.
+ *
+ * Key is v2 since list-price truth: v1 entries may hold a daily picked from
+ * the old eligible set (no listPrice → /api/score 409s all day). The pick
+ * below only ever sees listings with a listPrice (PLAYABLE_SQL/WHERE).
+ * Deploy changes to eligibility just after midnight ET so the offset
+ * (hash % count) doesn't move today's home under players mid-day.
  */
 const getCachedDaily = unstable_cache(
   async (todayET: string): Promise<DailyPayload | { error: string }> => {
@@ -32,7 +38,7 @@ const getCachedDaily = unstable_cache(
 
     return { dailyNumber, dateET: todayET, listing };
   },
-  ["api:daily:v1"],
+  ["api:daily:v2"],
   { revalidate: 86400, tags: ["api:daily"] }
 );
 

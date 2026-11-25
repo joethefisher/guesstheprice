@@ -1,5 +1,4 @@
 import type { RawListing, NormalizedListing } from "./types";
-import { recencyCutoffDate } from "@/lib/recency";
 
 export interface QualityResult {
   score: number;
@@ -7,13 +6,13 @@ export interface QualityResult {
   reasons: string[];
 }
 
-const SOLD_24_MONTHS_MS = 2 * 365 * 24 * 60 * 60 * 1000;
-
 export function scoreRaw(raw: RawListing): QualityResult {
   const reasons: string[] = [];
   let score = 0;
 
-  const price = raw.last_sold_price ?? raw.list_price;
+  // The answer is the for-sale listing's asking price. `last_sold_price` is the
+  // home's PREVIOUS sale (often years old) and must never be the truth.
+  const price = raw.list_price;
   const photos = raw.photos ?? [];
 
   // Hard rejections
@@ -24,13 +23,10 @@ export function scoreRaw(raw: RawListing): QualityResult {
     return { score: 0, reject: true, reasons: ["missing beds"] };
   }
   if (!price) {
-    return { score: 0, reject: true, reasons: ["missing price"] };
+    return { score: 0, reject: true, reasons: ["missing list price"] };
   }
-  // Drop anything sold before the recency cutoff — mirrors the runtime filter
-  // so we stop ingesting old listings that gameplay would exclude anyway.
-  if (!raw.last_sold_date || new Date(raw.last_sold_date) < recencyCutoffDate()) {
-    return { score: 0, reject: true, reasons: ["sold before 24-month cutoff"] };
-  }
+  // No sale-age rejection: with list-price truth, when the home last sold is
+  // irrelevant to whether the round is fair.
   if (price < 50_000 || price > 50_000_000) {
     return { score: 0, reject: true, reasons: [`price out of range: ${price}`] };
   }
@@ -47,10 +43,10 @@ export function scoreRaw(raw: RawListing): QualityResult {
   if (price >= 100_000 && price <= 15_000_000) { score += 10; }
   if (raw.address.coordinate) { score += 5; }
 
-  if (raw.last_sold_date) {
-    const soldMs = new Date(raw.last_sold_date).getTime();
-    if (Date.now() - soldMs <= SOLD_24_MONTHS_MS) { score += 10; }
-  }
+  // Has a list price (always true past the hard reject). Replaces the old
+  // "sold within 24 months" bonus so the rubric's max — and therefore the
+  // share of listings clearing the >=50 play threshold — is unchanged.
+  score += 10;
 
   // Photos from same domain (consistent listing photos, not stock)
   if (photos.length > 0) {

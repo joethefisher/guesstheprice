@@ -50,8 +50,10 @@ export default function MethodologyPage() {
           <h2 className="display text-2xl text-ink mb-3">Listings source</h2>
           <p>
             Pricetag sources its homes from Realtor.com&apos;s public listings
-            via their structured API. Each listing carries the publisher&apos;s
-            published list price, address, beds, baths, square footage, lot size,
+            via their structured API. Every home is an active for-sale
+            listing, and the price you&apos;re guessing is its list price (the
+            seller&apos;s asking price) as captured when we ingested it &mdash;
+            not a sold price. Each listing also carries the address, beds, baths, square footage, lot size,
             year built, and the photo set the publisher uploaded. We mirror
             photos to our own CDN (Cloudflare R2) so the game keeps working
             even if a listing is removed from Realtor.com after ingest.
@@ -137,18 +139,19 @@ export default function MethodologyPage() {
             The full street address is never displayed until you submit a guess.
             On the play screen you see neighborhood + city + state — enough to
             calibrate against the market, not enough to look up the listing
-            directly. After your guess, the reveal screen shows the address, the
-            list price, and a link to the original listing.
+            directly. After your guess, the reveal screen shows the address and the
+            list price you were scored against.
           </p>
         </section>
 
         <section>
           <h2 className="display text-2xl text-ink mb-3">Listing freshness</h2>
           <p>
-            We re-ingest on a schedule that varies by market tier. Top metros
-            refresh every few days; secondary cities refresh weekly. Each home&apos;s
-            reveal screen shows the ingest date, so you know whether the price
-            you guessed against was captured this week or last month.
+            List prices are a snapshot from when we ingested each listing. A
+            seller may have cut the price, or the home may have sold, since
+            then &mdash; the price we score against is the one we captured, and
+            it is an asking price, not a final sale price. We re-ingest
+            periodically to keep the pool current.
           </p>
         </section>
 

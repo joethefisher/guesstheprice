@@ -1,6 +1,5 @@
 import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
-import { recencyCutoffDate } from "@/lib/recency";
 
 export interface HeroCandidate {
   photoUrl: string;
@@ -30,14 +29,12 @@ interface HeroRow {
 export const getHeroPool = unstable_cache(
   async (): Promise<HeroCandidate[]> => {
     try {
-      const cutoff = recencyCutoffDate();
       const rows = await prisma.$queryRaw<HeroRow[]>`
         WITH picked AS (
           SELECT id FROM "Listing"
           WHERE "isActive" = true
           AND "qualityScore" >= 50
-          AND "soldDate" >= ${cutoff}
-          AND "soldPrice" >= 1000000
+          AND "listPrice" >= 1000000
           ORDER BY RANDOM()
           LIMIT 20
         )

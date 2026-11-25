@@ -13,6 +13,7 @@ import { DailyBadge } from "./DailyShared";
 import { MapPreviewCard } from "./map/MapPreviewCard";
 import { useSavedHomes } from "@/lib/saved-homes-client";
 import type { ListingPublic } from "@/lib/game";
+import { classifyScoreFailure, DAILY_UNAVAILABLE_MESSAGE } from "@/lib/score-response";
 
 interface Props {
   listing: ListingPublic;
@@ -50,6 +51,8 @@ export function DailyPlay({
   const [hasInteracted, setHasInteracted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Terminal: /api/score returned 409 (no listPrice). Retrying can't succeed.
+  const [unavailable, setUnavailable] = useState(false);
   const [showForfeit, setShowForfeit] = useState(false);
 
   const { homes: savedHomes, add: addSavedHome, remove: removeSavedHome } = useSavedHomes();
@@ -81,7 +84,7 @@ export function DailyPlay({
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (submitting) return;
+    if (submitting || unavailable) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -90,6 +93,12 @@ export function DailyPlay({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ listingId: listing.id, guess }),
       });
+      if (!res.ok && classifyScoreFailure(res.status) === "unplayable") {
+        setUnavailable(true);
+        setError(DAILY_UNAVAILABLE_MESSAGE);
+        setSubmitting(false);
+        return;
+      }
       if (!res.ok) throw new Error("score error");
       const data = await res.json();
       onSubmit(guess, data);
@@ -97,7 +106,7 @@ export function DailyPlay({
       setError("Something went wrong. Try again.");
       setSubmitting(false);
     }
-  }, [listing.id, guess, submitting, onSubmit]);
+  }, [listing.id, guess, submitting, unavailable, onSubmit]);
 
   return (
     <div className="relative w-full h-full bg-paper overflow-hidden flex flex-col">
@@ -231,7 +240,7 @@ export function DailyPlay({
           )}
 
           {error && (
-            <div className="mt-2 text-accent text-sm">{error}</div>
+            <div className="mt-2 text-accent text-sm" role="alert">{error}</div>
           )}
 
           {/* Submit CTA */}
@@ -239,11 +248,13 @@ export function DailyPlay({
             <button
               className="btn btn-primary w-full p-[22px] text-md rounded-3 flex items-center justify-between"
               onClick={handleSubmit}
-              disabled={submitting}
+              disabled={submitting || unavailable}
               style={{ boxShadow: "0 1px 0 rgba(255,255,255,0.25) inset, 0 14px 32px -10px rgba(255,92,57,0.6)" }}
             >
-              <span>{submitting ? "Locking in…" : "Lock in my final answer"}</span>
-              {!submitting && <Icon.Arrow size={18} />}
+              <span>
+                {unavailable ? "Unavailable today" : submitting ? "Locking in…" : "Lock in my final answer"}
+              </span>
+              {!submitting && !unavailable && <Icon.Arrow size={18} />}
             </button>
           </div>
         </div>

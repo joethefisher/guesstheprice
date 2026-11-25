@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aggregatePrice } from "@/lib/answer-price";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
@@ -38,7 +39,7 @@ export async function PATCH(
       score: true,
       accuracy: true,
       guess: true,
-      listing: { select: { soldPrice: true } },
+      listing: { select: { soldPrice: true, listPrice: true } },
     },
   });
   const aggregates = computeGameAggregates(
@@ -46,7 +47,7 @@ export async function PATCH(
       score: r.score,
       accuracy: r.accuracy,
       guess: r.guess,
-      soldPrice: r.listing.soldPrice,
+      soldPrice: aggregatePrice(r.listing),
     })),
   );
   const durationMs = Date.now() - game.startedAt.getTime();

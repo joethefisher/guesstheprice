@@ -170,7 +170,7 @@ export default function SavedPage() {
                 <div className="px-4 pt-3.5 pb-4">
                   <div className="display tnum text-lg text-ink mb-1">
                     {home.actualPrice !== null
-                      ? `Sold for ${formatPrice(home.actualPrice)}`
+                      ? `Listed at ${formatPrice(home.actualPrice)}`
                       : <span className="text-ink-mute">Saved before guess</span>}
                   </div>
                   <div className="font-semibold text-sm mb-0.5">

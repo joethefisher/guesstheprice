@@ -79,7 +79,7 @@ export function RevealOverlay({ result, listing, roundNumber, totalRounds, onNex
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <div className="eyebrow">Actual price</div>
+            <div className="eyebrow">List price</div>
             <div className="text-display-l leading-none text-accent">
               <NumberTicker
                 value={result.actualPrice}

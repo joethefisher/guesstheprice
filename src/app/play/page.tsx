@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Play — Guess the Housing Price",
   description:
-    "Real homes. Real prices. Try to guess what each one sold for — score is based on how close you get.",
+    "Real homes. Real prices. Try to guess each one\u2019s list price — score is based on how close you get.",
   alternates: { canonical: "/play" },
   openGraph: {
     title: "Play — Guess the Housing Price",

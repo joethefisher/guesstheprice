@@ -31,7 +31,7 @@ const MigrateBody = z.object({
  * SECURITY:
  * - userId comes from session.
  * - All upserts scoped to (userId, listingId).
- * - actualPrice derived from Listing.soldPrice; never trusted from body.
+ * - actualPrice derived from Listing.listPrice; never trusted from body.
  * - Per-user cap enforced; extras are skipped (not errored — clients with
  *   localStorage bloat shouldn't break their sign-in).
  * - Items with non-existent or inactive listingIds are silently skipped so
@@ -76,12 +76,12 @@ export async function POST(req: NextRequest) {
     }),
     prisma.listing.findMany({
       where: { id: { in: items.map((i) => i.listingId) }, isActive: true },
-      select: { id: true, soldPrice: true },
+      select: { id: true, listPrice: true },
     }),
   ]);
 
   const existingSet = new Set(existing.map((e) => e.listingId));
-  const listingMap = new Map(listings.map((l) => [l.id, l.soldPrice]));
+  const listingMap = new Map(listings.map((l) => [l.id, l.listPrice]));
 
   let available = Math.max(0, MAX_SAVES_PER_USER - count);
   let migrated = 0;
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
           guess: hasScore ? item.guess : null,
           tier: hasScore ? item.tier : null,
           accuracy: hasScore ? item.accuracy : null,
-          actualPrice: hasScore ? listingMap.get(item.listingId)! : null,
+          actualPrice: hasScore ? (listingMap.get(item.listingId) ?? null) : null,
           savedAt: new Date(item.savedAt),
         },
       })

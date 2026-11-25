@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { recencyCutoffDate } from "@/lib/recency";
 import { buildMapBlock } from "@/lib/map";
 import type { ListingPublic } from "@/lib/game";
 
@@ -10,7 +9,13 @@ import type { ListingPublic } from "@/lib/game";
  * deterministic-daily) supplies the "picked" CTE; the outer SELECT and
  * post-processing are shared.
  *
- * SECURITY: none of these queries expose `soldPrice` or `streetAddress` —
+ * PLAYABILITY: a listing is in play iff isActive, qualityScore >= 50 and it
+ * has a listPrice (the answer). The old soldDate recency window is gone —
+ * the previous sale's age says nothing about whether the asking price is
+ * a fair answer. PLAYABLE_SQL (raw queries) and PLAYABLE_WHERE (Prisma) below
+ * are the only definitions; keep the two in sync.
+ *
+ * SECURITY: none of these queries expose `listPrice`, `soldPrice` or `streetAddress` —
  * the answer lives server-side until /api/score returns it post-submit.
  */
 
@@ -30,6 +35,16 @@ interface ListingRow {
   longitude: number | null;
   photos: { url: string; thumbnailUrl: string | null; caption: string | null }[];
 }
+
+/** Playability predicate for raw SQL against an unaliased "Listing". */
+export const PLAYABLE_SQL = Prisma.sql`"isActive" = true AND "qualityScore" >= 50 AND "listPrice" IS NOT NULL`;
+
+/** Same predicate as PLAYABLE_SQL for Prisma `where` clauses. */
+export const PLAYABLE_WHERE = {
+  isActive: true,
+  qualityScore: { gte: 50 },
+  listPrice: { not: null },
+} satisfies Prisma.ListingWhereInput;
 
 function toHttps(url: string) { return url.replace(/^http:\/\//, "https://"); }
 
@@ -84,16 +99,13 @@ function rowToPublic(l: ListingRow): ListingPublic {
 /** Fetch a single random active+recent listing. Returns null on no-data / DB error. */
 export async function fetchOneListing(opts: { exclude?: string[] } = {}): Promise<ListingPublic | null> {
   const excludeIds = (opts.exclude ?? []).slice(0, 50);
-  const cutoff = recencyCutoffDate();
   const excludeClause = excludeIds.length
     ? Prisma.sql`AND id NOT IN (${Prisma.join(excludeIds)})`
     : Prisma.empty;
 
   const picked = Prisma.sql`
     SELECT id FROM "Listing"
-    WHERE "isActive" = true
-    AND "qualityScore" >= 50
-    AND "soldDate" >= ${cutoff}
+    WHERE ${PLAYABLE_SQL}
     ${excludeClause}
     ORDER BY RANDOM()
     LIMIT 1
@@ -111,12 +123,9 @@ export async function fetchOneListing(opts: { exclude?: string[] } = {}): Promis
 /** Fetch N random active+recent listings (used by the landing prefetch warmer). */
 export async function fetchListingsBatch(count: number): Promise<ListingPublic[] | null> {
   const n = Math.min(10, Math.max(1, count | 0));
-  const cutoff = recencyCutoffDate();
   const picked = Prisma.sql`
     SELECT id FROM "Listing"
-    WHERE "isActive" = true
-    AND "qualityScore" >= 50
-    AND "soldDate" >= ${cutoff}
+    WHERE ${PLAYABLE_SQL}
     ORDER BY RANDOM()
     LIMIT ${n}
   `;
@@ -132,12 +141,9 @@ export async function fetchListingsBatch(count: number): Promise<ListingPublic[]
 
 /** Fetch the deterministic daily listing at the given catalog offset (stable order by id). */
 export async function fetchDailyListing(offset: number): Promise<ListingPublic | null> {
-  const cutoff = recencyCutoffDate();
   const picked = Prisma.sql`
     SELECT id FROM "Listing"
-    WHERE "isActive" = true
-    AND "qualityScore" >= 50
-    AND "soldDate" >= ${cutoff}
+    WHERE ${PLAYABLE_SQL}
     ORDER BY id
     LIMIT 1
     OFFSET ${offset}
@@ -156,11 +162,7 @@ export async function fetchDailyListing(offset: number): Promise<ListingPublic |
 export async function countEligibleListings(): Promise<number | null> {
   try {
     return await prisma.listing.count({
-      where: {
-        isActive: true,
-        qualityScore: { gte: 50 },
-        soldDate: { gte: recencyCutoffDate() },
-      },
+      where: PLAYABLE_WHERE,
     });
   } catch {
     return null;

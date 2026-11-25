@@ -7,7 +7,7 @@ export function normalizeOne(raw: RawListing): NormalizedListing | null {
   const { score, reject } = scoreRaw(raw);
   if (reject) return null;
 
-  const price = raw.last_sold_price ?? raw.list_price!;
+  const listPrice = raw.list_price!; // guaranteed by scoreRaw
   const baths = parseFloat(raw.description.baths_consolidated ?? "0") || 0;
 
   return {
@@ -26,7 +26,12 @@ export function normalizeOne(raw: RawListing): NormalizedListing | null {
     lotSqft: raw.description.lot_sqft,
     yearBuilt: raw.description.year_built,
     homeType: raw.description.type,
-    soldPrice: Math.round(price),
+    // The answer players are scored against.
+    listPrice: Math.round(listPrice),
+    // Legacy previous-sale fields — informational only, never the answer.
+    // soldPrice is NOT NULL in the schema, so fall back to listPrice when the
+    // home has no recorded prior sale.
+    soldPrice: Math.round(raw.last_sold_price ?? listPrice),
     soldDate: raw.last_sold_date ? new Date(raw.last_sold_date) : undefined,
     qualityScore: score,
     photos: (raw.photos ?? []).slice(0, 20).map((p, i) => ({
